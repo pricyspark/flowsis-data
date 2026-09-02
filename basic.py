@@ -30,7 +30,7 @@ for id in tool_ids:
     if not subdir.is_dir():
         print(f"images/{id} is not a directory. Skipped.")
     
-    for img in subdir.iterdir():
+    for img in sorted(subdir.iterdir()):
         if not img.is_file():
             print(f"images/{id}/{img} is not a file. Skipped.")
             
