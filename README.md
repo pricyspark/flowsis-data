@@ -2,41 +2,67 @@
 
 ## Installation
 
+You will need Python and Git to use this repo. If you do not have Python, you can try and install it. It is easiest on Linux and MacOS. On Windows, I recommend using WSL2 to emulate Linux. If you are comfortable with a terminal and command line I recommend installing Python with Miniforge, otherwise you can use Anaconda, which has a graphics user interface (GUI). Installation for both of these is relatively simple. If you cannot install Python use the lab PC, which runs Linux. Similarly, install Git based on your system.
+
+Once you have Python and Git, in your command line (called Terminal in MacOS and Linux) type:
+
 ```shell
+# Navigate to home. If you prefer to clone to somewhere else, nagivate there.
+cd ~
+# Clone the repo to your local machine
 git clone https://github.com/pricyspark/flowsis-data.git
+cd flowsis-data
 ```
 
 ## Usage
 
-Download all of temporary images and place into the folder temp. Create subfolders within temp based on the tool IDs that you're photographed. For example, temp/10, temp/11/, temp/12, etc. Once all the images are arranged in subfolders, sync your local repository with the one on GitHub using a pull. If you have a preferred git GUI, use that. Otherwise, use the CLI with:
+We will use Git pushes and pulls to sychronize data. I recommend briefly researching the basics of what Git is, and what pushes and pulls do. If you already have a preferred Git GUI, use that. Otherwise, this guide will give command line interface (CLI) instructions to enter into the terminal.
+
+Put all the your new images into this repository's (abbreviated as repo) temp folder. You can do this by uploading to the Google Drive under temp/{your name}. Create subfolders within temp and name them based on the tool IDs that you've photographed. For example, name them temp/10, temp/11/, temp/12, etc. Place your images in the subfolders accordingly, for example all images of tool 10 go in temp/10. Afterwards, sync your local repo with GitHub using a pull.
+
+To use the CLI, enter:
 
 ```shell
 git pull
 ```
 
-Once the repository is synced, run:
+Once the repo is synced, in the terminal run:
 
 ```shell
 python basic.py
 ```
 
-This update image_manifest.csv. It will also create previous_image_manifes.csv if it doesn't exist already. previous_image_manifest.csv will have the contents of image_manifest.csv from before you ran basic.py.
-
-Check through the updated image_manifest.csv and make sure the tool ID and filepaths look good. For now, you will still need to manually enter sample IDs, tool classes, tool names, and confidences. If something bad happens, you can manually revert to the old version since it's saved in previous_image_manifest.csv. Once the manifest is correctly filled out, push it to GitHub to sync it. Set the commit message to your name, the tool IDs you entered, and the sample IDs you entered. For example:
-
-```text
-John Doe
-tools: x, y, z
-samples: a, b, c, d, e, f
-```
-
-If you do not have a preferred git GUI, you can use the CLI with:
+This updates image_manifest.csv and enters rows based on the subfolders you made in the images folder. Check through the updated image_manifest.csv, and make sure the tool ID and filepaths look good. Git lets you see exactly what changed in each line. For now, you will still need to manually enter sample IDs, tool classes, tool names, and confidences. If something bad happens, you can revert to the old version since it's saved with Git. Once the manifest is correctly filled out, use Git to sychnonize it on GitHub. We do this using a push. Before pushing, it's good practice to pull first to make sure theres no incoming changes.
 
 ```shell
-# Sync from GitHub last time
 git pull
-# Sync your changes to GitHub
+```
+
+Add the files we want to synchronize to GitHub:
+
+```shell
 git add *
+```
+
+The files are now "staged". We commit staged changes so they are saved to the Git history. Each commit needs a message to describe the change. Format your commit message using your name, the tools, and the samples added:
+
+```shell
 git commit -m "Jane Doe" -m "tools: x, y, z" -m "samples: a, b, c, d, e, f"
+```
+
+Finally, push it to GitHub to send you new changes to the cloud so everyone can now see them.
+
+```shell
 git push
+```
+
+You can now check the repo on the GitHub website to confirm your changes.
+
+## Uninstallation
+
+```shell
+# If you cloned into a directory other than home, go there instead.
+cd ~
+
+rm -rf flowsis-data
 ```

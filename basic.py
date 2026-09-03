@@ -11,11 +11,6 @@ with open("image_manifest.csv") as f:
     header = next(reader)
     rows = list(reader)
 
-with open("previous_image_manifest.csv", mode='w', newline='') as f:
-    writer = csv.writer(f)
-    writer.writerow(header)
-    writer.writerows(rows)
-
 num_rows = len(rows)
 num_cols = len(rows[0])
 
