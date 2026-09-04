@@ -1,49 +1,136 @@
-Tool ID,Sample ID,Filepath,Tool Class,Tool Name,Confidence,Angle,Lights,Make,Model,Flash,ISO,Exposure,Aperture,Focal length
-0,0,images/0/IMG_8585.heic,scissors,iris,0.8,0,FALSE,,,,,,,
-0,0,images/0/IMG_8586.heic,scissors,iris,0.8,45,FALSE,,,,,,,
-0,0,images/0/IMG_8588.heic,scissors,iris,0.8,90,FALSE,,,,,,,
-0,0,images/0/IMG_8589.heic,scissors,iris,0.8,135,FALSE,,,,,,,
-0,0,images/0/IMG_8590.heic,scissors,iris,0.8,180,FALSE,,,,,,,
-0,0,images/0/IMG_8591.heic,scissors,iris,0.8,225,FALSE,,,,,,,
-0,0,images/0/IMG_8594.heic,scissors,iris,0.8,270,FALSE,,,,,,,
-0,0,images/0/IMG_8595.heic,scissors,iris,0.8,315,FALSE,,,,,,,
-0,1,images/0/IMG_8624.heic,scissors,iris,0.8,0,FALSE,,,,,,,
-0,1,images/0/IMG_8625.heic,scissors,iris,0.8,45,FALSE,,,,,,,
-0,1,images/0/IMG_8626.heic,scissors,iris,0.8,90,FALSE,,,,,,,
-0,1,images/0/IMG_8627.heic,scissors,iris,0.8,135,FALSE,,,,,,,
-0,1,images/0/IMG_8628.heic,scissors,iris,0.8,180,FALSE,,,,,,,
-0,1,images/0/IMG_8629.heic,scissors,iris,0.8,225,FALSE,,,,,,,
-0,1,images/0/IMG_8630.heic,scissors,iris,0.8,270,FALSE,,,,,,,
-0,1,images/0/IMG_8631.heic,scissors,iris,0.8,315,FALSE,,,,,,,
-1,2,images/1/IMG_8599.heic,forceps,crile,0.6,0,FALSE,,,,,,,
-1,2,images/1/IMG_8600.heic,forceps,crile,0.6,45,FALSE,,,,,,,
-1,2,images/1/IMG_8602.heic,forceps,crile,0.6,90,FALSE,,,,,,,
-1,2,images/1/IMG_8603.heic,forceps,crile,0.6,135,FALSE,,,,,,,
-1,2,images/1/IMG_8604.heic,forceps,crile,0.6,180,FALSE,,,,,,,
-1,2,images/1/IMG_8605.heic,forceps,crile,0.6,225,FALSE,,,,,,,
-1,2,images/1/IMG_8606.heic,forceps,crile,0.6,270,FALSE,,,,,,,
-1,2,images/1/IMG_8607.heic,forceps,crile,0.6,315,FALSE,,,,,,,
-1,3,images/1/IMG_8633.heic,forceps,crile,0.6,0,FALSE,,,,,,,
-1,3,images/1/IMG_8634.heic,forceps,crile,0.6,45,FALSE,,,,,,,
-1,3,images/1/IMG_8635.heic,forceps,crile,0.6,90,FALSE,,,,,,,
-1,3,images/1/IMG_8637.heic,forceps,crile,0.6,135,FALSE,,,,,,,
-1,3,images/1/IMG_8638.heic,forceps,crile,0.6,180,FALSE,,,,,,,
-1,3,images/1/IMG_8639.heic,forceps,crile,0.6,225,FALSE,,,,,,,
-1,3,images/1/IMG_8640.heic,forceps,crile,0.6,270,FALSE,,,,,,,
-1,3,images/1/IMG_8641.heic,forceps,crile,0.6,315,FALSE,,,,,,,
-2,4,images/2/IMG_8608.heic,forceps,microvascular coupler,1,0,FALSE,,,,,,,
-2,4,images/2/IMG_8609.heic,forceps,microvascular coupler,1,45,FALSE,,,,,,,
-2,4,images/2/IMG_8610.heic,forceps,microvascular coupler,1,90,FALSE,,,,,,,
-2,4,images/2/IMG_8611.heic,forceps,microvascular coupler,1,135,FALSE,,,,,,,
-2,4,images/2/IMG_8612.heic,forceps,microvascular coupler,1,180,FALSE,,,,,,,
-2,4,images/2/IMG_8613.heic,forceps,microvascular coupler,1,225,FALSE,,,,,,,
-2,4,images/2/IMG_8614.heic,forceps,microvascular coupler,1,270,FALSE,,,,,,,
-2,4,images/2/IMG_8615.heic,forceps,microvascular coupler,1,315,FALSE,,,,,,,
-3,5,images/3/IMG_8616.heic,pliers,ruskin rongear,1,0,FALSE,,,,,,,
-3,5,images/3/IMG_8617.heic,pliers,ruskin rongear,1,45,FALSE,,,,,,,
-3,5,images/3/IMG_8618.heic,pliers,ruskin rongear,1,90,FALSE,,,,,,,
-3,5,images/3/IMG_8619.heic,pliers,ruskin rongear,1,135,FALSE,,,,,,,
-3,5,images/3/IMG_8620.heic,pliers,ruskin rongear,1,180,FALSE,,,,,,,
-3,5,images/3/IMG_8621.heic,pliers,ruskin rongear,1,225,FALSE,,,,,,,
-3,5,images/3/IMG_8622.heic,pliers,ruskin rongear,1,270,FALSE,,,,,,,
-3,5,images/3/IMG_8623.heic,pliers,ruskin rongear,1,315,FALSE,,,,,,,
+Tool ID,Sample ID,Filepath,Tool Class,Tool Name,Confidence,Angle,Lights,Make,Model,Flash,ISO,Exposure,Aperture,Focal length (mm)
+0,0,images/0/IMG_8585.jpg,scissors,iris,0.8,0,FALSE,Apple,iPhone 16 Pro Max,FALSE,4000,1/15,1.78,6.765
+0,0,images/0/IMG_8586.jpg,scissors,iris,0.8,45,FALSE,Apple,iPhone 16 Pro Max,FALSE,3200,1/15,1.78,6.765
+0,0,images/0/IMG_8588.jpg,scissors,iris,0.8,90,FALSE,Apple,iPhone 16 Pro Max,FALSE,2500,1/15,1.78,6.765
+0,0,images/0/IMG_8589.jpg,scissors,iris,0.8,135,FALSE,Apple,iPhone 16 Pro Max,FALSE,3200,1/15,1.78,6.765
+0,0,images/0/IMG_8590.jpg,scissors,iris,0.8,180,FALSE,Apple,iPhone 16 Pro Max,FALSE,3200,1/15,2.2,2.22
+0,0,images/0/IMG_8591.jpg,scissors,iris,0.8,225,FALSE,Apple,iPhone 16 Pro Max,FALSE,4000,1/15,1.78,6.765
+0,0,images/0/IMG_8594.jpg,scissors,iris,0.8,270,FALSE,Apple,iPhone 16 Pro Max,FALSE,4000,1/15,1.78,6.765
+0,0,images/0/IMG_8595.jpg,scissors,iris,0.8,315,FALSE,Apple,iPhone 16 Pro Max,FALSE,5000,1/15,1.78,6.765
+0,1,images/0/IMG_8624.jpg,scissors,iris,0.8,0,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+0,1,images/0/IMG_8625.jpg,scissors,iris,0.8,45,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+0,1,images/0/IMG_8626.jpg,scissors,iris,0.8,90,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+0,1,images/0/IMG_8627.jpg,scissors,iris,0.8,135,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+0,1,images/0/IMG_8628.jpg,scissors,iris,0.8,180,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+0,1,images/0/IMG_8629.jpg,scissors,iris,0.8,225,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+0,1,images/0/IMG_8630.jpg,scissors,iris,0.8,270,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+0,1,images/0/IMG_8631.jpg,scissors,iris,0.8,315,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+1,2,images/1/IMG_8599.jpg,forceps,crile,0.6,0,FALSE,Apple,iPhone 16 Pro Max,FALSE,6400,1/15,1.78,6.765
+1,2,images/1/IMG_8600.jpg,forceps,crile,0.6,45,FALSE,Apple,iPhone 16 Pro Max,FALSE,8000,1/15,1.78,6.765
+1,2,images/1/IMG_8602.jpg,forceps,crile,0.6,90,FALSE,Apple,iPhone 16 Pro Max,FALSE,8000,1/15,1.78,6.765
+1,2,images/1/IMG_8603.jpg,forceps,crile,0.6,135,FALSE,Apple,iPhone 16 Pro Max,FALSE,10000,1/15,1.78,6.765
+1,2,images/1/IMG_8604.jpg,forceps,crile,0.6,180,FALSE,Apple,iPhone 16 Pro Max,FALSE,10000,1/15,1.78,6.765
+1,2,images/1/IMG_8605.jpg,forceps,crile,0.6,225,FALSE,Apple,iPhone 16 Pro Max,FALSE,10000,1/15,1.78,6.765
+1,2,images/1/IMG_8606.jpg,forceps,crile,0.6,270,FALSE,Apple,iPhone 16 Pro Max,FALSE,8000,1/15,1.78,6.765
+1,2,images/1/IMG_8607.jpg,forceps,crile,0.6,315,FALSE,Apple,iPhone 16 Pro Max,FALSE,10000,1/15,1.78,6.765
+1,3,images/1/IMG_8633.jpg,forceps,crile,0.6,0,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+1,3,images/1/IMG_8634.jpg,forceps,crile,0.6,45,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+1,3,images/1/IMG_8635.jpg,forceps,crile,0.6,90,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+1,3,images/1/IMG_8637.jpg,forceps,crile,0.6,135,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+1,3,images/1/IMG_8638.jpg,forceps,crile,0.6,180,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+1,3,images/1/IMG_8639.jpg,forceps,crile,0.6,225,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+1,3,images/1/IMG_8640.jpg,forceps,crile,0.6,270,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+1,3,images/1/IMG_8641.jpg,forceps,crile,0.6,315,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+2,4,images/2/IMG_8608.jpg,forceps,microvascular coupler,1,0,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+2,4,images/2/IMG_8609.jpg,forceps,microvascular coupler,1,45,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+2,4,images/2/IMG_8610.jpg,forceps,microvascular coupler,1,90,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+2,4,images/2/IMG_8611.jpg,forceps,microvascular coupler,1,135,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+2,4,images/2/IMG_8612.jpg,forceps,microvascular coupler,1,180,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+2,4,images/2/IMG_8613.jpg,forceps,microvascular coupler,1,225,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+2,4,images/2/IMG_8614.jpg,forceps,microvascular coupler,1,270,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+2,4,images/2/IMG_8615.jpg,forceps,microvascular coupler,1,315,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+3,5,images/3/IMG_8616.jpg,pliers,ruskin rongear,1,0,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+3,5,images/3/IMG_8617.jpg,pliers,ruskin rongear,1,45,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+3,5,images/3/IMG_8618.jpg,pliers,ruskin rongear,1,90,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+3,5,images/3/IMG_8619.jpg,pliers,ruskin rongear,1,135,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+3,5,images/3/IMG_8620.jpg,pliers,ruskin rongear,1,180,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+3,5,images/3/IMG_8621.jpg,pliers,ruskin rongear,1,225,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+3,5,images/3/IMG_8622.jpg,pliers,ruskin rongear,1,270,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+3,5,images/3/IMG_8623.jpg,pliers,ruskin rongear,1,315,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765
+17,,images/17/IMG_2565.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2566.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2567.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2568.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2569.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2570.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2571.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2572.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2573.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2574.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2575.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2576.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2577.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2578.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2579.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2580.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2581.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2583.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2585.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2586.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2587.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2588.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2589.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2590.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2591.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2592.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2593.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2594.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2595.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2596.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2640.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2641.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2642.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2643.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2644.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2645.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2646.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,200,1/60,1.78,6.86
+17,,images/17/IMG_2647.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2648.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2649.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2650.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2651.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2652.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2653.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86
+17,,images/17/IMG_2667.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86
+17,,images/17/IMG_2668.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86
+17,,images/17/IMG_2669.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86
+17,,images/17/IMG_2670.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86
+17,,images/17/IMG_2671.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/60,1.78,6.86
+17,,images/17/IMG_2672.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86
+17,,images/17/IMG_2676.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2677.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86
+17,,images/17/IMG_2678.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86
+17,,images/17/IMG_2679.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86
+17,,images/17/IMG_2680.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86
+22,6,images/22/IMG_0664.jpg,,,,0,,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96
+22,6,images/22/IMG_0665.jpg,,,,45,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,6,images/22/IMG_0667.jpg,,,,90,,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96
+22,6,images/22/IMG_0668.jpg,,,,135,,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96
+22,6,images/22/IMG_0669.jpg,,,,180,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,6,images/22/IMG_0671.jpg,,,,225,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,6,images/22/IMG_0672.jpg,,,,270,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,6,images/22/IMG_0673.jpg,,,,315,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,7,images/22/IMG_0674.jpg,,,,0,,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96
+22,7,images/22/IMG_0675.jpg,,,,45,,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96
+22,7,images/22/IMG_0676.jpg,,,,90,,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96
+22,7,images/22/IMG_0677.jpg,,,,135,,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96
+22,7,images/22/IMG_0678.jpg,,,,180,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,7,images/22/IMG_0679.jpg,,,,225,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,7,images/22/IMG_0680.jpg,,,,270,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,7,images/22/IMG_0681.jpg,,,,315,,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96
+22,8,images/22/IMG_0682.jpg,,,,0,,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96
+22,8,images/22/IMG_0683.jpg,,,,45,,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96
+22,8,images/22/IMG_0684.jpg,,,,90,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,8,images/22/IMG_0686.jpg,,,,135,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,8,images/22/IMG_0687.jpg,,,,180,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,8,images/22/IMG_0688.jpg,,,,225,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,8,images/22/IMG_0689.jpg,,,,270,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,8,images/22/IMG_0690.jpg,,,,315,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,9,images/22/IMG_0691.jpg,,,,0,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,9,images/22/IMG_0692.jpg,,,,45,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,9,images/22/IMG_0693.jpg,,,,90,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,9,images/22/IMG_0695.jpg,,,,135,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,9,images/22/IMG_0696.jpg,,,,180,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,9,images/22/IMG_0697.jpg,,,,225,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,9,images/22/IMG_0698.jpg,,,,270,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96
+22,9,images/22/IMG_0699.jpg,,,,315,,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96

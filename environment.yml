@@ -1,0 +1,9 @@
+name: flowsis-data
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pillow
+  - pip
+  - pip:
+    - pillow_heif
