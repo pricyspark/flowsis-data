@@ -41,9 +41,28 @@ Now run:
 python basic.py
 ```
 
-The script lists each new tool ID and asks you for its class, name, and confidence. Confidence must be a number from 0 to 1. It reads the original files in `raw-images` to fill in the camera make, model, flash, ISO, exposure, aperture, and focal length when that metadata is available. The metadata is written only to the CSV; it is not copied into the JPG files. If a tool has a multiple of eight images, the script treats each consecutive set of eight filenames as one sample and fills in unique sample IDs and angles from 0 to 315 degrees. Otherwise, it leaves the sample IDs and angles blank for you to review.
+The script lists each new tool ID and asks you for its class, name, and confidence. Tool classes and names are automatically changed to lowercase with punctuation removed. Confidence must be a number from 0 to 1. If it finds undocumented images for a tool ID that is already in the manifest, it warns you and asks whether to add or skip them. Pressing Enter skips that tool. If you continue, the script reuses the tool's existing class, name, and confidence. It reads the original files in `raw-images` to fill in the capture time, camera make, model, flash, ISO, exposure, aperture, and focal length in millimeters when that metadata is available. Capture times are stored with their date and timezone, for example `2026-09-01T19:51:50.430-04:00`. The metadata is written only to the CSV; it is not copied into the JPG files. If a tool has a multiple of eight ungrouped images, the script treats each consecutive set of eight filenames as one sample and fills in unique sample IDs and angles from 0 to 315 degrees. Otherwise, it leaves the sample IDs and angles blank for you to review.
 
-Check the updated `image_manifest.csv` and make sure the tool IDs, filepaths, sample groupings, and angles look correct. In particular, confirm that the filenames sort in the same order in which the tool was rotated. Once the manifest is correct, use Git to synchronize it with GitHub. Before pushing, pull again to check for incoming changes.
+Check the updated `image_manifest.csv` and make sure the tool IDs, filepaths, sample groupings, and angles look correct. In particular, confirm that the filenames sort in the same order in which the tool was rotated.
+
+You can also run an automatic verification:
+
+```shell
+python verify_data.py
+```
+
+The verifier first checks the CSV and files for missing images, images that are not in the manifest, duplicate paths, tool IDs that disagree with their folder, invalid confidence values, incomplete samples, and missing or repeated angles. It then asks whether Codex should visually review temporary, downscaled contact sheets. The visual review looks for a different tool within a sample, suspicious rotation order, image-quality problems, and inconsistent class or name conventions. These findings are suggestions for a person to review; the verifier never changes the manifest. Temporary contact sheets are deleted automatically.
+
+The visual review requires the Codex command-line program and a one-time ChatGPT sign-in. If `codex` is not installed, install it with:
+
+```shell
+curl -fsSL https://chatgpt.com/codex/install.sh | sh
+codex login
+```
+
+The results are saved as `verification_report.html`, which you can open in a web browser, and `verification_report.json`, which contains the same results in a machine-readable format. To run only the CSV and file checks without Codex, use `python verify_data.py --static-only`.
+
+Once the manifest is correct, use Git to synchronize it with GitHub. Before pushing, pull again to check for incoming changes.
 
 ```shell
 git pull

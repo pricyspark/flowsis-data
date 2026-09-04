@@ -15,6 +15,10 @@ def main() -> None:
     for source in sorted(path for path in SOURCE_DIR.rglob("*") if path.is_file()):
         destination = (OUTPUT_DIR / source.relative_to(SOURCE_DIR)).with_suffix(".jpg")
 
+        if destination.exists():
+            print(f"Skipping existing file: {destination}")
+            continue
+
         try:
             with Image.open(source) as image:
                 image = ImageOps.exif_transpose(image).convert("RGB")

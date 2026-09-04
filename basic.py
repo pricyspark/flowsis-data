@@ -1,4 +1,6 @@
 import csv
+import unicodedata
+from datetime import datetime
 from fractions import Fraction
 from pathlib import Path
 
@@ -19,7 +21,8 @@ METADATA_COLUMNS = (
     "ISO",
     "Exposure",
     "Aperture",
-    "Focal length",
+    "Focal length (mm)",
+    "Time Taken",
 )
 
 
@@ -30,9 +33,17 @@ def sort_key(value: str) -> tuple[int, int | str]:
         return 1, value.lower()
 
 
+def normalize_label(value: str) -> str:
+    without_punctuation = "".join(
+        " " if unicodedata.category(character).startswith("P") else character
+        for character in value
+    )
+    return " ".join(without_punctuation.lower().split())
+
+
 def prompt_required(label: str) -> str:
     while True:
-        value = input(f"{label}: ").strip()
+        value = normalize_label(input(f"{label}: "))
         if value:
             return value
         print("Please enter a value.")
@@ -50,6 +61,19 @@ def prompt_confidence() -> str:
         if 0 <= confidence <= 1:
             return f"{confidence:g}"
         print("Confidence must be between 0 and 1.")
+
+
+def prompt_continue(tool_id: str, image_count: int) -> bool:
+    while True:
+        response = input(
+            f"Tool ID {tool_id} already has manifest entries but also has "
+            f"{image_count} undocumented image(s). Continue and add them? [y/N]: "
+        ).strip().lower()
+        if response in {"y", "yes"}:
+            return True
+        if response in {"", "n", "no"}:
+            return False
+        print("Please enter y for yes or n for no.")
 
 
 def find_images(tool_dir: Path) -> list[Path]:
@@ -105,6 +129,35 @@ def format_exposure(value: object) -> str:
     return f"{exposure.numerator}/{exposure.denominator}"
 
 
+def format_time_taken(exif: Image.Exif, camera: dict[int, object]) -> str:
+    raw_time = camera.get(ExifTags.Base.DateTimeOriginal) or exif.get(
+        ExifTags.Base.DateTime
+    )
+    if not raw_time:
+        return ""
+
+    raw_time = str(raw_time).strip()
+    try:
+        timestamp = datetime.strptime(raw_time, "%Y:%m:%d %H:%M:%S").strftime(
+            "%Y-%m-%dT%H:%M:%S"
+        )
+    except ValueError:
+        return raw_time
+
+    subseconds = str(camera.get(ExifTags.Base.SubsecTimeOriginal, "")).strip()
+    if subseconds.isdigit():
+        timestamp += f".{subseconds}"
+
+    offset = str(
+        camera.get(ExifTags.Base.OffsetTimeOriginal)
+        or exif.get(ExifTags.Base.OffsetTime)
+        or ""
+    ).strip()
+    if offset:
+        timestamp += offset
+    return timestamp
+
+
 def extract_metadata(source: Path) -> dict[str, str]:
     with Image.open(source) as image:
         exif = image.getexif()
@@ -118,7 +171,8 @@ def extract_metadata(source: Path) -> dict[str, str]:
         "ISO": format_decimal(camera.get(ExifTags.Base.ISOSpeedRatings)),
         "Exposure": format_exposure(camera.get(ExifTags.Base.ExposureTime)),
         "Aperture": format_decimal(camera.get(ExifTags.Base.FNumber)),
-        "Focal length": format_decimal(camera.get(ExifTags.Base.FocalLength)),
+        "Focal length (mm)": format_decimal(camera.get(ExifTags.Base.FocalLength)),
+        "Time Taken": format_time_taken(exif, camera),
     }
 
 
@@ -148,6 +202,11 @@ def main(
         print(f"{manifest_path.name} does not have a header row.")
         return
 
+    if "Time Taken" not in fieldnames:
+        fieldnames.append("Time Taken")
+        for row in rows:
+            row["Time Taken"] = ""
+
     required_columns = {
         "Tool ID",
         "Sample ID",
@@ -163,6 +222,14 @@ def main(
         missing = ", ".join(sorted(missing_columns))
         print(f"{manifest_path.name} is missing columns: {missing}")
         return
+
+    normalized_labels = 0
+    for row in rows:
+        for column in ("Tool Class", "Tool Name"):
+            normalized = normalize_label(row[column])
+            if normalized != row[column]:
+                row[column] = normalized
+                normalized_labels += 1
 
     metadata_updates = 0
     for row in rows:
@@ -189,15 +256,18 @@ def main(
                 row[column] = value
                 metadata_updates += 1
 
-    existing_tool_ids = {row["Tool ID"] for row in rows}
     tool_dirs = sorted(
         (path for path in images_dir.iterdir() if path.is_dir()),
         key=lambda path: sort_key(path.name),
     )
-    new_tool_dirs = [path for path in tool_dirs if path.name not in existing_tool_ids]
+    rows_by_tool = {
+        tool_dir.name: [row for row in rows if row["Tool ID"] == tool_dir.name]
+        for tool_dir in tool_dirs
+    }
+    new_tool_ids = [tool_id for tool_id, tool_rows in rows_by_tool.items() if not tool_rows]
 
-    if new_tool_dirs:
-        print("New tool IDs found: " + ", ".join(path.name for path in new_tool_dirs))
+    if new_tool_ids:
+        print("New tool IDs found: " + ", ".join(new_tool_ids))
     else:
         print("No new tool IDs found.")
 
@@ -209,39 +279,71 @@ def main(
     next_sample_id = max(sample_ids, default=-1) + 1
     added_rows = 0
 
-    for tool_dir in new_tool_dirs:
+    for tool_dir in tool_dirs:
         tool_id = tool_dir.name
         images = find_images(tool_dir)
+        existing_rows = rows_by_tool[tool_id]
 
         if not images:
-            print(f"\nTool ID {tool_id} has no image files. Skipping it.")
+            if not existing_rows:
+                print(f"\nTool ID {tool_id} has no image files. Skipping it.")
             continue
 
-        print(f"\nTool ID {tool_id} has {len(images)} image(s).")
-        tool_class = prompt_required("Tool class")
-        tool_name = prompt_required("Tool name")
-        confidence = prompt_confidence()
+        documented_paths = {row["Filepath"] for row in existing_rows}
+        undocumented_images = [
+            image
+            for image in images
+            if image.relative_to(manifest_path.parent).as_posix()
+            not in documented_paths
+        ]
+        if not undocumented_images:
+            continue
 
-        has_complete_groups = len(images) % len(ANGLES) == 0
-        if has_complete_groups:
-            group_count = len(images) // len(ANGLES)
-            first_sample_id = next_sample_id
+        if existing_rows:
             print(
-                f"Assigning {group_count} sample ID(s), starting at "
-                f"{first_sample_id}, with angles 0 through 315 degrees."
+                f"\nWarning: tool ID {tool_id} contains "
+                f"{len(undocumented_images)} image(s) that are not in the manifest."
+            )
+            if not prompt_continue(tool_id, len(undocumented_images)):
+                print(f"Skipping tool ID {tool_id}.")
+                continue
+
+            tool_class = next(
+                (row["Tool Class"] for row in existing_rows if row["Tool Class"]),
+                "",
+            )
+            tool_name = next(
+                (row["Tool Name"] for row in existing_rows if row["Tool Name"]),
+                "",
+            )
+            confidence = next(
+                (row["Confidence"] for row in existing_rows if row["Confidence"]),
+                "",
+            )
+            if not tool_class:
+                tool_class = prompt_required("Tool class")
+            if not tool_name:
+                tool_name = prompt_required("Tool name")
+            if not confidence:
+                confidence = prompt_confidence()
+            print(
+                f"Using existing details: class={tool_class}, name={tool_name}, "
+                f"confidence={confidence}."
             )
         else:
-            print(
-                f"Warning: {len(images)} is not a multiple of 8. "
-                "Sample ID and angle will be left blank for this tool."
-            )
+            print(f"\nTool ID {tool_id} has {len(images)} image(s).")
+            tool_class = prompt_required("Tool class")
+            tool_name = prompt_required("Tool name")
+            confidence = prompt_confidence()
 
-        for index, image in enumerate(images):
+        new_rows_by_path: dict[str, dict[str, str]] = {}
+        for image in undocumented_images:
+            filepath = image.relative_to(manifest_path.parent).as_posix()
             row = dict.fromkeys(fieldnames, "")
             row.update(
                 {
                     "Tool ID": tool_id,
-                    "Filepath": image.relative_to(manifest_path.parent).as_posix(),
+                    "Filepath": filepath,
                     "Tool Class": tool_class,
                     "Tool Name": tool_name,
                     "Confidence": confidence,
@@ -257,17 +359,38 @@ def main(
                 except (OSError, UnidentifiedImageError, TypeError, ValueError) as error:
                     print(f"Warning: could not read metadata from {source}: {error}")
 
-            if has_complete_groups:
-                row["Sample ID"] = str(next_sample_id + index // len(ANGLES))
-                row["Angle"] = str(ANGLES[index % len(ANGLES)])
-
             rows.append(row)
+            new_rows_by_path[filepath] = row
             added_rows += 1
 
-        if has_complete_groups:
-            next_sample_id += len(images) // len(ANGLES)
+        rows_for_path = {row["Filepath"]: row for row in existing_rows}
+        rows_for_path.update(new_rows_by_path)
+        ungrouped_rows = []
+        for image in images:
+            filepath = image.relative_to(manifest_path.parent).as_posix()
+            row = rows_for_path.get(filepath)
+            if row and not row["Sample ID"] and not row["Angle"]:
+                ungrouped_rows.append(row)
 
-    if not added_rows and not metadata_updates:
+        has_complete_groups = len(ungrouped_rows) % len(ANGLES) == 0
+        if ungrouped_rows and has_complete_groups:
+            group_count = len(ungrouped_rows) // len(ANGLES)
+            first_sample_id = next_sample_id
+            for index, row in enumerate(ungrouped_rows):
+                row["Sample ID"] = str(next_sample_id + index // len(ANGLES))
+                row["Angle"] = str(ANGLES[index % len(ANGLES)])
+            next_sample_id += group_count
+            print(
+                f"Assigning {group_count} sample ID(s), starting at "
+                f"{first_sample_id}, with angles 0 through 315 degrees."
+            )
+        elif ungrouped_rows:
+            print(
+                f"Warning: {len(ungrouped_rows)} ungrouped image(s) is not a "
+                "multiple of 8. Sample ID and angle will be left blank."
+            )
+
+    if not added_rows and not metadata_updates and not normalized_labels:
         print("The manifest was not changed.")
         return
 
@@ -287,6 +410,8 @@ def main(
 
     if metadata_updates:
         print(f"Filled {metadata_updates} empty metadata field(s).")
+    if normalized_labels:
+        print(f"Normalized {normalized_labels} tool class or name field(s).")
     if added_rows:
         print(f"Added {added_rows} row(s) to {manifest_path.name}.")
 
