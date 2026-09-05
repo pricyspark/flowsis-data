@@ -7,12 +7,19 @@ from pathlib import Path
 from PIL import ExifTags, Image, UnidentifiedImageError
 import pillow_heif
 
-
 ROOT = Path(__file__).resolve().parent
 IMAGES_DIR = ROOT / "images"
 RAW_IMAGES_DIR = ROOT / "raw-images"
 MANIFEST_PATH = ROOT / "image_manifest.csv"
-IMAGE_EXTENSIONS = {".avif", ".heic", ".jpeg", ".jpg", ".png", ".webp"}
+IMAGE_EXTENSIONS = {
+    ".avif",
+    ".heic",
+    ".heif",
+    ".jpeg",
+    ".jpg",
+    ".png",
+    ".webp",
+}
 ANGLES = tuple(range(0, 360, 45))
 METADATA_COLUMNS = (
     "Make",
@@ -65,10 +72,14 @@ def prompt_confidence() -> str:
 
 def prompt_continue(tool_id: str, image_count: int) -> bool:
     while True:
-        response = input(
-            f"Tool ID {tool_id} already has manifest entries but also has "
-            f"{image_count} undocumented image(s). Continue and add them? [y/N]: "
-        ).strip().lower()
+        response = (
+            input(
+                f"Tool ID {tool_id} already has manifest entries but also has "
+                f"{image_count} undocumented image(s). Continue and add them? [y/N]: "
+            )
+            .strip()
+            .lower()
+        )
         if response in {"y", "yes"}:
             return True
         if response in {"", "n", "no"}:
@@ -85,6 +96,74 @@ def find_images(tool_dir: Path) -> list[Path]:
         ),
         key=lambda path: str(path.relative_to(tool_dir)).lower(),
     )
+
+
+def find_image_slots(
+    tool_dir: Path,
+    images_dir: Path,
+    raw_images_dir: Path,
+) -> list[Path]:
+    """Return expected JPG paths ordered by their raw source filenames."""
+    raw_tool_dir = raw_images_dir / tool_dir.relative_to(images_dir)
+    if not raw_tool_dir.is_dir():
+        return find_images(tool_dir)
+
+    sources = find_images(raw_tool_dir)
+    if not sources:
+        return find_images(tool_dir)
+
+    slots = []
+    seen = set()
+    for source in sources:
+        destination = (images_dir / source.relative_to(raw_images_dir)).with_suffix(
+            ".jpg"
+        )
+        if destination not in seen:
+            slots.append(destination)
+            seen.add(destination)
+
+    for image in find_images(tool_dir):
+        if image not in seen:
+            slots.append(image)
+            seen.add(image)
+    return slots
+
+
+def assign_complete_batches(
+    image_slots: list[Path],
+    rows_by_path: dict[str, dict[str, str]],
+    manifest_dir: Path,
+    next_sample_id: int,
+) -> tuple[int, int, int]:
+    """Assign complete eight-image slots without shifting past missing images."""
+    group_count = 0
+    incomplete_rows = 0
+    for start in range(0, len(image_slots), len(ANGLES)):
+        image_batch = image_slots[start : start + len(ANGLES)]
+        batch_rows = [
+            (
+                rows_by_path.get(image.relative_to(manifest_dir).as_posix())
+                if image.is_file()
+                else None
+            )
+            for image in image_batch
+        ]
+        ungrouped_rows = [
+            row
+            for row in batch_rows
+            if row and not row["Sample ID"] and not row["Angle"]
+        ]
+
+        if len(image_batch) == len(ANGLES) and len(ungrouped_rows) == len(ANGLES):
+            for angle, row in zip(ANGLES, ungrouped_rows):
+                row["Sample ID"] = str(next_sample_id)
+                row["Angle"] = str(angle)
+            next_sample_id += 1
+            group_count += 1
+        else:
+            incomplete_rows += len(ungrouped_rows)
+
+    return next_sample_id, group_count, incomplete_rows
 
 
 def find_original(image: Path, images_dir: Path, raw_images_dir: Path) -> Path | None:
@@ -264,7 +343,9 @@ def main(
         tool_dir.name: [row for row in rows if row["Tool ID"] == tool_dir.name]
         for tool_dir in tool_dirs
     }
-    new_tool_ids = [tool_id for tool_id, tool_rows in rows_by_tool.items() if not tool_rows]
+    new_tool_ids = [
+        tool_id for tool_id, tool_rows in rows_by_tool.items() if not tool_rows
+    ]
 
     if new_tool_ids:
         print("New tool IDs found: " + ", ".join(new_tool_ids))
@@ -272,9 +353,7 @@ def main(
         print("No new tool IDs found.")
 
     sample_ids = [
-        int(row["Sample ID"])
-        for row in rows
-        if row["Sample ID"].strip().isdigit()
+        int(row["Sample ID"]) for row in rows if row["Sample ID"].strip().isdigit()
     ]
     next_sample_id = max(sample_ids, default=-1) + 1
     added_rows = 0
@@ -282,6 +361,7 @@ def main(
     for tool_dir in tool_dirs:
         tool_id = tool_dir.name
         images = find_images(tool_dir)
+        image_slots = find_image_slots(tool_dir, images_dir, raw_images_dir)
         existing_rows = rows_by_tool[tool_id]
 
         if not images:
@@ -308,6 +388,7 @@ def main(
                 print(f"Skipping tool ID {tool_id}.")
                 continue
 
+        if existing_rows:
             tool_class = next(
                 (row["Tool Class"] for row in existing_rows if row["Tool Class"]),
                 "",
@@ -356,7 +437,12 @@ def main(
             else:
                 try:
                     row.update(extract_metadata(source))
-                except (OSError, UnidentifiedImageError, TypeError, ValueError) as error:
+                except (
+                    OSError,
+                    UnidentifiedImageError,
+                    TypeError,
+                    ValueError,
+                ) as error:
                     print(f"Warning: could not read metadata from {source}: {error}")
 
             rows.append(row)
@@ -365,29 +451,24 @@ def main(
 
         rows_for_path = {row["Filepath"]: row for row in existing_rows}
         rows_for_path.update(new_rows_by_path)
-        ungrouped_rows = []
-        for image in images:
-            filepath = image.relative_to(manifest_path.parent).as_posix()
-            row = rows_for_path.get(filepath)
-            if row and not row["Sample ID"] and not row["Angle"]:
-                ungrouped_rows.append(row)
+        first_sample_id = next_sample_id
+        next_sample_id, group_count, incomplete_rows = assign_complete_batches(
+            image_slots,
+            rows_for_path,
+            manifest_path.parent,
+            next_sample_id,
+        )
 
-        has_complete_groups = len(ungrouped_rows) % len(ANGLES) == 0
-        if ungrouped_rows and has_complete_groups:
-            group_count = len(ungrouped_rows) // len(ANGLES)
-            first_sample_id = next_sample_id
-            for index, row in enumerate(ungrouped_rows):
-                row["Sample ID"] = str(next_sample_id + index // len(ANGLES))
-                row["Angle"] = str(ANGLES[index % len(ANGLES)])
-            next_sample_id += group_count
+        if group_count:
             print(
                 f"Assigning {group_count} sample ID(s), starting at "
                 f"{first_sample_id}, with angles 0 through 315 degrees."
             )
-        elif ungrouped_rows:
+        if incomplete_rows:
             print(
-                f"Warning: {len(ungrouped_rows)} ungrouped image(s) is not a "
-                "multiple of 8. Sample ID and angle will be left blank."
+                f"Warning: {incomplete_rows} ungrouped image(s) belong to "
+                "incomplete eight-image batch(es). Sample ID and angle will be "
+                "left blank; later complete batches are unaffected."
             )
 
     if not added_rows and not metadata_updates and not normalized_labels:

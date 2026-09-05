@@ -29,11 +29,27 @@ To use the CLI, enter:
 git pull
 ```
 
-Convert raw images to JPG and save them in the images folder.
+Convert and crop the raw images. The converter isolates the blue marker in each image quadrant, matches its inner corner with an L-shaped convolution kernel, applies a perspective correction, and saves the finished 2160×2160 JPG in `images`. If a marker is missing, incomplete, or does not match the kernel reliably, it does not create the JPG and lists the failed image and reason after processing finishes.
 
 ```shell
 python img_convert.py
 ```
+
+Existing JPGs are skipped by default. To reprocess all raw images and replace their existing JPGs, run:
+
+```shell
+python img_convert.py --force
+```
+
+If forced conversion fails, the old JPG is removed so `images` cannot retain an output that failed the current crop validation. The original file remains in `raw-images`.
+
+To save annotated previews of the detected coordinates for visual review, run:
+
+```shell
+python review_crop_coordinates.py --count 32
+```
+
+Use `--count 0` to review every raw image. Previews are saved in `coordinate-review` and are not used by the converter.
 
 Now run:
 
@@ -41,7 +57,9 @@ Now run:
 python basic.py
 ```
 
-The script lists each new tool ID and asks you for its class, name, and confidence. Tool classes and names are automatically changed to lowercase with punctuation removed. Confidence must be a number from 0 to 1. If it finds undocumented images for a tool ID that is already in the manifest, it warns you and asks whether to add or skip them. Pressing Enter skips that tool. If you continue, the script reuses the tool's existing class, name, and confidence. It reads the original files in `raw-images` to fill in the capture time, camera make, model, flash, ISO, exposure, aperture, and focal length in millimeters when that metadata is available. Capture times are stored with their date and timezone, for example `2026-09-01T19:51:50.430-04:00`. The metadata is written only to the CSV; it is not copied into the JPG files. If a tool has a multiple of eight ungrouped images, the script treats each consecutive set of eight filenames as one sample and fills in unique sample IDs and angles from 0 to 315 degrees. Otherwise, it leaves the sample IDs and angles blank for you to review.
+The script lists each new tool ID and asks you for its class, name, and confidence. Tool classes and names are automatically changed to lowercase with punctuation removed. Confidence must be a number from 0 to 1. If it finds undocumented images for a tool ID that is already in the manifest, it warns you and asks whether to add or skip them. Pressing Enter skips that tool. If you continue, the script reuses the tool's existing class, name, and confidence. It reads the original files in `raw-images` to fill in the capture time, camera make, model, flash, ISO, exposure, aperture, and focal length in millimeters when that metadata is available. Capture times are stored with their date and timezone, for example `2026-09-01T19:51:50.430-04:00`. The metadata is written only to the CSV; it is not copied into the JPG files.
+
+Raw images are considered in consecutive filename slots of eight, including newly added raw images that do not have a converted JPG yet. A complete slot receives a unique sample ID and angles from 0 to 315 degrees. If conversion or cropping fails, the raw file continues to occupy its original slot. The other images in that slot are left ungrouped for review, but the failure does not shift the angles or prevent later complete eight-image slots from being assigned automatically.
 
 Check the updated `image_manifest.csv` and make sure the tool IDs, filepaths, sample groupings, and angles look correct. In particular, confirm that the filenames sort in the same order in which the tool was rotated.
 
