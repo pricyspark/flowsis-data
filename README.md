@@ -106,6 +106,84 @@ git push
 
 You can now check the repo on the GitHub website to confirm your changes.
 
+## Mask annotation
+
+After converting images and updating the manifest with `basic.py`, generate and
+review SAM3 masks from the `flowsis-data` repository root:
+
+```shell
+# Update an existing environment after pulling the annotation changes.
+conda env update -n flowsis-data -f environment.yml
+conda activate flowsis-data
+python annotate.py images --single-tool
+```
+
+The first run downloads `facebook/sam3` through Transformers. If access to the
+checkpoint requires authentication, authenticate with Hugging Face using an
+account authorized to download it. Interactive review requires a graphical
+Matplotlib backend. CUDA is selected when available; use `--device cpu` to
+select CPU explicitly. `--batch-size 1` reduces the image batch size.
+
+`--single-tool` merges fragments such as the two sides of open scissors into
+one object. Omit it for multi-tool images. Prompts use `Tool Class` by default;
+use `--image-prompt name-and-class` for prompts such as "iris scissors".
+A second pass refines a padded crop by default; disable it with
+`--no-refine-crop`.
+
+In the terminal review prompt:
+
+- `a` accepts all candidates; `a 0,2` accepts selected candidates.
+- `e` accepts an empty image; `r` rejects it; `s` skips it for later.
+- `p TEXT` reruns segmentation with another prompt.
+- `i 0,2` marks ignore regions; `v partial 0` sets an instance's visibility
+  (`clear`, `partial`, or `severe`).
+- `q` quits. Rerunning the same command resumes unfinished images.
+
+Annotation preserves existing manifest values and adds `Image ID` and
+`Capture Session ID`. Review the suggested capture sessions before splitting
+training data. Outputs are `image_object_manifest.csv`, `masks/images/*.npz`,
+and the append-only `image_review.jsonl`. Commit these together with the updated
+`image_manifest.csv` so masks and resume decisions stay synchronized. Mask
+bundles retain the format consumed by `flowsis` training. `--auto-accept` bypasses
+human review and should only be used when that is intended.
+
+Video annotation is also available with `python annotate.py videos --prompt
+"scissors"`; it reads `videos/` and writes `video_manifest.csv`,
+`video_object_manifest.csv`, `masks/videos/`, and `video_review.jsonl`.
+Use `python annotate.py images --help` or `python annotate.py videos --help`
+for all options.
+
+### Build training data in flowsis
+
+The existing training builder resolves mask paths against its working directory.
+Keep running from the `flowsis-data` root, including after moving or cloning this
+repository, and use the environment where `flowsis` is installed:
+
+```shell
+conda activate flowsis
+flowsis-build-annotated-dataset \
+  --image-manifest image_manifest.csv \
+  --object-manifest image_object_manifest.csv \
+  --review-log image_review.jsonl \
+  --image-mask-dir masks/images \
+  --video-manifest video_manifest.csv \
+  --video-object-manifest video_object_manifest.csv \
+  --video-review-log video_review.jsonl \
+  --video-mask-dir masks/videos \
+  --output-path ../flowsis/data/new/segmentation-dataset
+```
+
+Paths stored by annotation are relative to the directory where it runs, so use
+the repository root consistently. Custom output directories must also remain
+accessible from that directory. The old `flowsis-annotate` command still belongs
+to the training repo; use `python annotate.py` here instead.
+
+Run annotation tests without downloading model weights:
+
+```shell
+python -m pytest tests -q
+```
+
 ## Uninstallation
 
 ```shell

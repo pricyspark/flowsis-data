@@ -1,0 +1,79 @@
+Image ID,Instance ID,Tool ID,Tool Class,Tool Name,BBox X,BBox Y,BBox Width,BBox Height,Mask Path,Mask Index,Visibility,Reviewed,Annotation Complete,Mask Valid,Class Valid,Base Valid,Visible,Annotation Confidence
+image-241ea1b4d217d125,instance-0,0,scissors,iris,1159,567,185,524,masks/images/image-241ea1b4d217d125.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-7d5a24cb4a7e30a4,instance-0,0,scissors,iris,1081,606,299,492,masks/images/image-7d5a24cb4a7e30a4.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-b30e43e06066f659,instance-0,0,scissors,iris,1003,739,519,183,masks/images/image-b30e43e06066f659.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-03fd859217391918,instance-0,0,scissors,iris,1031,732,428,394,masks/images/image-03fd859217391918.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-75c6191b19b1d8fd,instance-0,0,scissors,iris,1160,699,188,531,masks/images/image-75c6191b19b1d8fd.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-3ebefc2965298abf,instance-0,0,scissors,iris,1009,722,430,395,masks/images/image-3ebefc2965298abf.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-24ae4d8eac215d46,instance-0,0,scissors,iris,986,809,523,187,masks/images/image-24ae4d8eac215d46.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-c92984aa153892de,instance-0,0,scissors,iris,1088,734,436,384,masks/images/image-c92984aa153892de.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-bbaec2e74ea8bbf3,instance-0,0,scissors,iris,956,672,504,435,masks/images/image-bbaec2e74ea8bbf3.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-e3e05fd88b6fc50c,instance-0,0,scissors,iris,942,712,514,507,masks/images/image-e3e05fd88b6fc50c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-209891f5c4d32653,instance-0,0,scissors,iris,1028,744,428,512,masks/images/image-209891f5c4d32653.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-1f50bf2bf7b2af1a,instance-0,0,scissors,iris,965,706,521,509,masks/images/image-1f50bf2bf7b2af1a.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-7f20c1bca2ead4df,instance-1,0,scissors,iris,977,786,517,425,masks/images/image-7f20c1bca2ead4df.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-aea2257e6547993a,instance-0,0,scissors,iris,1018,715,497,523,masks/images/image-aea2257e6547993a.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-3f7c0497a58fe56d,instance-0,0,scissors,iris,1019,636,457,498,masks/images/image-3f7c0497a58fe56d.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-5238bb90ca1ff424,instance-0,0,scissors,iris,1084,686,506,515,masks/images/image-5238bb90ca1ff424.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-a43667a200299edc,instance-0,1,forceps,crile,1072,589,265,541,masks/images/image-a43667a200299edc.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-8f54f30e6bfd2f3f,instance-0,1,forceps,crile,1032,675,381,511,masks/images/image-8f54f30e6bfd2f3f.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-cc2603f4d5bc12b7,instance-0,1,forceps,crile,1062,861,539,265,masks/images/image-cc2603f4d5bc12b7.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-74db4150484d9b88,instance-0,1,forceps,crile,1027,744,486,422,masks/images/image-74db4150484d9b88.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-aebe57e80c846110,instance-0,1,forceps,crile,1082,718,265,540,masks/images/image-aebe57e80c846110.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-5161c4faa76be42c,instance-0,1,forceps,crile,1028,703,432,477,masks/images/image-5161c4faa76be42c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-807addc1c1768225,instance-0,1,forceps,crile,922,810,540,267,masks/images/image-807addc1c1768225.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-2ee3076a168c8588,instance-0,1,forceps,crile,1000,720,458,454,masks/images/image-2ee3076a168c8588.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-858a95501596f0f3,instance-0,1,forceps,crile,927,616,545,440,masks/images/image-858a95501596f0f3.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-8493587800f6243c,instance-0,1,forceps,crile,901,649,534,545,masks/images/image-8493587800f6243c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-9cb34f66c8bca33d,instance-0,1,forceps,crile,981,606,444,592,masks/images/image-9cb34f66c8bca33d.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-0d3b779ed66d7fd6,instance-0,1,forceps,crile,921,569,528,538,masks/images/image-0d3b779ed66d7fd6.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-4c71241c5f2b8d5c,instance-1,1,forceps,crile,906,738,625,381,masks/images/image-4c71241c5f2b8d5c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-ff97c522003b8627,instance-0,1,forceps,crile,1018,574,540,537,masks/images/image-ff97c522003b8627.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-355c0ceee3df8c66,instance-0,1,forceps,crile,1027,516,344,672,masks/images/image-355c0ceee3df8c66.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-39aab54738e96f7c,instance-0,1,forceps,crile,1012,618,531,542,masks/images/image-39aab54738e96f7c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-ce409fb38329c172,instance-0,2,forceps,microvascular coupler,1142,635,57,683,masks/images/image-ce409fb38329c172.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-8090b4497c54fb07,instance-0,2,forceps,microvascular coupler,1023,671,365,596,masks/images/image-8090b4497c54fb07.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-fb20908f2361be0d,instance-0,2,forceps,microvascular coupler,897,949,676,57,masks/images/image-fb20908f2361be0d.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-80c6a1a10ef4b195,instance-0,2,forceps,microvascular coupler,983,760,534,448,masks/images/image-80c6a1a10ef4b195.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-9990e1a28c29c00f,instance-0,2,forceps,microvascular coupler,1175,640,57,680,masks/images/image-9990e1a28c29c00f.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-3139179e00158894,instance-0,2,forceps,microvascular coupler,985,693,401,575,masks/images/image-3139179e00158894.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-50a46c27667bf057,instance-0,2,forceps,microvascular coupler,883,949,675,59,masks/images/image-50a46c27667bf057.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-de2101c47bcf08b6,instance-0,2,forceps,microvascular coupler,970,760,503,484,masks/images/image-de2101c47bcf08b6.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-c729345a587a7e30,instance-0,4,forceps,debakey,1029,566,82,732,masks/images/image-c729345a587a7e30.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-f6c6336d4e6b88e3,instance-0,4,forceps,debakey,832,630,441,628,masks/images/image-f6c6336d4e6b88e3.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-27fa784325966064,instance-0,4,forceps,debakey,707,917,725,86,masks/images/image-27fa784325966064.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-5f123fcfecd3bbdc,instance-0,4,forceps,debakey,1054,603,79,732,masks/images/image-5f123fcfecd3bbdc.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-efa8a85242aa814f,instance-0,4,forceps,debakey,805,979,726,84,masks/images/image-efa8a85242aa814f.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-5028d474eb9f0431,instance-0,4,forceps,debakey,1119,666,80,730,masks/images/image-5028d474eb9f0431.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-b5490de785e94a8a,instance-0,4,forceps,debakey,1118,667,80,731,masks/images/image-b5490de785e94a8a.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-efe3dd13ec028c7d,instance-0,4,forceps,debakey,1117,663,81,732,masks/images/image-efe3dd13ec028c7d.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-436cbef430c20da2,instance-0,4,forceps,debakey,727,896,728,87,masks/images/image-436cbef430c20da2.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-fe3a4f1a5b203f9c,instance-0,4,forceps,debakey,1083,611,82,731,masks/images/image-fe3a4f1a5b203f9c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-921245142b723c7b,instance-0,4,forceps,debakey,822,934,727,83,masks/images/image-921245142b723c7b.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-8e344fa5781dea81,instance-0,4,forceps,debakey,979,631,469,574,masks/images/image-8e344fa5781dea81.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-05fbb21bcf13455e,instance-0,4,forceps,debakey,1089,543,46,740,masks/images/image-05fbb21bcf13455e.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-ab168fff52107709,instance-0,8,scissors,metzenbaum,898,477,206,862,masks/images/image-ab168fff52107709.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-37226add553aeae3,instance-0,8,scissors,metzenbaum,670,593,648,672,masks/images/image-37226add553aeae3.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-32cf7f9266a4533d,instance-0,8,scissors,metzenbaum,599,931,864,207,masks/images/image-32cf7f9266a4533d.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-bfcfcbd88d43f5cd,instance-0,8,scissors,metzenbaum,648,673,696,621,masks/images/image-bfcfcbd88d43f5cd.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-331cbc1a0ab8dbdf,instance-0,8,scissors,metzenbaum,888,555,206,859,masks/images/image-331cbc1a0ab8dbdf.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-dfb60055f8f5c3b6,instance-0,8,scissors,metzenbaum,686,624,626,690,masks/images/image-dfb60055f8f5c3b6.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-28c0cc7d3c2ecdc6,instance-0,8,scissors,metzenbaum,485,924,867,206,masks/images/image-28c0cc7d3c2ecdc6.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-26c926e0c4ca4f9c,instance-0,8,scissors,metzenbaum,604,599,659,668,masks/images/image-26c926e0c4ca4f9c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-594e79564f49f4d0,instance-0,8,scissors,metzenbaum,862,511,206,854,masks/images/image-594e79564f49f4d0.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-2a620ee4031afd1a,instance-0,8,scissors,metzenbaum,649,629,628,680,masks/images/image-2a620ee4031afd1a.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-fef5fc9763df4f95,instance-0,8,scissors,metzenbaum,566,949,859,208,masks/images/image-fef5fc9763df4f95.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-0c53eb30da22eedb,instance-0,8,scissors,metzenbaum,587,721,726,577,masks/images/image-0c53eb30da22eedb.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-2523daad1ad3d155,instance-0,8,scissors,metzenbaum,851,614,207,857,masks/images/image-2523daad1ad3d155.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-e3935924717f6bb9,instance-0,8,scissors,metzenbaum,685,653,554,739,masks/images/image-e3935924717f6bb9.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-41116e2305fc3cd7,instance-0,8,scissors,metzenbaum,456,912,860,207,masks/images/image-41116e2305fc3cd7.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-8eb75edf599c9ca4,instance-0,8,scissors,metzenbaum,593,646,656,659,masks/images/image-8eb75edf599c9ca4.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-130e04de72ec613d,instance-0,8,scissors,metzenbaum,507,587,985,654,masks/images/image-130e04de72ec613d.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-acafdc6f67c1f3a1,instance-0,8,scissors,metzenbaum,503,706,865,845,masks/images/image-acafdc6f67c1f3a1.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-0a5e3a5e4de9d486,instance-0,8,scissors,metzenbaum,698,488,624,1011,masks/images/image-0a5e3a5e4de9d486.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-a456bd008e5b67d0,instance-0,8,scissors,metzenbaum,472,491,849,860,masks/images/image-a456bd008e5b67d0.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-da409a9abf0d2944,instance-0,8,scissors,metzenbaum,479,784,1032,617,masks/images/image-da409a9abf0d2944.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-2472b03506e5eaaa,instance-0,8,scissors,metzenbaum,637,579,867,846,masks/images/image-2472b03506e5eaaa.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-55a1c48d0a88c359,instance-0,8,scissors,metzenbaum,600,514,653,980,masks/images/image-55a1c48d0a88c359.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-4663b8119ac54c37,instance-0,8,scissors,metzenbaum,551,649,854,860,masks/images/image-4663b8119ac54c37.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+image-60bb375cf5d0490e,instance-0,8,scissors,metzenbaum,464,644,1047,597,masks/images/image-60bb375cf5d0490e.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0

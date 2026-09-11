@@ -2,10 +2,15 @@ name: flowsis-data
 channels:
   - conda-forge
 dependencies:
-  - python
+  - python=3.13
   - numpy
   - opencv
   - pillow
+  - pytorch
+  - torchvision
+  - transformers >=5.13,<5.14
+  - matplotlib
+  - pytest
   - pip
   - pip:
     - pillow_heif
