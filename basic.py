@@ -471,10 +471,6 @@ def main(
                 "left blank; later complete batches are unaffected."
             )
 
-    if not added_rows and not metadata_updates and not normalized_labels:
-        print("The manifest was not changed.")
-        return
-
     rows.sort(
         key=lambda row: (
             sort_key(row["Tool ID"]),
@@ -483,6 +479,22 @@ def main(
             row["Filepath"].lower(),
         )
     )
+
+    sample_id_map: dict[tuple[str, str], str] = {}
+    remapped_samples = 0
+    for row in rows:
+        sample_id = row["Sample ID"]
+        if not sample_id.strip():
+            continue
+        sample_key = (row["Tool ID"], sample_id)
+        if sample_key not in sample_id_map:
+            sample_id_map[sample_key] = str(len(sample_id_map))
+            remapped_samples += sample_id_map[sample_key] != sample_id
+        row["Sample ID"] = sample_id_map[sample_key]
+
+    if not (added_rows or metadata_updates or normalized_labels or remapped_samples):
+        print("The manifest was not changed.")
+        return
 
     with manifest_path.open("w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -495,6 +507,8 @@ def main(
         print(f"Normalized {normalized_labels} tool class or name field(s).")
     if added_rows:
         print(f"Added {added_rows} row(s) to {manifest_path.name}.")
+    if remapped_samples:
+        print(f"Remapped {remapped_samples} sample ID(s) into increasing tool order.")
 
 
 if __name__ == "__main__":
