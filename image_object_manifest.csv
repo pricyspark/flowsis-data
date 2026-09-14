@@ -1,79 +1,538 @@
-Image ID,Instance ID,Tool ID,Tool Class,Tool Name,BBox X,BBox Y,BBox Width,BBox Height,Mask Path,Mask Index,Visibility,Reviewed,Annotation Complete,Mask Valid,Class Valid,Base Valid,Visible,Annotation Confidence
-image-241ea1b4d217d125,instance-0,0,scissors,iris,1159,567,185,524,masks/images/image-241ea1b4d217d125.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-7d5a24cb4a7e30a4,instance-0,0,scissors,iris,1081,606,299,492,masks/images/image-7d5a24cb4a7e30a4.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-b30e43e06066f659,instance-0,0,scissors,iris,1003,739,519,183,masks/images/image-b30e43e06066f659.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-03fd859217391918,instance-0,0,scissors,iris,1031,732,428,394,masks/images/image-03fd859217391918.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-75c6191b19b1d8fd,instance-0,0,scissors,iris,1160,699,188,531,masks/images/image-75c6191b19b1d8fd.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-3ebefc2965298abf,instance-0,0,scissors,iris,1009,722,430,395,masks/images/image-3ebefc2965298abf.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-24ae4d8eac215d46,instance-0,0,scissors,iris,986,809,523,187,masks/images/image-24ae4d8eac215d46.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-c92984aa153892de,instance-0,0,scissors,iris,1088,734,436,384,masks/images/image-c92984aa153892de.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-bbaec2e74ea8bbf3,instance-0,0,scissors,iris,956,672,504,435,masks/images/image-bbaec2e74ea8bbf3.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-e3e05fd88b6fc50c,instance-0,0,scissors,iris,942,712,514,507,masks/images/image-e3e05fd88b6fc50c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-209891f5c4d32653,instance-0,0,scissors,iris,1028,744,428,512,masks/images/image-209891f5c4d32653.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-1f50bf2bf7b2af1a,instance-0,0,scissors,iris,965,706,521,509,masks/images/image-1f50bf2bf7b2af1a.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-7f20c1bca2ead4df,instance-1,0,scissors,iris,977,786,517,425,masks/images/image-7f20c1bca2ead4df.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-aea2257e6547993a,instance-0,0,scissors,iris,1018,715,497,523,masks/images/image-aea2257e6547993a.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-3f7c0497a58fe56d,instance-0,0,scissors,iris,1019,636,457,498,masks/images/image-3f7c0497a58fe56d.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-5238bb90ca1ff424,instance-0,0,scissors,iris,1084,686,506,515,masks/images/image-5238bb90ca1ff424.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-a43667a200299edc,instance-0,1,forceps,crile,1072,589,265,541,masks/images/image-a43667a200299edc.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-8f54f30e6bfd2f3f,instance-0,1,forceps,crile,1032,675,381,511,masks/images/image-8f54f30e6bfd2f3f.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-cc2603f4d5bc12b7,instance-0,1,forceps,crile,1062,861,539,265,masks/images/image-cc2603f4d5bc12b7.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-74db4150484d9b88,instance-0,1,forceps,crile,1027,744,486,422,masks/images/image-74db4150484d9b88.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-aebe57e80c846110,instance-0,1,forceps,crile,1082,718,265,540,masks/images/image-aebe57e80c846110.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-5161c4faa76be42c,instance-0,1,forceps,crile,1028,703,432,477,masks/images/image-5161c4faa76be42c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-807addc1c1768225,instance-0,1,forceps,crile,922,810,540,267,masks/images/image-807addc1c1768225.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-2ee3076a168c8588,instance-0,1,forceps,crile,1000,720,458,454,masks/images/image-2ee3076a168c8588.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-858a95501596f0f3,instance-0,1,forceps,crile,927,616,545,440,masks/images/image-858a95501596f0f3.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-8493587800f6243c,instance-0,1,forceps,crile,901,649,534,545,masks/images/image-8493587800f6243c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-9cb34f66c8bca33d,instance-0,1,forceps,crile,981,606,444,592,masks/images/image-9cb34f66c8bca33d.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-0d3b779ed66d7fd6,instance-0,1,forceps,crile,921,569,528,538,masks/images/image-0d3b779ed66d7fd6.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-4c71241c5f2b8d5c,instance-1,1,forceps,crile,906,738,625,381,masks/images/image-4c71241c5f2b8d5c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-ff97c522003b8627,instance-0,1,forceps,crile,1018,574,540,537,masks/images/image-ff97c522003b8627.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-355c0ceee3df8c66,instance-0,1,forceps,crile,1027,516,344,672,masks/images/image-355c0ceee3df8c66.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-39aab54738e96f7c,instance-0,1,forceps,crile,1012,618,531,542,masks/images/image-39aab54738e96f7c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-ce409fb38329c172,instance-0,2,forceps,microvascular coupler,1142,635,57,683,masks/images/image-ce409fb38329c172.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-8090b4497c54fb07,instance-0,2,forceps,microvascular coupler,1023,671,365,596,masks/images/image-8090b4497c54fb07.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-fb20908f2361be0d,instance-0,2,forceps,microvascular coupler,897,949,676,57,masks/images/image-fb20908f2361be0d.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-80c6a1a10ef4b195,instance-0,2,forceps,microvascular coupler,983,760,534,448,masks/images/image-80c6a1a10ef4b195.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-9990e1a28c29c00f,instance-0,2,forceps,microvascular coupler,1175,640,57,680,masks/images/image-9990e1a28c29c00f.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-3139179e00158894,instance-0,2,forceps,microvascular coupler,985,693,401,575,masks/images/image-3139179e00158894.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-50a46c27667bf057,instance-0,2,forceps,microvascular coupler,883,949,675,59,masks/images/image-50a46c27667bf057.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-de2101c47bcf08b6,instance-0,2,forceps,microvascular coupler,970,760,503,484,masks/images/image-de2101c47bcf08b6.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-c729345a587a7e30,instance-0,4,forceps,debakey,1029,566,82,732,masks/images/image-c729345a587a7e30.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-f6c6336d4e6b88e3,instance-0,4,forceps,debakey,832,630,441,628,masks/images/image-f6c6336d4e6b88e3.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-27fa784325966064,instance-0,4,forceps,debakey,707,917,725,86,masks/images/image-27fa784325966064.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-5f123fcfecd3bbdc,instance-0,4,forceps,debakey,1054,603,79,732,masks/images/image-5f123fcfecd3bbdc.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-efa8a85242aa814f,instance-0,4,forceps,debakey,805,979,726,84,masks/images/image-efa8a85242aa814f.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-5028d474eb9f0431,instance-0,4,forceps,debakey,1119,666,80,730,masks/images/image-5028d474eb9f0431.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-b5490de785e94a8a,instance-0,4,forceps,debakey,1118,667,80,731,masks/images/image-b5490de785e94a8a.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-efe3dd13ec028c7d,instance-0,4,forceps,debakey,1117,663,81,732,masks/images/image-efe3dd13ec028c7d.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-436cbef430c20da2,instance-0,4,forceps,debakey,727,896,728,87,masks/images/image-436cbef430c20da2.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-fe3a4f1a5b203f9c,instance-0,4,forceps,debakey,1083,611,82,731,masks/images/image-fe3a4f1a5b203f9c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-921245142b723c7b,instance-0,4,forceps,debakey,822,934,727,83,masks/images/image-921245142b723c7b.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-8e344fa5781dea81,instance-0,4,forceps,debakey,979,631,469,574,masks/images/image-8e344fa5781dea81.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-05fbb21bcf13455e,instance-0,4,forceps,debakey,1089,543,46,740,masks/images/image-05fbb21bcf13455e.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-ab168fff52107709,instance-0,8,scissors,metzenbaum,898,477,206,862,masks/images/image-ab168fff52107709.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-37226add553aeae3,instance-0,8,scissors,metzenbaum,670,593,648,672,masks/images/image-37226add553aeae3.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-32cf7f9266a4533d,instance-0,8,scissors,metzenbaum,599,931,864,207,masks/images/image-32cf7f9266a4533d.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-bfcfcbd88d43f5cd,instance-0,8,scissors,metzenbaum,648,673,696,621,masks/images/image-bfcfcbd88d43f5cd.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-331cbc1a0ab8dbdf,instance-0,8,scissors,metzenbaum,888,555,206,859,masks/images/image-331cbc1a0ab8dbdf.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-dfb60055f8f5c3b6,instance-0,8,scissors,metzenbaum,686,624,626,690,masks/images/image-dfb60055f8f5c3b6.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-28c0cc7d3c2ecdc6,instance-0,8,scissors,metzenbaum,485,924,867,206,masks/images/image-28c0cc7d3c2ecdc6.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-26c926e0c4ca4f9c,instance-0,8,scissors,metzenbaum,604,599,659,668,masks/images/image-26c926e0c4ca4f9c.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-594e79564f49f4d0,instance-0,8,scissors,metzenbaum,862,511,206,854,masks/images/image-594e79564f49f4d0.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-2a620ee4031afd1a,instance-0,8,scissors,metzenbaum,649,629,628,680,masks/images/image-2a620ee4031afd1a.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-fef5fc9763df4f95,instance-0,8,scissors,metzenbaum,566,949,859,208,masks/images/image-fef5fc9763df4f95.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-0c53eb30da22eedb,instance-0,8,scissors,metzenbaum,587,721,726,577,masks/images/image-0c53eb30da22eedb.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-2523daad1ad3d155,instance-0,8,scissors,metzenbaum,851,614,207,857,masks/images/image-2523daad1ad3d155.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-e3935924717f6bb9,instance-0,8,scissors,metzenbaum,685,653,554,739,masks/images/image-e3935924717f6bb9.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-41116e2305fc3cd7,instance-0,8,scissors,metzenbaum,456,912,860,207,masks/images/image-41116e2305fc3cd7.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-8eb75edf599c9ca4,instance-0,8,scissors,metzenbaum,593,646,656,659,masks/images/image-8eb75edf599c9ca4.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-130e04de72ec613d,instance-0,8,scissors,metzenbaum,507,587,985,654,masks/images/image-130e04de72ec613d.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-acafdc6f67c1f3a1,instance-0,8,scissors,metzenbaum,503,706,865,845,masks/images/image-acafdc6f67c1f3a1.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-0a5e3a5e4de9d486,instance-0,8,scissors,metzenbaum,698,488,624,1011,masks/images/image-0a5e3a5e4de9d486.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-a456bd008e5b67d0,instance-0,8,scissors,metzenbaum,472,491,849,860,masks/images/image-a456bd008e5b67d0.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-da409a9abf0d2944,instance-0,8,scissors,metzenbaum,479,784,1032,617,masks/images/image-da409a9abf0d2944.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-2472b03506e5eaaa,instance-0,8,scissors,metzenbaum,637,579,867,846,masks/images/image-2472b03506e5eaaa.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-55a1c48d0a88c359,instance-0,8,scissors,metzenbaum,600,514,653,980,masks/images/image-55a1c48d0a88c359.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-4663b8119ac54c37,instance-0,8,scissors,metzenbaum,551,649,854,860,masks/images/image-4663b8119ac54c37.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
-image-60bb375cf5d0490e,instance-0,8,scissors,metzenbaum,464,644,1047,597,masks/images/image-60bb375cf5d0490e.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+Tool ID,Tool Class,Tool Name,Confidence,Sample ID,Filepath,Image ID,Instance ID,BBox X,BBox Y,BBox Width,BBox Height,Mask Path,Mask Index,Visibility,Reviewed,Annotation Complete,Mask Valid,Class Valid,Base Valid,Visible,Annotation Confidence
+0,scissors,iris,0.8,0,images/0/IMG_8585.jpg,image-241ea1b4d217d125,instance-0,1159,567,185,524,masks/images/0/IMG_8585.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,0,images/0/IMG_8586.jpg,image-7d5a24cb4a7e30a4,instance-0,1081,606,299,492,masks/images/0/IMG_8586.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,0,images/0/IMG_8588.jpg,image-b30e43e06066f659,instance-0,1003,739,519,183,masks/images/0/IMG_8588.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,0,images/0/IMG_8589.jpg,image-03fd859217391918,instance-0,1031,732,428,394,masks/images/0/IMG_8589.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,0,images/0/IMG_8590.jpg,image-75c6191b19b1d8fd,instance-0,1160,699,188,531,masks/images/0/IMG_8590.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,0,images/0/IMG_8591.jpg,image-3ebefc2965298abf,instance-0,1009,722,430,395,masks/images/0/IMG_8591.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,0,images/0/IMG_8594.jpg,image-24ae4d8eac215d46,instance-0,986,809,523,187,masks/images/0/IMG_8594.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,0,images/0/IMG_8595.jpg,image-c92984aa153892de,instance-0,1088,734,436,384,masks/images/0/IMG_8595.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,1,images/0/IMG_8624.jpg,image-bbaec2e74ea8bbf3,instance-0,956,672,504,435,masks/images/0/IMG_8624.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,1,images/0/IMG_8625.jpg,image-e3e05fd88b6fc50c,instance-0,942,712,514,507,masks/images/0/IMG_8625.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,1,images/0/IMG_8626.jpg,image-209891f5c4d32653,instance-0,1028,744,428,512,masks/images/0/IMG_8626.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,1,images/0/IMG_8627.jpg,image-1f50bf2bf7b2af1a,instance-0,965,706,521,509,masks/images/0/IMG_8627.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,1,images/0/IMG_8628.jpg,image-7f20c1bca2ead4df,instance-1,977,786,517,425,masks/images/0/IMG_8628.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,1,images/0/IMG_8629.jpg,image-aea2257e6547993a,instance-0,1018,715,497,523,masks/images/0/IMG_8629.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,1,images/0/IMG_8630.jpg,image-3f7c0497a58fe56d,instance-0,1019,636,457,498,masks/images/0/IMG_8630.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+0,scissors,iris,0.8,1,images/0/IMG_8631.jpg,image-5238bb90ca1ff424,instance-0,1084,686,506,515,masks/images/0/IMG_8631.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,2,images/1/IMG_8599.jpg,image-a43667a200299edc,instance-0,1072,589,265,541,masks/images/1/IMG_8599.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,2,images/1/IMG_8600.jpg,image-8f54f30e6bfd2f3f,instance-0,1032,675,381,511,masks/images/1/IMG_8600.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,2,images/1/IMG_8602.jpg,image-cc2603f4d5bc12b7,instance-0,1062,861,539,265,masks/images/1/IMG_8602.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,2,images/1/IMG_8603.jpg,image-74db4150484d9b88,instance-0,1027,744,486,422,masks/images/1/IMG_8603.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,2,images/1/IMG_8604.jpg,image-aebe57e80c846110,instance-0,1082,718,265,540,masks/images/1/IMG_8604.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,2,images/1/IMG_8605.jpg,image-5161c4faa76be42c,instance-0,1028,703,432,477,masks/images/1/IMG_8605.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,2,images/1/IMG_8606.jpg,image-807addc1c1768225,instance-0,922,810,540,267,masks/images/1/IMG_8606.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,2,images/1/IMG_8607.jpg,image-2ee3076a168c8588,instance-0,1000,720,458,454,masks/images/1/IMG_8607.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,3,images/1/IMG_8633.jpg,image-858a95501596f0f3,instance-0,927,616,545,440,masks/images/1/IMG_8633.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,3,images/1/IMG_8634.jpg,image-8493587800f6243c,instance-0,901,649,534,545,masks/images/1/IMG_8634.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,3,images/1/IMG_8635.jpg,image-9cb34f66c8bca33d,instance-0,981,606,444,592,masks/images/1/IMG_8635.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,3,images/1/IMG_8637.jpg,image-0d3b779ed66d7fd6,instance-0,921,569,528,538,masks/images/1/IMG_8637.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,3,images/1/IMG_8638.jpg,image-4c71241c5f2b8d5c,instance-1,906,738,625,381,masks/images/1/IMG_8638.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,3,images/1/IMG_8639.jpg,image-ff97c522003b8627,instance-0,1018,574,540,537,masks/images/1/IMG_8639.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,3,images/1/IMG_8640.jpg,image-355c0ceee3df8c66,instance-0,1027,516,344,672,masks/images/1/IMG_8640.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+1,forceps,crile,0.6,3,images/1/IMG_8641.jpg,image-39aab54738e96f7c,instance-0,1012,618,531,542,masks/images/1/IMG_8641.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+2,forceps,microvascular coupler,1,4,images/2/IMG_8608.jpg,image-ce409fb38329c172,instance-0,1142,635,57,683,masks/images/2/IMG_8608.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+2,forceps,microvascular coupler,1,4,images/2/IMG_8609.jpg,image-8090b4497c54fb07,instance-0,1023,671,365,596,masks/images/2/IMG_8609.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+2,forceps,microvascular coupler,1,4,images/2/IMG_8610.jpg,image-fb20908f2361be0d,instance-0,897,949,676,57,masks/images/2/IMG_8610.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+2,forceps,microvascular coupler,1,4,images/2/IMG_8611.jpg,image-80c6a1a10ef4b195,instance-0,983,760,534,448,masks/images/2/IMG_8611.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+2,forceps,microvascular coupler,1,4,images/2/IMG_8612.jpg,image-9990e1a28c29c00f,instance-0,1175,640,57,680,masks/images/2/IMG_8612.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+2,forceps,microvascular coupler,1,4,images/2/IMG_8613.jpg,image-3139179e00158894,instance-0,985,693,401,575,masks/images/2/IMG_8613.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+2,forceps,microvascular coupler,1,4,images/2/IMG_8614.jpg,image-50a46c27667bf057,instance-0,883,949,675,59,masks/images/2/IMG_8614.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+2,forceps,microvascular coupler,1,4,images/2/IMG_8615.jpg,image-de2101c47bcf08b6,instance-0,970,760,503,484,masks/images/2/IMG_8615.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+3,pliers,ruskin rongeur,1,5,images/3/IMG_8616.jpg,image-7ead347aea9b9f59,instance-0,,,,,,,,,,,,,,
+3,pliers,ruskin rongeur,1,5,images/3/IMG_8617.jpg,image-4148646e37a361d5,instance-0,,,,,,,,,,,,,,
+3,pliers,ruskin rongeur,1,5,images/3/IMG_8618.jpg,image-e63cb35bdc649864,instance-0,,,,,,,,,,,,,,
+3,pliers,ruskin rongeur,1,5,images/3/IMG_8619.jpg,image-11643f71fb51593d,instance-0,,,,,,,,,,,,,,
+3,pliers,ruskin rongeur,1,5,images/3/IMG_8620.jpg,image-2f1431483bfdff45,instance-0,,,,,,,,,,,,,,
+3,pliers,ruskin rongeur,1,5,images/3/IMG_8621.jpg,image-4bac1bbb0ad11a82,instance-0,,,,,,,,,,,,,,
+3,pliers,ruskin rongeur,1,5,images/3/IMG_8622.jpg,image-6b74317ce8e6ef3a,instance-0,,,,,,,,,,,,,,
+3,pliers,ruskin rongeur,1,5,images/3/IMG_8623.jpg,image-87ca33198a335f5e,instance-0,,,,,,,,,,,,,,
+8,scissors,metzenbaum,1,6,images/8/IMG_0807.jpg,image-ab168fff52107709,instance-0,898,477,206,862,masks/images/8/IMG_0807.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,6,images/8/IMG_0808.jpg,image-37226add553aeae3,instance-0,670,593,648,672,masks/images/8/IMG_0808.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,6,images/8/IMG_0809.jpg,image-32cf7f9266a4533d,instance-0,599,931,864,207,masks/images/8/IMG_0809.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,6,images/8/IMG_0810.jpg,image-bfcfcbd88d43f5cd,instance-0,648,673,696,621,masks/images/8/IMG_0810.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,6,images/8/IMG_0811.jpg,image-331cbc1a0ab8dbdf,instance-0,888,555,206,859,masks/images/8/IMG_0811.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,6,images/8/IMG_0812.jpg,image-dfb60055f8f5c3b6,instance-0,686,624,626,690,masks/images/8/IMG_0812.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,6,images/8/IMG_0813.jpg,image-28c0cc7d3c2ecdc6,instance-0,485,924,867,206,masks/images/8/IMG_0813.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,6,images/8/IMG_0814.jpg,image-26c926e0c4ca4f9c,instance-0,604,599,659,668,masks/images/8/IMG_0814.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,7,images/8/IMG_0815.jpg,image-594e79564f49f4d0,instance-0,862,511,206,854,masks/images/8/IMG_0815.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,7,images/8/IMG_0816.jpg,image-2a620ee4031afd1a,instance-0,649,629,628,680,masks/images/8/IMG_0816.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,7,images/8/IMG_0817.jpg,image-fef5fc9763df4f95,instance-0,566,949,859,208,masks/images/8/IMG_0817.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,7,images/8/IMG_0818.jpg,image-0c53eb30da22eedb,instance-0,587,721,726,577,masks/images/8/IMG_0818.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,7,images/8/IMG_0819.jpg,image-2523daad1ad3d155,instance-0,851,614,207,857,masks/images/8/IMG_0819.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,7,images/8/IMG_0820.jpg,image-e3935924717f6bb9,instance-0,685,653,554,739,masks/images/8/IMG_0820.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,7,images/8/IMG_0821.jpg,image-41116e2305fc3cd7,instance-0,456,912,860,207,masks/images/8/IMG_0821.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,7,images/8/IMG_0822.jpg,image-8eb75edf599c9ca4,instance-0,593,646,656,659,masks/images/8/IMG_0822.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,8,images/8/IMG_0823.jpg,image-130e04de72ec613d,instance-0,507,587,985,654,masks/images/8/IMG_0823.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,8,images/8/IMG_0824.jpg,image-acafdc6f67c1f3a1,instance-0,503,706,865,845,masks/images/8/IMG_0824.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,8,images/8/IMG_0826.jpg,image-0a5e3a5e4de9d486,instance-0,698,488,624,1011,masks/images/8/IMG_0826.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,8,images/8/IMG_0827.jpg,image-a456bd008e5b67d0,instance-0,472,491,849,860,masks/images/8/IMG_0827.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,8,images/8/IMG_0828.jpg,image-da409a9abf0d2944,instance-0,479,784,1032,617,masks/images/8/IMG_0828.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,8,images/8/IMG_0829.jpg,image-2472b03506e5eaaa,instance-0,637,579,867,846,masks/images/8/IMG_0829.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,8,images/8/IMG_0831.jpg,image-55a1c48d0a88c359,instance-0,600,514,653,980,masks/images/8/IMG_0831.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,8,images/8/IMG_0832.jpg,image-4663b8119ac54c37,instance-0,551,649,854,860,masks/images/8/IMG_0832.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,9,images/8/IMG_0833.jpg,image-60bb375cf5d0490e,instance-0,464,644,1047,597,masks/images/8/IMG_0833.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,9,images/8/IMG_0834.jpg,image-f4fef70770b30439,instance-0,408,606,852,855,masks/images/8/IMG_0834.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,9,images/8/IMG_0835.jpg,image-4c29ecfb82a30e9a,instance-0,659,501,618,1017,masks/images/8/IMG_0835.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,9,images/8/IMG_0836.jpg,image-2313973c794bbf3e,instance-0,460,421,861,847,masks/images/8/IMG_0836.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,9,images/8/IMG_0837.jpg,image-e5bf0fcadc295ec6,instance-0,515,722,1034,626,masks/images/8/IMG_0837.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,9,images/8/IMG_0838.jpg,image-eab224bea3a63596,instance-0,687,528,849,856,masks/images/8/IMG_0838.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,9,images/8/IMG_0839.jpg,image-de09df5fe51b03f0,instance-0,671,488,609,1042,masks/images/8/IMG_0839.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+8,scissors,metzenbaum,1,9,images/8/IMG_0840.jpg,image-5693709ad4df8f67,instance-0,609,804,858,845,masks/images/8/IMG_0840.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+9,bone punch,kerrison,1,10,images/9/IMG_0843.jpg,image-33a6e9f3d27041a4,instance-0,,,,,,,,,,,,,,
+9,bone punch,kerrison,1,10,images/9/IMG_0844.jpg,image-23e4c82b2e43b96a,instance-0,,,,,,,,,,,,,,
+9,bone punch,kerrison,1,10,images/9/IMG_0845.jpg,image-43bf924580674ba7,instance-0,,,,,,,,,,,,,,
+9,bone punch,kerrison,1,10,images/9/IMG_0846.jpg,image-a94d80d026f8cd11,instance-0,714,574,569,893,masks/images/9/IMG_0846.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+9,bone punch,kerrison,1,10,images/9/IMG_0847.jpg,image-ee7c81e1fabce6ea,instance-0,814,672,484,911,masks/images/9/IMG_0847.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+9,bone punch,kerrison,1,10,images/9/IMG_0848.jpg,image-b1a78b50811c1a41,instance-0,546,723,800,670,masks/images/9/IMG_0848.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+9,bone punch,kerrison,1,10,images/9/IMG_0849.jpg,image-1fb888ff99fd894d,instance-0,375,833,930,485,masks/images/9/IMG_0849.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+9,bone punch,kerrison,1,10,images/9/IMG_0851.jpg,image-6aeb12e5c738f796,instance-0,,,,,,,,,,,,,,
+9,bone punch,kerrison,1,11,images/9/IMG_0852.jpg,image-a4869694d3692079,instance-0,,,,,,,,,,,,,,
+9,bone punch,kerrison,1,11,images/9/IMG_0853.jpg,image-bfddf695aa20b053,instance-0,,,,,,,,,,,,,,
+9,bone punch,kerrison,1,11,images/9/IMG_0854.jpg,image-184c016b662f23e8,instance-0,,,,,,,,,,,,,,
+9,bone punch,kerrison,1,11,images/9/IMG_0855.jpg,image-c08e15520f478a86,instance-0,,,,,,,,,,,,,,
+9,bone punch,kerrison,1,11,images/9/IMG_0856.jpg,image-b41357971a99c784,instance-0,,,,,,,,,,,,,,
+9,bone punch,kerrison,1,11,images/9/IMG_0857.jpg,image-f72cfdcb5bf2e445,instance-0,,,,,,,,,,,,,,
+9,bone punch,kerrison,1,11,images/9/IMG_0858.jpg,image-1af4739b2b8e7b57,instance-0,,,,,,,,,,,,,,
+9,bone punch,kerrison,1,11,images/9/IMG_0859.jpg,image-58c860ae6925abd1,instance-0,,,,,,,,,,,,,,
+10,mallet,mpr surgical,1,12,images/10/IMG_0244.jpg,image-97846043ee9f6f5d,instance-0,806,610,249,870,masks/images/10/IMG_0244.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,12,images/10/IMG_0245.jpg,image-69a31893b463f48d,instance-0,590,454,705,731,masks/images/10/IMG_0245.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,12,images/10/IMG_0246.jpg,image-d0341d0b434ff987,instance-0,464,787,874,246,masks/images/10/IMG_0246.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,12,images/10/IMG_0247.jpg,image-8ec46cf03a04d7bc,instance-0,639,618,713,725,masks/images/10/IMG_0247.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,12,images/10/IMG_0248.jpg,image-2c7b163e15f8468b,instance-0,801,510,249,870,masks/images/10/IMG_0248.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,12,images/10/IMG_0249.jpg,image-63c82ad67aea33da,instance-0,511,633,693,734,masks/images/10/IMG_0249.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,12,images/10/IMG_0250.jpg,image-3b3624355872ad14,instance-0,453,726,871,247,masks/images/10/IMG_0250.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,12,images/10/IMG_0251.jpg,image-b9bf55bccc3f2132,instance-0,554,464,687,748,masks/images/10/IMG_0251.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,13,images/10/IMG_0252.jpg,image-78bcc999c5d2b037,instance-0,722,464,248,869,masks/images/10/IMG_0252.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,13,images/10/IMG_0253.jpg,image-a979a6c062574744,instance-0,607,449,763,669,masks/images/10/IMG_0253.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,13,images/10/IMG_0254.jpg,image-957f0010bd64467a,instance-0,608,746,877,250,masks/images/10/IMG_0254.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,13,images/10/IMG_0255.jpg,image-2b09b651dd0165d8,instance-0,705,668,750,686,masks/images/10/IMG_0255.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,13,images/10/IMG_0959.jpg,image-5ec4f8271a103c84,instance-0,838,584,247,870,masks/images/10/IMG_0959.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,13,images/10/IMG_0960.jpg,image-1301684efce926cf,instance-0,479,739,689,740,masks/images/10/IMG_0960.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,13,images/10/IMG_0258.jpg,image-258e3ef14fc35b16,instance-0,449,786,879,248,masks/images/10/IMG_0258.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+10,mallet,mpr surgical,1,13,images/10/IMG_0259.jpg,image-9a339c8497429c6a,instance-0,564,497,692,747,masks/images/10/IMG_0259.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,14,images/11/IMG_0260.jpg,image-e4cce5b0c878d79d,instance-0,838,633,188,818,masks/images/11/IMG_0260.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,14,images/11/IMG_0261.jpg,image-b7d1b94329656bf4,instance-0,565,675,638,611,masks/images/11/IMG_0261.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,14,images/11/IMG_0262.jpg,image-7f261b5e8730db4c,instance-0,484,856,825,190,masks/images/11/IMG_0262.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,14,images/11/IMG_0263.jpg,image-b63dec8f28d02b4b,instance-0,584,575,629,623,masks/images/11/IMG_0263.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,14,images/11/IMG_0264.jpg,image-43ff42eb1f6ae30e,instance-0,824,494,196,819,masks/images/11/IMG_0264.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,14,images/11/IMG_0265.jpg,image-761e3f794d815e09,instance-0,678,590,591,658,masks/images/11/IMG_0265.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,14,images/11/IMG_0266.jpg,image-cdc50bbd1d4fe8b1,instance-0,554,809,823,190,masks/images/11/IMG_0266.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,14,images/11/IMG_0267.jpg,image-74afac32104f3c4d,instance-0,618,607,654,592,masks/images/11/IMG_0267.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,15,images/11/IMG_0268.jpg,image-dfabb3254d031cff,instance-0,797,494,191,818,masks/images/11/IMG_0268.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,15,images/11/IMG_0269.jpg,image-201b7c7274b6e1cc,instance-0,640,576,657,592,masks/images/11/IMG_0269.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,15,images/11/IMG_0270.jpg,image-043d8d31a51f1781,instance-0,584,814,822,188,masks/images/11/IMG_0270.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,15,images/11/IMG_0271.jpg,image-971767cf1b9bed2f,instance-0,626,591,657,591,masks/images/11/IMG_0271.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,15,images/11/IMG_0272.jpg,image-af6d2b3014bc9cd2,instance-0,835,464,192,815,masks/images/11/IMG_0272.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+11,pliers,lineman,1,15,images/11/IMG_0273.jpg,image-547855e3c5492abc,instance-0,,,,,,,,,,,,,,
+11,pliers,lineman,1,15,images/11/IMG_0274.jpg,image-012a237adc03bd41,instance-0,,,,,,,,,,,,,,
+11,pliers,lineman,1,15,images/11/IMG_0275.jpg,image-5286b526a7da48fd,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,16,images/16/IMG_0560.jpg,image-f9ac71d15ed18b18,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,16,images/16/IMG_0580.jpg,image-4a19c4243860c434,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,16,images/16/IMG_0581.jpg,image-699ba643f31163c1,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,16,images/16/IMG_0582.jpg,image-05466e1cd5dedf10,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,16,images/16/IMG_0584.jpg,image-b8fbe286c2158a4f,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,16,images/16/IMG_0585.jpg,image-161423d9a2021a0b,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,16,images/16/IMG_0586.jpg,image-edacb018de9abb72,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,16,images/16/IMG_0587.jpg,image-8c3cd92a971ceb87,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,17,images/16/IMG_0588.jpg,image-6d17eba8cea9c668,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,17,images/16/IMG_0590.jpg,image-566eb4f9f4daeb75,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,17,images/16/IMG_0592.jpg,image-0123419070c3bf33,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,17,images/16/IMG_0593.jpg,image-cb9f609847bdb9aa,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,17,images/16/IMG_0594.jpg,image-623b73eb9d788d3f,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,17,images/16/IMG_0595.jpg,image-6a398a891a120a14,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,17,images/16/IMG_0596.jpg,image-657a6b43b3e3e74b,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,17,images/16/IMG_0598.jpg,image-d4b79f6b428446d0,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,18,images/16/IMG_0599.jpg,image-611e2dfcc4e38df3,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,18,images/16/IMG_0600.jpg,image-9d23a53d4d27ae15,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,18,images/16/IMG_0601.jpg,image-9db53e592a957337,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,18,images/16/IMG_0603.jpg,image-d35b83fe7d01848a,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,18,images/16/IMG_0604.jpg,image-dc202cdaf00e664b,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,18,images/16/IMG_0605.jpg,image-cc916189f15b0bfa,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,18,images/16/IMG_0606.jpg,image-5e7bfc2762e64323,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,18,images/16/IMG_0607.jpg,image-7236ee91b9fe3989,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,19,images/16/IMG_0609.jpg,image-dc8fc6c3fbc0b06e,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,19,images/16/IMG_0610.jpg,image-c67e1c9fd0e8df24,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,19,images/16/IMG_0612.jpg,image-d7e074768eeaa2cd,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,19,images/16/IMG_0613.jpg,image-45ee8f1818c7dd24,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,19,images/16/IMG_0614.jpg,image-26f1379cf832e25a,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,19,images/16/IMG_0615.jpg,image-4354291eeb43b413,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,19,images/16/IMG_0617.jpg,image-2d79e135c373f89e,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,19,images/16/IMG_0618.jpg,image-106e3b1c1a443e63,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,20,images/16/IMG_0626.jpg,image-044c8696c2ff5b22,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,20,images/16/IMG_0628.jpg,image-28b6c3bf9b09f387,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,20,images/16/IMG_0629.jpg,image-12f91c1a9d828711,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,20,images/16/IMG_0631.jpg,image-f66267e9e58fd26e,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,20,images/16/IMG_0632.jpg,image-6a9d077c85ef895b,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,20,images/16/IMG_0634.jpg,image-3e03dd67c2886716,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,20,images/16/IMG_0635.jpg,image-32b3f250db6da222,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,20,images/16/IMG_0636.jpg,image-40e3511578b67223,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,21,images/16/IMG_0637.jpg,image-0a1e90552c21d823,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,21,images/16/IMG_0638.jpg,image-56a61944f7718988,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,21,images/16/IMG_0639.jpg,image-109beff0ab1c634a,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,21,images/16/IMG_0640.jpg,image-66abe9426d7a2158,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,21,images/16/IMG_0641.jpg,image-9f7418bf92110b47,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,21,images/16/IMG_0642.jpg,image-9f0e88116b2f34cd,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,21,images/16/IMG_0644.jpg,image-a669ce097b725033,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,21,images/16/IMG_0645.jpg,image-38917c5e25e58837,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,22,images/16/IMG_0646.jpg,image-7c18174f893ff233,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,22,images/16/IMG_0647.jpg,image-5865d05bf70e076c,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,22,images/16/IMG_0648.jpg,image-fb337c681a41ec19,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,22,images/16/IMG_0649.jpg,image-d907fa09878e1c2a,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,22,images/16/IMG_0650.jpg,image-1c6fc9e6cd71814a,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,22,images/16/IMG_0651.jpg,image-c07b77a4c52822b8,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,22,images/16/IMG_0652.jpg,image-a5a2ebb7a570147a,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,22,images/16/IMG_0653.jpg,image-5124784ec7e7ba31,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,23,images/16/IMG_0654.jpg,image-c462fe1ecc65d573,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,23,images/16/IMG_0655.jpg,image-712bd6fe9db99862,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,23,images/16/IMG_0656.jpg,image-cd6bdd084364d49f,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,23,images/16/IMG_0657.jpg,image-0eef4afec2368ccf,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,23,images/16/IMG_0658.jpg,image-a1b9036f9b7d7800,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,23,images/16/IMG_0659.jpg,image-d3ab4553b1e490ec,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,23,images/16/IMG_0660.jpg,image-fb40d9147c54eb90,instance-0,,,,,,,,,,,,,,
+16,forceps,rowes maxillary,1,23,images/16/IMG_0662.jpg,image-70bce60eb7bb5de0,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,24,images/22/IMG_0664.jpg,image-ca23d537b27a55e7,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,24,images/22/IMG_0665.jpg,image-b8adb0740c5e1c9e,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,24,images/22/IMG_0667.jpg,image-5323a72f5d418595,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,24,images/22/IMG_0668.jpg,image-631b1a8518325808,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,24,images/22/IMG_0669.jpg,image-4084fed03dcd782c,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,24,images/22/IMG_0671.jpg,image-191392b73abbc91a,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,24,images/22/IMG_0672.jpg,image-428f966d3aed0e9e,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,24,images/22/IMG_0673.jpg,image-97fbf698150c016f,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,25,images/22/IMG_0674.jpg,image-2071eec7f35a3108,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,25,images/22/IMG_0675.jpg,image-b2decb732e0994cd,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,25,images/22/IMG_0676.jpg,image-167910f654a9c5fc,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,25,images/22/IMG_0677.jpg,image-1029021f06b6f27c,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,25,images/22/IMG_0678.jpg,image-0a2713f596bc4aac,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,25,images/22/IMG_0679.jpg,image-e30f30462343173b,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,25,images/22/IMG_0680.jpg,image-73758df545b9d2f9,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,25,images/22/IMG_0681.jpg,image-74fd040cfedeb9dd,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,26,images/22/IMG_0682.jpg,image-5efd11a5eb545c45,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,26,images/22/IMG_0683.jpg,image-26cf948541903772,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,26,images/22/IMG_0684.jpg,image-6f34c02484545c9a,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,26,images/22/IMG_0686.jpg,image-53ad55181d0e7249,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,26,images/22/IMG_0687.jpg,image-9192b729d7981ce1,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,26,images/22/IMG_0688.jpg,image-8e3e61bbc5aa35f3,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,26,images/22/IMG_0689.jpg,image-71ef8b1dd8eed47c,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,26,images/22/IMG_0690.jpg,image-66dce5167db58f1d,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,27,images/22/IMG_0691.jpg,image-fe02b993e09cd37d,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,27,images/22/IMG_0692.jpg,image-2f94e50ded0ddbc5,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,27,images/22/IMG_0693.jpg,image-5ac0e56cbcd73bf7,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,27,images/22/IMG_0695.jpg,image-111464cc23fda808,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,27,images/22/IMG_0696.jpg,image-78ad0b9c1879b5c9,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,27,images/22/IMG_0697.jpg,image-0ba8af9772e4221d,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,27,images/22/IMG_0698.jpg,image-3d2a6e7108550ce0,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,27,images/22/IMG_0699.jpg,image-aed88e8febc23f93,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,28,images/22/IMG_0700.jpg,image-5a027e7a4f74d305,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,28,images/22/IMG_0701.jpg,image-d492d23990e52d88,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,28,images/22/IMG_0702.jpg,image-1b4e358c22e6e73d,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,28,images/22/IMG_0703.jpg,image-b445f762dac2dae1,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,28,images/22/IMG_0704.jpg,image-937a72d360e6155b,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,28,images/22/IMG_0705.jpg,image-7cc0060799bab76e,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,28,images/22/IMG_0706.jpg,image-005b92267fc644e1,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,28,images/22/IMG_0707.jpg,image-005a5a3a4b8b27b3,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,29,images/22/IMG_0708.jpg,image-7bd5b9bb7d2fe6ba,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,29,images/22/IMG_0709.jpg,image-61f4030d55ddaefa,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,29,images/22/IMG_0710.jpg,image-747d494b9d6e0d17,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,29,images/22/IMG_0711.jpg,image-add7f9767d4d5463,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,29,images/22/IMG_0712.jpg,image-408a62375522db9e,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,29,images/22/IMG_0713.jpg,image-60d8874bf39cb462,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,29,images/22/IMG_0714.jpg,image-418e99194b3e87e6,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,29,images/22/IMG_0716.jpg,image-68162b77b07c61e1,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,30,images/22/IMG_0717.jpg,image-ca5c5ac82f969527,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,30,images/22/IMG_0718.jpg,image-3ff0922836090271,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,30,images/22/IMG_0719.jpg,image-02061ce79cd4cd04,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,30,images/22/IMG_0720.jpg,image-aea0d82fbc77977d,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,30,images/22/IMG_0721.jpg,image-c014951f2027ffa9,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,30,images/22/IMG_0722.jpg,image-d0fdfd3c187088b0,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,30,images/22/IMG_0723.jpg,image-9d09982613990a53,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,30,images/22/IMG_0724.jpg,image-b5c7c08f430ce8b2,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,31,images/22/IMG_0725.jpg,image-0d1e9431d96a4895,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,31,images/22/IMG_0726.jpg,image-64484f382d270bed,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,31,images/22/IMG_0727.jpg,image-e5fedcc81a7c0fee,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,31,images/22/IMG_0728.jpg,image-9316843e3ebacf30,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,31,images/22/IMG_0729.jpg,image-919d1d9c14883a20,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,31,images/22/IMG_0730.jpg,image-508ec94f01bc51a6,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,31,images/22/IMG_0731.jpg,image-8f1c97b19016f571,instance-0,,,,,,,,,,,,,,
+22,retractor,gelpi,1,31,images/22/IMG_0732.jpg,image-a9498c73d80ab277,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,32,images/23/IMG_0733.jpg,image-145efe4db4ebc6c0,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,32,images/23/IMG_0734.jpg,image-73899b8ee6e5b146,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,32,images/23/IMG_0735.jpg,image-cdcb4d9cd36ab32d,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,32,images/23/IMG_0736.jpg,image-523dafba79edb4d5,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,32,images/23/IMG_0737.jpg,image-68716f04ef000470,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,32,images/23/IMG_0739.jpg,image-7d6deee2c5f5a0d1,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,32,images/23/IMG_0740.jpg,image-b58c1f3224304eb0,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,32,images/23/IMG_0741.jpg,image-d40522c087561c49,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,33,images/23/IMG_0742.jpg,image-72e42a335031a42f,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,33,images/23/IMG_0743.jpg,image-df3a0ab90dc80fdc,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,33,images/23/IMG_0744.jpg,image-b129d92576eaae50,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,33,images/23/IMG_0745.jpg,image-01026f04f0f06da4,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,33,images/23/IMG_0746.jpg,image-70bd7e6dd98c8213,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,33,images/23/IMG_0747.jpg,image-98b5786513b15929,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,33,images/23/IMG_0748.jpg,image-d47f3920aa89d002,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,33,images/23/IMG_0749.jpg,image-b9afd1d6834766b1,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,34,images/23/IMG_0751.jpg,image-c3c47d4a56cfd0ba,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,34,images/23/IMG_0752.jpg,image-95e097de94efbebf,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,34,images/23/IMG_0754.jpg,image-aabbcf1aab147b26,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,34,images/23/IMG_0755.jpg,image-890705697034295b,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,34,images/23/IMG_0756.jpg,image-6f39a7656c18a760,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,34,images/23/IMG_0757.jpg,image-e6c406c0afacfedb,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,34,images/23/IMG_0758.jpg,image-92389656b306db73,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,34,images/23/IMG_0759.jpg,image-8a6ff589e804b0a6,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,35,images/23/IMG_0762.jpg,image-8a215273324618f7,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,35,images/23/IMG_0763.jpg,image-c894872e86f1e8a6,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,35,images/23/IMG_0764.jpg,image-a2d56dd7860d556e,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,35,images/23/IMG_0765.jpg,image-eb3711dbc5253752,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,35,images/23/IMG_0766.jpg,image-6a815c23371e8870,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,35,images/23/IMG_0767.jpg,image-9da89620c55f8dee,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,35,images/23/IMG_0769.jpg,image-12d24306af552972,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,35,images/23/IMG_0770.jpg,image-d7dd3b0bac03c947,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,36,images/23/IMG_0771.jpg,image-70a58ae7b4afe39e,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,36,images/23/IMG_0772.jpg,image-62e63494941c6780,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,36,images/23/IMG_0773.jpg,image-43e332dad1424435,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,36,images/23/IMG_0774.jpg,image-74b362de4c678051,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,36,images/23/IMG_0775.jpg,image-d5f1e1d86cfdcadb,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,36,images/23/IMG_0776.jpg,image-72d214dc4c2332bd,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,36,images/23/IMG_0777.jpg,image-04b613093e770f29,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,36,images/23/IMG_0778.jpg,image-7194687a1901db76,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,37,images/23/IMG_0779.jpg,image-c603961cba0d4557,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,37,images/23/IMG_0780.jpg,image-e5d8166a9f28a0ba,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,37,images/23/IMG_0781.jpg,image-c128f2e1e165eb80,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,37,images/23/IMG_0782.jpg,image-359407323c0ee9ea,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,37,images/23/IMG_0783.jpg,image-884710482441401f,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,37,images/23/IMG_0784.jpg,image-5d7d09165ee4dfaf,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,37,images/23/IMG_0785.jpg,image-4aa0daaea7767e0c,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,37,images/23/IMG_0786.jpg,image-db03b183c941db9b,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,38,images/23/IMG_0787.jpg,image-20321d2186d7addd,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,38,images/23/IMG_0788.jpg,image-4fb3c873935b4263,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,38,images/23/IMG_0789.jpg,image-3eb751ae6699d882,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,38,images/23/IMG_0790.jpg,image-7c2e37e35f139f18,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,38,images/23/IMG_0791.jpg,image-3374d6179dfc6ce6,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,38,images/23/IMG_0793.jpg,image-6e85100166addeab,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,38,images/23/IMG_0794.jpg,image-9f20414899726f70,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,38,images/23/IMG_0796.jpg,image-9385983cca0026c3,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,39,images/23/IMG_0797.jpg,image-7dd6470609beb3b5,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,39,images/23/IMG_0798.jpg,image-51c020035a40f540,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,39,images/23/IMG_0799.jpg,image-c0fc8f6dc8d0d9d8,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,39,images/23/IMG_0800.jpg,image-cbd9e57cc72698c5,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,39,images/23/IMG_0802.jpg,image-158b18b480c0e4ae,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,39,images/23/IMG_0803.jpg,image-92785c4b0620c90b,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,39,images/23/IMG_0804.jpg,image-5ed9a3c994bfc3d4,instance-0,,,,,,,,,,,,,,
+23,scissors,metzenbaum,1,39,images/23/IMG_0805.jpg,image-8054d252091a2a54,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,40,images/26/IMG_0869.jpg,image-9dd3d65da728213f,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,40,images/26/IMG_0870.jpg,image-3bf6bc58ed99ffee,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,40,images/26/IMG_0871.jpg,image-57d3b02f68eae664,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,40,images/26/IMG_0872.jpg,image-691aa39cc1e3d304,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,40,images/26/IMG_0873.jpg,image-4c65a09b27461f34,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,40,images/26/IMG_0874.jpg,image-57c8fd09a201ba96,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,40,images/26/IMG_0875.jpg,image-c8d0723286b2f5db,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,40,images/26/IMG_0876.jpg,image-da7db50109237169,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,41,images/26/IMG_0878.jpg,image-cb3c85c66b2e7866,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,41,images/26/IMG_0879.jpg,image-7e1267a6bfcc1666,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,41,images/26/IMG_0880.jpg,image-048ff7247f371f4f,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,41,images/26/IMG_0881.jpg,image-4ea17e88248bbc30,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,41,images/26/IMG_0882.jpg,image-5de133a2c55eb034,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,41,images/26/IMG_0883.jpg,image-93f92d92015006f4,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,41,images/26/IMG_0884.jpg,image-1a81caeefbc030c5,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,41,images/26/IMG_0885.jpg,image-c392115785e30305,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,42,images/26/IMG_0886.jpg,image-6b61c63030b340d1,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,42,images/26/IMG_0887.jpg,image-cdc45b698a499365,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,42,images/26/IMG_0888.jpg,image-420cd5caff59ca9f,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,42,images/26/IMG_0889.jpg,image-3ec233b6a69dcb79,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,42,images/26/IMG_0890.jpg,image-a7a04118712f97c8,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,42,images/26/IMG_0891.jpg,image-a5b025a1493f9034,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,42,images/26/IMG_0893.jpg,image-e270fb9a2b80f457,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,42,images/26/IMG_0894.jpg,image-54274530e973e8db,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,43,images/26/IMG_0895.jpg,image-c2f629a8b0c436af,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,43,images/26/IMG_0896.jpg,image-8bca31878123ca70,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,43,images/26/IMG_0897.jpg,image-13b603bb0cc2bcd2,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,43,images/26/IMG_0899.jpg,image-f6c5107800538611,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,43,images/26/IMG_0900.jpg,image-2ce9f1225d8c0a88,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,43,images/26/IMG_0901.jpg,image-636e7cf8b7d1579d,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,43,images/26/IMG_0902.jpg,image-b0f0125b80176a2b,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,43,images/26/IMG_0903.jpg,image-2fba4b99b86972a0,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,44,images/26/IMG_0906.jpg,image-c6e76bb2c18a5a08,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,44,images/26/IMG_0907.jpg,image-dee93c83f3a79606,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,44,images/26/IMG_0908.jpg,image-d6db57016a387d19,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,44,images/26/IMG_0909.jpg,image-23458b1c9fdbc937,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,44,images/26/IMG_0911.jpg,image-e45b58bab70ee902,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,44,images/26/IMG_0912.jpg,image-1dbc3dfa81a0ab49,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,44,images/26/IMG_0913.jpg,image-a179dca11b744ff8,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,44,images/26/IMG_0914.jpg,image-3c3894c0e1328dc0,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,45,images/26/IMG_0923.jpg,image-9052d1d74974ba4a,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,45,images/26/IMG_0924.jpg,image-ed1dd2c7a55310ca,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,45,images/26/IMG_0925.jpg,image-59ccab0ec4ac63a6,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,45,images/26/IMG_0926.jpg,image-63c7a2decc5b9d32,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,45,images/26/IMG_0927.jpg,image-07279ce8b7635293,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,45,images/26/IMG_0929.jpg,image-c9a1db5d7358e6d2,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,45,images/26/IMG_0930.jpg,image-4308e6284b01f539,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,45,images/26/IMG_0932.jpg,image-66692d62284e20ba,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,46,images/26/IMG_0935.jpg,image-bd8c6dd0ec6576cc,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,46,images/26/IMG_0936.jpg,image-420784a2d291226a,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,46,images/26/IMG_0937.jpg,image-d8886de72c791fb3,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,46,images/26/IMG_0939.jpg,image-b8bff0a54e8005bf,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,46,images/26/IMG_0941.jpg,image-9e501bb24f6792e4,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,46,images/26/IMG_0942.jpg,image-13a604c18c6dacc0,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,46,images/26/IMG_0943.jpg,image-566150db0845e03e,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,46,images/26/IMG_0944.jpg,image-d5932389d9423c17,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,47,images/26/IMG_0947.jpg,image-e12a905fecd4e3b3,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,47,images/26/IMG_0948.jpg,image-f54b32016e76fdac,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,47,images/26/IMG_0949.jpg,image-93926b4c1a1be21c,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,47,images/26/IMG_0950.jpg,image-53e331da32b0373e,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,47,images/26/IMG_0951.jpg,image-e51ea0d177c85f7d,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,47,images/26/IMG_0953.jpg,image-960a89de71c4e69d,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,47,images/26/IMG_0954.jpg,image-4231f78305cf36dc,instance-0,,,,,,,,,,,,,,
+26,forceps,hunt tumor,1,47,images/26/IMG_0956.jpg,image-e0b23ac12f0063c2,instance-0,,,,,,,,,,,,,,
+33,scissors,mueller bandage,1,48,images/33/IMG_0970.jpg,image-038f1d3a80c8fe7f,instance-0,,,,,,,,,,,,,,
+33,scissors,mueller bandage,1,48,images/33/IMG_0971.jpg,image-ccde6bedc3dfd0f6,instance-0,,,,,,,,,,,,,,
+33,scissors,mueller bandage,1,48,images/33/IMG_0973.jpg,image-6299a7c775c3aad7,instance-0,,,,,,,,,,,,,,
+33,scissors,mueller bandage,1,48,images/33/IMG_0974.jpg,image-2dc19198fd34fbed,instance-0,,,,,,,,,,,,,,
+33,scissors,mueller bandage,1,48,images/33/IMG_0975.jpg,image-fc3dfc1a37f742a8,instance-0,,,,,,,,,,,,,,
+33,scissors,mueller bandage,1,48,images/33/IMG_0976.jpg,image-6ede997d32e2275a,instance-0,,,,,,,,,,,,,,
+33,scissors,mueller bandage,1,48,images/33/IMG_0977.jpg,image-ff3c7b8acda43107,instance-0,,,,,,,,,,,,,,
+33,scissors,mueller bandage,1,48,images/33/IMG_0978.jpg,image-484b0525d6ec6b73,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2430.jpg,image-c729345a587a7e30,instance-0,1029,566,82,732,masks/images/4/IMG_2430.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2431.jpg,image-f6c6336d4e6b88e3,instance-0,832,630,441,628,masks/images/4/IMG_2431.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2432.jpg,image-27fa784325966064,instance-0,707,917,725,86,masks/images/4/IMG_2432.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2433.jpg,image-876175ee8a2d5795,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2434.jpg,image-5f123fcfecd3bbdc,instance-0,1054,603,79,732,masks/images/4/IMG_2434.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2435.jpg,image-d5dd571563e3cd89,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2436.jpg,image-efa8a85242aa814f,instance-0,805,979,726,84,masks/images/4/IMG_2436.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2438.jpg,image-3e45fe4f8535c05b,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2439.jpg,image-5028d474eb9f0431,instance-0,1119,666,80,730,masks/images/4/IMG_2439.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2440.jpg,image-b5490de785e94a8a,instance-0,1118,667,80,731,masks/images/4/IMG_2440.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2441.jpg,image-efe3dd13ec028c7d,instance-0,1117,663,81,732,masks/images/4/IMG_2441.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2443.jpg,image-fc34054f06e9cb37,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2444.jpg,image-436cbef430c20da2,instance-0,727,896,728,87,masks/images/4/IMG_2444.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2445.jpg,image-de72de0bfdb332b5,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2446.jpg,image-fe3a4f1a5b203f9c,instance-0,1083,611,82,731,masks/images/4/IMG_2446.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2447.jpg,image-7f0992ad6f6626fe,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2448.jpg,image-921245142b723c7b,instance-0,822,934,727,83,masks/images/4/IMG_2448.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2449.jpg,image-56b9853efc605a79,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2450.jpg,image-d1320198bce6a06c,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2451.jpg,image-8e344fa5781dea81,instance-0,979,631,469,574,masks/images/4/IMG_2451.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2452.jpg,image-d1796dd8b9bdba0e,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2453.jpg,image-cf01eca079d6b2de,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2454.jpg,image-5d7d11fba0155d89,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2455.jpg,image-719f04804205160f,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2456.jpg,image-23497360887d127a,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2457.jpg,image-658ebc50cb8572e7,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2458.jpg,image-f6143dfde67d38f9,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2459.jpg,image-b5ea4ed85174c5ed,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2460.jpg,image-4a30fb452546fa1e,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2461.jpg,image-633e25474ffc6427,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2462.jpg,image-61a3a1174866b97c,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2463.jpg,image-05fbb21bcf13455e,instance-0,1089,543,46,740,masks/images/4/IMG_2463.npz,0,clear,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,1.0
+4,forceps,debakey,1,,images/4/IMG_2464.jpg,image-ab18b36cf811882e,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2465.jpg,image-a3f16d80b288e03b,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2466.jpg,image-484ab8e6c8ecae5b,instance-0,,,,,,,,,,,,,,
+4,forceps,debakey,1,,images/4/IMG_2467.jpg,image-04240ed733384391,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2597.jpg,image-d00ee4e9d2593f02,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2598.jpg,image-8f3dc0d0546934f3,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2599.jpg,image-9be317b236f577aa,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2600.jpg,image-eb77adf86d9cfed9,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2601.jpg,image-6ce493ae1bebffcc,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2602.jpg,image-ac240eb0b03e6242,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2603.jpg,image-28e6d97ff4322dbb,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2604.jpg,image-0693f7fd3202bffa,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2605.jpg,image-2066aae1afbe686f,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2606.jpg,image-38173acab8197bcb,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2607.jpg,image-eb1c9f4af59e3750,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2608.jpg,image-ebeb5e6025074f9e,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2609.jpg,image-251e4e3d7df1ff9c,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2611.jpg,image-831e9129f9157cb5,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2612.jpg,image-dc9eeb6f2dcc3542,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2613.jpg,image-8164234cc3240f77,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2614.jpg,image-6d2169a04f48d44f,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2615.jpg,image-a8271c7fc722a3be,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2616.jpg,image-30c3d0180c2e6557,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2617.jpg,image-6b6843df27441dbb,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2618.jpg,image-e347ad4d8dad8de2,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2619.jpg,image-367081db08d53308,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2620.jpg,image-cfc4e656400c8022,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2621.jpg,image-e3e25a980a141a5f,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2622.jpg,image-4c50e598967b1861,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2623.jpg,image-4f96d81f830e71fa,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2624.jpg,image-e04f48315a7d4659,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2625.jpg,image-c93674eefac94d06,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2626.jpg,image-e67a3fa06f71a6f4,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2627.jpg,image-45a92fb1c6156ebb,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2628.jpg,image-b2cdcd190d932009,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2629.jpg,image-c67a31e78a856f82,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2630.jpg,image-170a8ef08abaeab6,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2631.jpg,image-9beaf644455780f8,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2632.jpg,image-df95f4e9284286d1,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2633.jpg,image-9eec14fe964e4953,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2634.jpg,image-11dda684006f1348,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2635.jpg,image-bfe92fe0eac9d1bc,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2636.jpg,image-d5a219341bb21a73,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2637.jpg,image-e611c97e06cc10f4,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2639.jpg,image-f13fc8fa32bf3a09,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2654.jpg,image-a1f9eb87f7395590,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2655.jpg,image-9e91517c4b577f97,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2656.jpg,image-bd0ce3dd82139b76,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2657.jpg,image-fa88343ba7b1dcda,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2658.jpg,image-7ffde2521fd4234a,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2659.jpg,image-9b86af4d2f6163da,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2660.jpg,image-6f0af856285f5360,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2661.jpg,image-ad288ec06882cd6f,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2662.jpg,image-fc656e767cf5bced,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2663.jpg,image-21e43eaa7c444fdf,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2664.jpg,image-4b622d8655b9c968,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2665.jpg,image-b834ebeee6755c72,instance-0,,,,,,,,,,,,,,
+15,scissors,lister bandage,1,,images/15/IMG_2666.jpg,image-c3ca0274c82da84c,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2565.jpg,image-0baaf984f293dbc2,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2566.jpg,image-98039930e9c991c5,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2567.jpg,image-234146b1f4e16764,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2568.jpg,image-9351bf7ccb74d632,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2569.jpg,image-113d0aa9601e98c4,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2570.jpg,image-2530cf57e7cf60e3,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2571.jpg,image-5c6c8af12c2050b0,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2572.jpg,image-029ce7ed2c9da856,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2573.jpg,image-f5c9e1bdd298a23b,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2574.jpg,image-90ca92340938b479,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2575.jpg,image-43c9e12160349b79,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2576.jpg,image-4060fd235e0fc165,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2577.jpg,image-946c6bc0053d97d3,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2578.jpg,image-69390ca6aadd87e3,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2579.jpg,image-32467425a79c784f,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2580.jpg,image-b38b0e8d17a6225f,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2581.jpg,image-0be51f8476a9a6c4,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2583.jpg,image-801073f29d9818ec,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2585.jpg,image-93f9221a3f3a7aa7,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2586.jpg,image-05b6e693609bbce2,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2587.jpg,image-a1c3c526c16b4b37,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2588.jpg,image-12a34e0b6b08acb9,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2589.jpg,image-610093af1ea901cc,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2590.jpg,image-0fc934600f89e860,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2591.jpg,image-35a1c62d0b1990dc,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2592.jpg,image-f522183f14cd545e,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2593.jpg,image-9f8046891e0e186a,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2594.jpg,image-6389cf1f49a41859,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2595.jpg,image-03e9859df05d8ddc,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2596.jpg,image-9cdf254d51871807,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2640.jpg,image-4b860f6d230e6805,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2641.jpg,image-28441537c4fcc35e,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2642.jpg,image-ab41d3a869de68da,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2643.jpg,image-0e5e66e18e7824cd,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2644.jpg,image-6a8a67428d2fcbc1,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2645.jpg,image-b39fcea2973c5d42,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2646.jpg,image-e15657dbfa3c7a47,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2647.jpg,image-e6174be0c026eeff,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2648.jpg,image-84f088329c9302d5,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2649.jpg,image-5f6593d1ce967145,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2650.jpg,image-9af6dbacd0c4dcf0,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2651.jpg,image-b0eef8cddb38a340,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2652.jpg,image-9faa0503b6c95b52,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2653.jpg,image-7cf68b24c0ec835d,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2667.jpg,image-f635d41334f27f4e,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2668.jpg,image-3f6394f540ff6953,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2669.jpg,image-e4dd46e8dc59b9fc,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2670.jpg,image-f0e2a8ac9bea0d20,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2671.jpg,image-5582b76854bcb6d4,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2672.jpg,image-cf3b081e57a7a17d,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2676.jpg,image-9f1f6adb4eaa3fb2,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2677.jpg,image-5c80efd82e6fa7ed,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2678.jpg,image-7c9b9b8fb84819a0,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2679.jpg,image-1102c326469d30c1,instance-0,,,,,,,,,,,,,,
+17,scissors,mayo,1,,images/17/IMG_2680.jpg,image-197b7390aaad4e77,instance-0,,,,,,,,,,,,,,

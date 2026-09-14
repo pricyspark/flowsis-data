@@ -21,11 +21,13 @@ from annotations import (
     VIDEO_OBJECT_FIELDS,
     canonical_tool_label,
     extend_image_manifest,
+    image_mask_path,
     load_taxonomy_aliases,
     normalize_tool_name,
     read_csv,
     stable_media_id,
     write_csv,
+    write_image_manifests,
 )
 from masks import mask2xywh, save_mask_bundle
 
@@ -487,6 +489,9 @@ def _image_object_rows(
                     if index == intended_index
                     else candidate.prompt
                 ),
+                "Confidence": (
+                    source.get("Confidence", "") if index == intended_index else ""
+                ),
                 "BBox X": box[0],
                 "BBox Y": box[1],
                 "BBox Width": box[2],
@@ -502,10 +507,32 @@ def _image_object_rows(
 def annotate_images(args: argparse.Namespace) -> None:
     manifest = extend_image_manifest(args.manifest)
     rows = read_csv(manifest)
+    mask_paths = [image_mask_path(args.mask_dir, row["Filepath"]) for row in rows]
+    if len(set(mask_paths)) != len(mask_paths):
+        raise ValueError("Image filenames map to duplicate mask paths.")
     object_rows: list[dict[str, object]] = (
         list(read_csv(args.object_manifest)) if args.object_manifest.is_file() else []
     )
+    sources: dict[str, dict[str, str]] = {}
+    for row in rows:
+        instances = [
+            obj for obj in object_rows
+            if obj[IMAGE_ID_FIELD] == row[IMAGE_ID_FIELD]
+        ]
+        if len(instances) == 1:
+            sources[row[IMAGE_ID_FIELD]] = {
+                **{key: str(value) for key, value in instances[0].items()}, **row
+            }
     review = ReviewLog(args.review_log)
+    for row in rows:
+        if (
+            not review.completed(row[IMAGE_ID_FIELD])
+            and row[IMAGE_ID_FIELD] not in sources
+        ):
+            raise ValueError(
+                f"{row['Filepath']} requires exactly one declared instance for this "
+                "annotation workflow. Run basic.py to add instance metadata."
+            )
     device = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
     backend = Sam3ImageBackend(
         args.model,
@@ -524,17 +551,23 @@ def annotate_images(args: argparse.Namespace) -> None:
             f"Skipping {len(missing)} manifest images that are not present below {root}."
         )
 
-    for offset in range(0, len(rows), args.batch_size):
-        pending = [
-            row
-            for row in rows[offset : offset + args.batch_size]
-            if not review.completed(row[IMAGE_ID_FIELD])
-            and (root / row["Filepath"]).is_file()
-        ]
-        if not pending:
-            continue
+    queue = [
+        row for row in rows
+        if not review.completed(row[IMAGE_ID_FIELD])
+        and (root / row["Filepath"]).is_file()
+    ]
+    queue.sort(
+        key=lambda row: (
+            review.decisions.get(row[IMAGE_ID_FIELD], {}).get("decision") == "skipped"
+        ) != args.skipped_first
+    )
+    for offset in range(0, len(queue), args.batch_size):
+        pending = queue[offset : offset + args.batch_size]
         images = [Image.open(root / row["Filepath"]).convert("RGB") for row in pending]
-        prompts = [image_prompt(row, args.image_prompt, aliases) for row in pending]
+        prompts = [
+            image_prompt(sources[row[IMAGE_ID_FIELD]], args.image_prompt, aliases)
+            for row in pending
+        ]
         predicted = backend.predict(images, prompts)
         discovery_prompts = tuple(
             normalize_tool_name(prompt, aliases)
@@ -581,7 +614,10 @@ def annotate_images(args: argparse.Namespace) -> None:
                 review.append(key, decision, prompt=active_prompt)
                 continue
             if decision == "accepted":
-                mask_path = args.mask_dir / f"{key}.npz"
+                source = sources[key]
+                if len(selected) == 1:
+                    selected = [replace(selected[0], identity=source["Instance ID"])]
+                mask_path = image_mask_path(args.mask_dir, row["Filepath"])
                 height, width = np.asarray(image).shape[:2]
                 masks = (
                     np.stack([candidate.mask for candidate in selected])
@@ -599,8 +635,8 @@ def annotate_images(args: argparse.Namespace) -> None:
                     ),
                 )
                 normalized_row = {
-                    **row,
-                    "Tool Name": normalize_tool_name(row["Tool Name"], aliases),
+                    **source,
+                    "Tool Name": normalize_tool_name(source["Tool Name"], aliases),
                 }
                 replacements = _image_object_rows(
                     normalized_row,
@@ -608,12 +644,23 @@ def annotate_images(args: argparse.Namespace) -> None:
                     mask_path,
                     active_prompt,
                 )
+                if not replacements:
+                    # An accepted empty mask must not erase the capture's identity.
+                    replacements = [{
+                        field: source.get(field, "") if field in {
+                            IMAGE_ID_FIELD, "Instance ID", "Tool ID", "Tool Class",
+                            "Tool Name", "Confidence",
+                        } else ""
+                        for field in IMAGE_OBJECT_FIELDS
+                    }]
                 object_rows = _replace_scope(
                     object_rows,
                     replacements,
                     scope={IMAGE_ID_FIELD: key},
                 )
-                write_csv(args.object_manifest, object_rows, IMAGE_OBJECT_FIELDS)
+                write_image_manifests(
+                    manifest, rows, args.object_manifest, object_rows
+                )
             review.append(key, decision, prompt=active_prompt)
 
 
@@ -839,6 +886,11 @@ def parse_args() -> argparse.Namespace:
     images.add_argument("--mask-dir", type=Path, default=Path("masks/images"))
     images.add_argument(
         "--review-log", type=Path, default=Path("image_review.jsonl")
+    )
+    images.add_argument(
+        "--skipped-first",
+        action="store_true",
+        help="Review previously skipped images first (default: skipped images last).",
     )
     images.add_argument("--batch-size", type=int, default=4)
     images.add_argument("--threshold", type=float, default=0.5)

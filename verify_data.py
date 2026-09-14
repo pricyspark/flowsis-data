@@ -10,6 +10,8 @@ from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 
+from annotations import numeric_sort_key, tool_id_summary
+
 from PIL import Image, ImageDraw, ImageFont, ImageOps, UnidentifiedImageError
 
 
@@ -21,12 +23,10 @@ REPORT_HTML_PATH = ROOT / "verification_report.html"
 IMAGE_EXTENSIONS = {".avif", ".jpeg", ".jpg", ".png", ".webp"}
 EXPECTED_ANGLES = set(range(0, 360, 45))
 REQUIRED_COLUMNS = {
-    "Tool ID",
+    "Tool IDs",
+    "Image ID",
     "Sample ID",
     "Filepath",
-    "Tool Class",
-    "Tool Name",
-    "Confidence",
     "Angle",
     "Time Taken",
 }
@@ -147,10 +147,56 @@ def resolved_manifest_image(filepath: str) -> Path | None:
 
 def validate_manifest(
     rows: list[dict[str, str]],
+    objects: list[dict[str, str]],
 ) -> tuple[list[dict[str, str]], dict[str, list[dict[str, str]]]]:
     issues: list[dict[str, str]] = []
     samples: dict[str, list[dict[str, str]]] = defaultdict(list)
     filepaths: Counter[str] = Counter()
+
+    by_image: dict[str, list[dict[str, str]]] = defaultdict(list)
+    image_ids = [row["Image ID"] for row in rows]
+    if len(set(image_ids)) != len(image_ids):
+        issues.append(issue("error", "duplicate_image_id", "Images", "Image IDs must be unique."))
+    known_ids = set(image_ids)
+    image_by_id = {row["Image ID"]: row for row in rows}
+    instance_keys = set()
+    for obj in objects:
+        key = (obj["Image ID"], obj["Instance ID"])
+        location = f"Instance {key}"
+        if key in instance_keys:
+            issues.append(issue("error", "duplicate_instance", location, "Instance key is repeated."))
+        instance_keys.add(key)
+        if obj["Image ID"] not in known_ids:
+            issues.append(issue("error", "unknown_image", location, "Image ID is not in the image manifest."))
+        for field in ("Image ID", "Instance ID", "Tool ID", "Tool Class", "Tool Name"):
+            if not obj[field].strip():
+                issues.append(issue("error", "blank_field", location, f"{field} is blank."))
+        try:
+            if not 0 <= float(obj["Confidence"]) <= 1:
+                raise ValueError
+        except ValueError:
+            issues.append(issue("error", "invalid_confidence", location, "Confidence must be from 0 to 1."))
+        image = image_by_id.get(obj["Image ID"])
+        if image is not None:
+            for field in ("Sample ID", "Filepath"):
+                if obj.get(field, "") != image.get(field, ""):
+                    issues.append(issue(
+                        "error", "stale_instance_reference", location,
+                        f"{field} differs from the image manifest. Run basic.py to refresh it.",
+                    ))
+        by_image[obj["Image ID"]].append(obj)
+    for row in rows:
+        instances = sorted(by_image[row["Image ID"]], key=lambda obj: obj["Instance ID"])
+        if not instances:
+            issues.append(issue("error", "missing_instances", row["Filepath"], "Image has no instance metadata."))
+        if row.get("Tool IDs", "") != tool_id_summary(instances):
+            issues.append(issue(
+                "error", "stale_tool_summary", row["Filepath"],
+                "Tool IDs differs from instance metadata. Run basic.py to refresh it.",
+            ))
+        # Joined strings are only for the report; CSV storage stays one row per instance.
+        for field in ("Tool ID", "Tool Class", "Tool Name"):
+            row[field] = "; ".join(obj[field] for obj in instances)
 
     for line_number, row in enumerate(rows, start=2):
         location = f"CSV row {line_number}"
@@ -175,7 +221,9 @@ def validate_manifest(
 
         path_parts = PurePosixPath(filepath).parts
         folder_tool_id = path_parts[1] if len(path_parts) >= 3 and path_parts[0] == "images" else None
-        if folder_tool_id is not None and row["Tool ID"].strip() != folder_tool_id:
+        if (folder_tool_id is not None and folder_tool_id.isdigit()
+                and len(by_image[row["Image ID"]]) == 1
+                and row["Tool ID"].strip() != folder_tool_id):
             issues.append(
                 issue(
                     "error",
@@ -183,16 +231,6 @@ def validate_manifest(
                     filepath,
                     f"Tool ID is {row['Tool ID']!r}, but the folder is {folder_tool_id!r}.",
                 )
-            )
-
-        confidence = row["Confidence"].strip()
-        try:
-            confidence_number = float(confidence)
-            if not 0 <= confidence_number <= 1:
-                raise ValueError
-        except ValueError:
-            issues.append(
-                issue("error", "invalid_confidence", location, "Confidence must be from 0 to 1.")
             )
 
         sample_id = row["Sample ID"].strip()
@@ -277,7 +315,7 @@ def validate_manifest(
 
     tool_values: dict[str, set[tuple[str, str]]] = defaultdict(set)
     label_spellings: dict[tuple[str, str], set[tuple[str, str]]] = defaultdict(set)
-    for row in rows:
+    for row in objects:
         tool_id = row["Tool ID"].strip()
         labels = row["Tool Class"].strip(), row["Tool Name"].strip()
         tool_values[tool_id].add(labels)
@@ -446,7 +484,7 @@ def run_agent_review(
         schema_path = temp_dir / "agent_schema.json"
         schema_path.write_text(json.dumps(AGENT_SCHEMA), encoding="utf-8")
         prepared: list[tuple[str, list[dict[str, str]], Path]] = []
-        for index, (sample_id, sample_rows) in enumerate(sorted(samples.items())):
+        for index, (sample_id, sample_rows) in enumerate(sorted(samples.items(), key=lambda item: numeric_sort_key(item[0]))):
             sheet_path = temp_dir / f"sample-{index:04d}.jpg"
             try:
                 make_contact_sheet(sample_id, sample_rows, sheet_path)
@@ -609,7 +647,15 @@ def main() -> None:
         missing = ", ".join(sorted(missing_columns))
         raise SystemExit(f"{MANIFEST_PATH.name} is missing columns: {missing}")
 
-    static_issues, samples = validate_manifest(rows)
+    object_path = MANIFEST_PATH.with_name("image_object_manifest.csv")
+    try:
+        object_fields, objects = load_manifest(object_path)
+    except (OSError, ValueError) as error:
+        raise SystemExit(f"Could not read {object_path.name}: {error}") from error
+    missing = {"Image ID", "Instance ID", "Tool ID", "Tool Class", "Tool Name", "Confidence", "Sample ID", "Filepath"} - set(object_fields)
+    if missing:
+        raise SystemExit(f"{object_path.name} is missing columns: {', '.join(sorted(missing))}")
+    static_issues, samples = validate_manifest(rows, objects)
     sample_reviews: list[dict[str, object]] = []
     taxonomy_suggestions: list[dict[str, object]] = []
     agent_errors: list[str] = []

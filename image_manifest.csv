@@ -1,530 +1,538 @@
-Tool ID,Sample ID,Filepath,Tool Class,Tool Name,Confidence,Angle,Lights,Make,Model,Flash,ISO,Exposure,Aperture,Focal length (mm),Time Taken,Image ID,Capture Session ID
-0,0,images/0/IMG_8585.jpg,scissors,iris,0.8,0,FALSE,Apple,iPhone 16 Pro Max,FALSE,4000,1/15,1.78,6.765,2026-09-01T19:51:50.430-04:00,image-241ea1b4d217d125,session-2026-09-01-005
-0,0,images/0/IMG_8586.jpg,scissors,iris,0.8,45,FALSE,Apple,iPhone 16 Pro Max,FALSE,3200,1/15,1.78,6.765,2026-09-01T19:52:19.666-04:00,image-7d5a24cb4a7e30a4,session-2026-09-01-005
-0,0,images/0/IMG_8588.jpg,scissors,iris,0.8,90,FALSE,Apple,iPhone 16 Pro Max,FALSE,2500,1/15,1.78,6.765,2026-09-01T19:53:04.191-04:00,image-b30e43e06066f659,session-2026-09-01-005
-0,0,images/0/IMG_8589.jpg,scissors,iris,0.8,135,FALSE,Apple,iPhone 16 Pro Max,FALSE,3200,1/15,1.78,6.765,2026-09-01T19:53:30.537-04:00,image-03fd859217391918,session-2026-09-01-005
-0,0,images/0/IMG_8590.jpg,scissors,iris,0.8,180,FALSE,Apple,iPhone 16 Pro Max,FALSE,3200,1/15,2.2,2.22,2026-09-01T19:53:52.647-04:00,image-75c6191b19b1d8fd,session-2026-09-01-005
-0,0,images/0/IMG_8591.jpg,scissors,iris,0.8,225,FALSE,Apple,iPhone 16 Pro Max,FALSE,4000,1/15,1.78,6.765,2026-09-01T19:54:31.506-04:00,image-3ebefc2965298abf,session-2026-09-01-005
-0,0,images/0/IMG_8594.jpg,scissors,iris,0.8,270,FALSE,Apple,iPhone 16 Pro Max,FALSE,4000,1/15,1.78,6.765,2026-09-01T19:56:17.350-04:00,image-24ae4d8eac215d46,session-2026-09-01-005
-0,0,images/0/IMG_8595.jpg,scissors,iris,0.8,315,FALSE,Apple,iPhone 16 Pro Max,FALSE,5000,1/15,1.78,6.765,2026-09-01T20:00:03.672-04:00,image-c92984aa153892de,session-2026-09-01-005
-0,1,images/0/IMG_8624.jpg,scissors,iris,0.8,0,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:18:28.183-04:00,image-bbaec2e74ea8bbf3,session-2026-09-01-005
-0,1,images/0/IMG_8625.jpg,scissors,iris,0.8,45,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:18:45.677-04:00,image-e3e05fd88b6fc50c,session-2026-09-01-005
-0,1,images/0/IMG_8626.jpg,scissors,iris,0.8,90,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:18:53.295-04:00,image-209891f5c4d32653,session-2026-09-01-005
-0,1,images/0/IMG_8627.jpg,scissors,iris,0.8,135,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:19:05.227-04:00,image-1f50bf2bf7b2af1a,session-2026-09-01-005
-0,1,images/0/IMG_8628.jpg,scissors,iris,0.8,180,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:19:17.344-04:00,image-7f20c1bca2ead4df,session-2026-09-01-005
-0,1,images/0/IMG_8629.jpg,scissors,iris,0.8,225,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:19:26.966-04:00,image-aea2257e6547993a,session-2026-09-01-005
-0,1,images/0/IMG_8630.jpg,scissors,iris,0.8,270,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:19:36.463-04:00,image-3f7c0497a58fe56d,session-2026-09-01-005
-0,1,images/0/IMG_8631.jpg,scissors,iris,0.8,315,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:19:45.633-04:00,image-5238bb90ca1ff424,session-2026-09-01-005
-1,2,images/1/IMG_8599.jpg,forceps,crile,0.6,0,FALSE,Apple,iPhone 16 Pro Max,FALSE,6400,1/15,1.78,6.765,2026-09-01T20:05:46.166-04:00,image-a43667a200299edc,session-2026-09-01-005
-1,2,images/1/IMG_8600.jpg,forceps,crile,0.6,45,FALSE,Apple,iPhone 16 Pro Max,FALSE,8000,1/15,1.78,6.765,2026-09-01T20:05:59.455-04:00,image-8f54f30e6bfd2f3f,session-2026-09-01-005
-1,2,images/1/IMG_8602.jpg,forceps,crile,0.6,90,FALSE,Apple,iPhone 16 Pro Max,FALSE,8000,1/15,1.78,6.765,2026-09-01T20:06:23.792-04:00,image-cc2603f4d5bc12b7,session-2026-09-01-005
-1,2,images/1/IMG_8603.jpg,forceps,crile,0.6,135,FALSE,Apple,iPhone 16 Pro Max,FALSE,10000,1/15,1.78,6.765,2026-09-01T20:06:46.456-04:00,image-74db4150484d9b88,session-2026-09-01-005
-1,2,images/1/IMG_8604.jpg,forceps,crile,0.6,180,FALSE,Apple,iPhone 16 Pro Max,FALSE,10000,1/15,1.78,6.765,2026-09-01T20:07:03.191-04:00,image-aebe57e80c846110,session-2026-09-01-005
-1,2,images/1/IMG_8605.jpg,forceps,crile,0.6,225,FALSE,Apple,iPhone 16 Pro Max,FALSE,10000,1/15,1.78,6.765,2026-09-01T20:07:17.823-04:00,image-5161c4faa76be42c,session-2026-09-01-005
-1,2,images/1/IMG_8606.jpg,forceps,crile,0.6,270,FALSE,Apple,iPhone 16 Pro Max,FALSE,8000,1/15,1.78,6.765,2026-09-01T20:07:28.358-04:00,image-807addc1c1768225,session-2026-09-01-005
-1,2,images/1/IMG_8607.jpg,forceps,crile,0.6,315,FALSE,Apple,iPhone 16 Pro Max,FALSE,10000,1/15,1.78,6.765,2026-09-01T20:07:38.860-04:00,image-2ee3076a168c8588,session-2026-09-01-005
-1,3,images/1/IMG_8633.jpg,forceps,crile,0.6,0,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:21:14.942-04:00,image-858a95501596f0f3,session-2026-09-01-005
-1,3,images/1/IMG_8634.jpg,forceps,crile,0.6,45,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:21:31.038-04:00,image-8493587800f6243c,session-2026-09-01-005
-1,3,images/1/IMG_8635.jpg,forceps,crile,0.6,90,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:21:49.523-04:00,image-9cb34f66c8bca33d,session-2026-09-01-005
-1,3,images/1/IMG_8637.jpg,forceps,crile,0.6,135,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:22:22.165-04:00,image-0d3b779ed66d7fd6,session-2026-09-01-005
-1,3,images/1/IMG_8638.jpg,forceps,crile,0.6,180,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:22:36.170-04:00,image-4c71241c5f2b8d5c,session-2026-09-01-005
-1,3,images/1/IMG_8639.jpg,forceps,crile,0.6,225,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:22:58.374-04:00,image-ff97c522003b8627,session-2026-09-01-005
-1,3,images/1/IMG_8640.jpg,forceps,crile,0.6,270,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:23:07.701-04:00,image-355c0ceee3df8c66,session-2026-09-01-005
-1,3,images/1/IMG_8641.jpg,forceps,crile,0.6,315,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:23:23.300-04:00,image-39aab54738e96f7c,session-2026-09-01-005
-2,4,images/2/IMG_8608.jpg,forceps,microvascular coupler,1,0,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:13:52.840-04:00,image-ce409fb38329c172,session-2026-09-01-005
-2,4,images/2/IMG_8609.jpg,forceps,microvascular coupler,1,45,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:04.376-04:00,image-8090b4497c54fb07,session-2026-09-01-005
-2,4,images/2/IMG_8610.jpg,forceps,microvascular coupler,1,90,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:14.465-04:00,image-fb20908f2361be0d,session-2026-09-01-005
-2,4,images/2/IMG_8611.jpg,forceps,microvascular coupler,1,135,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:22.268-04:00,image-80c6a1a10ef4b195,session-2026-09-01-005
-2,4,images/2/IMG_8612.jpg,forceps,microvascular coupler,1,180,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:33.164-04:00,image-9990e1a28c29c00f,session-2026-09-01-005
-2,4,images/2/IMG_8613.jpg,forceps,microvascular coupler,1,225,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:42.502-04:00,image-3139179e00158894,session-2026-09-01-005
-2,4,images/2/IMG_8614.jpg,forceps,microvascular coupler,1,270,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:49.946-04:00,image-50a46c27667bf057,session-2026-09-01-005
-2,4,images/2/IMG_8615.jpg,forceps,microvascular coupler,1,315,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:59.127-04:00,image-de2101c47bcf08b6,session-2026-09-01-005
-3,5,images/3/IMG_8616.jpg,pliers,ruskin rongear,1,0,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:05.272-04:00,image-7ead347aea9b9f59,session-2026-09-01-005
-3,5,images/3/IMG_8617.jpg,pliers,ruskin rongear,1,45,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:11.922-04:00,image-4148646e37a361d5,session-2026-09-01-005
-3,5,images/3/IMG_8618.jpg,pliers,ruskin rongear,1,90,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:19.914-04:00,image-e63cb35bdc649864,session-2026-09-01-005
-3,5,images/3/IMG_8619.jpg,pliers,ruskin rongear,1,135,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:27.403-04:00,image-11643f71fb51593d,session-2026-09-01-005
-3,5,images/3/IMG_8620.jpg,pliers,ruskin rongear,1,180,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:36.097-04:00,image-2f1431483bfdff45,session-2026-09-01-005
-3,5,images/3/IMG_8621.jpg,pliers,ruskin rongear,1,225,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:45.633-04:00,image-4bac1bbb0ad11a82,session-2026-09-01-005
-3,5,images/3/IMG_8622.jpg,pliers,ruskin rongear,1,270,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:53.654-04:00,image-6b74317ce8e6ef3a,session-2026-09-01-005
-3,5,images/3/IMG_8623.jpg,pliers,ruskin rongear,1,315,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:59.802-04:00,image-87ca33198a335f5e,session-2026-09-01-005
-4,,images/4/IMG_2430.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-02T12:32:04.625-04:00,image-c729345a587a7e30,session-2026-09-02-001
-4,,images/4/IMG_2431.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:32:13.799-04:00,image-f6c6336d4e6b88e3,session-2026-09-02-001
-4,,images/4/IMG_2432.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:32:23.116-04:00,image-27fa784325966064,session-2026-09-02-001
-4,,images/4/IMG_2433.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:32:38.696-04:00,image-876175ee8a2d5795,session-2026-09-02-001
-4,,images/4/IMG_2434.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:32:48.645-04:00,image-5f123fcfecd3bbdc,session-2026-09-02-001
-4,,images/4/IMG_2435.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:32:57.988-04:00,image-d5dd571563e3cd89,session-2026-09-02-001
-4,,images/4/IMG_2436.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:33:09.426-04:00,image-efa8a85242aa814f,session-2026-09-02-001
-4,,images/4/IMG_2438.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:33:48.843-04:00,image-3e45fe4f8535c05b,session-2026-09-02-001
-4,,images/4/IMG_2439.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:33:59.648-04:00,image-5028d474eb9f0431,session-2026-09-02-001
-4,,images/4/IMG_2440.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:34:26.645-04:00,image-b5490de785e94a8a,session-2026-09-02-001
-4,,images/4/IMG_2441.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:34:55.619-04:00,image-efe3dd13ec028c7d,session-2026-09-02-001
-4,,images/4/IMG_2443.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:35:20.873-04:00,image-fc34054f06e9cb37,session-2026-09-02-001
-4,,images/4/IMG_2444.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,640,1/60,1.78,6.86,2026-09-02T12:35:35.775-04:00,image-436cbef430c20da2,session-2026-09-02-001
-4,,images/4/IMG_2445.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,640,1/60,1.78,6.86,2026-09-02T12:35:50.378-04:00,image-de72de0bfdb332b5,session-2026-09-02-001
-4,,images/4/IMG_2446.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,640,1/60,1.78,6.86,2026-09-02T12:36:05.375-04:00,image-fe3a4f1a5b203f9c,session-2026-09-02-001
-4,,images/4/IMG_2447.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:36:18.235-04:00,image-7f0992ad6f6626fe,session-2026-09-02-001
-4,,images/4/IMG_2448.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:36:31.088-04:00,image-921245142b723c7b,session-2026-09-02-001
-4,,images/4/IMG_2449.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:36:40.340-04:00,image-56b9853efc605a79,session-2026-09-02-001
-4,,images/4/IMG_2450.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,640,1/60,1.78,6.86,2026-09-02T12:37:06.405-04:00,image-d1320198bce6a06c,session-2026-09-02-001
-4,,images/4/IMG_2451.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:37:17.544-04:00,image-8e344fa5781dea81,session-2026-09-02-001
-4,,images/4/IMG_2452.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:37:24.556-04:00,image-d1796dd8b9bdba0e,session-2026-09-02-001
-4,,images/4/IMG_2453.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,640,1/60,1.78,6.86,2026-09-02T12:37:36.438-04:00,image-cf01eca079d6b2de,session-2026-09-02-001
-4,,images/4/IMG_2454.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:37:51.243-04:00,image-5d7d11fba0155d89,session-2026-09-02-001
-4,,images/4/IMG_2455.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:38:06.485-04:00,image-719f04804205160f,session-2026-09-02-001
-4,,images/4/IMG_2456.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:38:20.579-04:00,image-23497360887d127a,session-2026-09-02-001
-4,,images/4/IMG_2457.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:38:31.645-04:00,image-658ebc50cb8572e7,session-2026-09-02-001
-4,,images/4/IMG_2458.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:38:40.746-04:00,image-f6143dfde67d38f9,session-2026-09-02-001
-4,,images/4/IMG_2459.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:41:41.261-04:00,image-b5ea4ed85174c5ed,session-2026-09-02-001
-4,,images/4/IMG_2460.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:41:51.645-04:00,image-4a30fb452546fa1e,session-2026-09-02-001
-4,,images/4/IMG_2461.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:42:19.679-04:00,image-633e25474ffc6427,session-2026-09-02-001
-4,,images/4/IMG_2462.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:42:30.427-04:00,image-61a3a1174866b97c,session-2026-09-02-001
-4,,images/4/IMG_2463.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:42:40.254-04:00,image-05fbb21bcf13455e,session-2026-09-02-001
-4,,images/4/IMG_2464.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:42:48.472-04:00,image-ab18b36cf811882e,session-2026-09-02-001
-4,,images/4/IMG_2465.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:42:57.074-04:00,image-a3f16d80b288e03b,session-2026-09-02-001
-4,,images/4/IMG_2466.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:43:05.755-04:00,image-484ab8e6c8ecae5b,session-2026-09-02-001
-4,,images/4/IMG_2467.jpg,forceps,debakey,1,,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:43:15.272-04:00,image-04240ed733384391,session-2026-09-02-001
-8,6,images/8/IMG_0807.jpg,scissors,metzenbaum,1,0,FALSE,Apple,iPhone 17,FALSE,500,1/45,1.6,5.96,2026-09-04T13:43:54.555-04:00,image-ab168fff52107709,session-2026-09-04-008
-8,6,images/8/IMG_0808.jpg,scissors,metzenbaum,1,45,FALSE,Apple,iPhone 17,FALSE,500,1/52,1.6,5.96,2026-09-04T13:44:19.340-04:00,image-37226add553aeae3,session-2026-09-04-008
-8,6,images/8/IMG_0809.jpg,scissors,metzenbaum,1,90,FALSE,Apple,iPhone 17,FALSE,500,1/52,1.6,5.96,2026-09-04T13:44:42.000-04:00,image-32cf7f9266a4533d,session-2026-09-04-008
-8,6,images/8/IMG_0810.jpg,scissors,metzenbaum,1,135,FALSE,Apple,iPhone 17,FALSE,500,1/50,1.6,5.96,2026-09-04T13:45:15.852-04:00,image-bfcfcbd88d43f5cd,session-2026-09-04-008
-8,6,images/8/IMG_0811.jpg,scissors,metzenbaum,1,180,FALSE,Apple,iPhone 17,FALSE,500,1/52,1.6,5.96,2026-09-04T13:45:36.719-04:00,image-331cbc1a0ab8dbdf,session-2026-09-04-008
-8,6,images/8/IMG_0812.jpg,scissors,metzenbaum,1,225,FALSE,Apple,iPhone 17,FALSE,500,1/49,1.6,5.96,2026-09-04T13:46:11.311-04:00,image-dfb60055f8f5c3b6,session-2026-09-04-008
-8,6,images/8/IMG_0813.jpg,scissors,metzenbaum,1,270,FALSE,Apple,iPhone 17,FALSE,640,1/32,1.6,5.96,2026-09-04T13:47:08.742-04:00,image-28c0cc7d3c2ecdc6,session-2026-09-04-008
-8,6,images/8/IMG_0814.jpg,scissors,metzenbaum,1,315,FALSE,Apple,iPhone 17,FALSE,500,1/49,1.6,5.96,2026-09-04T13:47:30.806-04:00,image-26c926e0c4ca4f9c,session-2026-09-04-008
-8,7,images/8/IMG_0815.jpg,scissors,metzenbaum,1,0,FALSE,Apple,iPhone 17,FALSE,500,1/51,1.6,5.96,2026-09-04T13:48:23.381-04:00,image-594e79564f49f4d0,session-2026-09-04-008
-8,7,images/8/IMG_0816.jpg,scissors,metzenbaum,1,45,FALSE,Apple,iPhone 17,FALSE,500,1/50,1.6,5.96,2026-09-04T13:49:08.072-04:00,image-2a620ee4031afd1a,session-2026-09-04-008
-8,7,images/8/IMG_0817.jpg,scissors,metzenbaum,1,90,FALSE,Apple,iPhone 17,FALSE,500,1/50,1.6,5.96,2026-09-04T13:49:42.659-04:00,image-fef5fc9763df4f95,session-2026-09-04-008
-8,7,images/8/IMG_0818.jpg,scissors,metzenbaum,1,135,FALSE,Apple,iPhone 17,FALSE,500,1/53,1.6,5.96,2026-09-04T13:49:53.611-04:00,image-0c53eb30da22eedb,session-2026-09-04-008
-8,7,images/8/IMG_0819.jpg,scissors,metzenbaum,1,180,FALSE,Apple,iPhone 17,FALSE,500,1/51,1.6,5.96,2026-09-04T13:50:05.940-04:00,image-2523daad1ad3d155,session-2026-09-04-008
-8,7,images/8/IMG_0820.jpg,scissors,metzenbaum,1,225,FALSE,Apple,iPhone 17,FALSE,500,1/52,1.6,5.96,2026-09-04T13:50:31.496-04:00,image-e3935924717f6bb9,session-2026-09-04-008
-8,7,images/8/IMG_0821.jpg,scissors,metzenbaum,1,270,FALSE,Apple,iPhone 17,FALSE,500,1/50,1.6,5.96,2026-09-04T13:51:02.057-04:00,image-41116e2305fc3cd7,session-2026-09-04-008
-8,7,images/8/IMG_0822.jpg,scissors,metzenbaum,1,315,FALSE,Apple,iPhone 17,FALSE,500,1/46,1.6,5.96,2026-09-04T13:51:28.645-04:00,image-8eb75edf599c9ca4,session-2026-09-04-008
-8,8,images/8/IMG_0823.jpg,scissors,metzenbaum,1,0,FALSE,Apple,iPhone 17,FALSE,500,1/44,1.6,5.96,2026-09-04T13:52:15.086-04:00,image-130e04de72ec613d,session-2026-09-04-008
-8,8,images/8/IMG_0824.jpg,scissors,metzenbaum,1,45,FALSE,Apple,iPhone 17,FALSE,500,1/50,1.6,5.96,2026-09-04T13:54:51.171-04:00,image-acafdc6f67c1f3a1,session-2026-09-04-008
-8,8,images/8/IMG_0826.jpg,scissors,metzenbaum,1,90,FALSE,Apple,iPhone 17,FALSE,500,1/46,1.6,5.96,2026-09-04T13:55:02.533-04:00,image-0a5e3a5e4de9d486,session-2026-09-04-008
-8,8,images/8/IMG_0827.jpg,scissors,metzenbaum,1,135,FALSE,Apple,iPhone 17,FALSE,500,1/48,1.6,5.96,2026-09-04T13:55:52.287-04:00,image-a456bd008e5b67d0,session-2026-09-04-008
-8,8,images/8/IMG_0828.jpg,scissors,metzenbaum,1,180,FALSE,Apple,iPhone 17,FALSE,500,1/45,1.6,5.96,2026-09-04T13:56:28.825-04:00,image-da409a9abf0d2944,session-2026-09-04-008
-8,8,images/8/IMG_0829.jpg,scissors,metzenbaum,1,225,FALSE,Apple,iPhone 17,FALSE,500,1/48,1.6,5.96,2026-09-04T13:56:53.924-04:00,image-2472b03506e5eaaa,session-2026-09-04-008
-8,8,images/8/IMG_0831.jpg,scissors,metzenbaum,1,270,FALSE,Apple,iPhone 17,FALSE,500,1/54,1.6,5.96,2026-09-04T13:57:39.949-04:00,image-55a1c48d0a88c359,session-2026-09-04-008
-8,8,images/8/IMG_0832.jpg,scissors,metzenbaum,1,315,FALSE,Apple,iPhone 17,FALSE,500,1/53,1.6,5.96,2026-09-04T13:57:57.421-04:00,image-4663b8119ac54c37,session-2026-09-04-008
-8,9,images/8/IMG_0833.jpg,scissors,metzenbaum,1,0,FALSE,Apple,iPhone 17,FALSE,500,1/50,1.6,5.96,2026-09-04T13:59:26.574-04:00,image-60bb375cf5d0490e,session-2026-09-04-008
-8,9,images/8/IMG_0834.jpg,scissors,metzenbaum,1,45,FALSE,Apple,iPhone 17,FALSE,500,1/49,1.6,5.96,2026-09-04T13:59:38.247-04:00,image-f4fef70770b30439,session-2026-09-04-008
-8,9,images/8/IMG_0835.jpg,scissors,metzenbaum,1,90,FALSE,Apple,iPhone 17,FALSE,500,1/49,1.6,5.96,2026-09-04T14:00:03.537-04:00,image-4c29ecfb82a30e9a,session-2026-09-04-008
-8,9,images/8/IMG_0836.jpg,scissors,metzenbaum,1,135,FALSE,Apple,iPhone 17,FALSE,500,1/47,1.6,5.96,2026-09-04T14:01:00.884-04:00,image-2313973c794bbf3e,session-2026-09-04-008
-8,9,images/8/IMG_0837.jpg,scissors,metzenbaum,1,180,FALSE,Apple,iPhone 17,FALSE,500,1/51,1.6,5.96,2026-09-04T14:01:35.740-04:00,image-e5bf0fcadc295ec6,session-2026-09-04-008
-8,9,images/8/IMG_0838.jpg,scissors,metzenbaum,1,225,FALSE,Apple,iPhone 17,FALSE,640,1/34,1.6,5.96,2026-09-04T14:01:59.123-04:00,image-eab224bea3a63596,session-2026-09-04-008
-8,9,images/8/IMG_0839.jpg,scissors,metzenbaum,1,270,FALSE,Apple,iPhone 17,FALSE,640,1/33,1.6,5.96,2026-09-04T14:02:30.324-04:00,image-de09df5fe51b03f0,session-2026-09-04-008
-8,9,images/8/IMG_0840.jpg,scissors,metzenbaum,1,315,FALSE,Apple,iPhone 17,FALSE,640,1/40,1.6,5.96,2026-09-04T14:02:50.775-04:00,image-5693709ad4df8f67,session-2026-09-04-008
-9,10,images/9/IMG_0843.jpg,bone punch,kerrison,1,0,FALSE,Apple,iPhone 17,FALSE,640,1/31,1.6,5.96,2026-09-04T14:29:33.874-04:00,image-33a6e9f3d27041a4,session-2026-09-04-008
-9,10,images/9/IMG_0844.jpg,bone punch,kerrison,1,45,FALSE,Apple,iPhone 17,FALSE,640,1/37,1.6,5.96,2026-09-04T14:29:43.391-04:00,image-23e4c82b2e43b96a,session-2026-09-04-008
-9,10,images/9/IMG_0845.jpg,bone punch,kerrison,1,90,FALSE,Apple,iPhone 17,FALSE,640,1/40,1.6,5.96,2026-09-04T14:30:06.408-04:00,image-43bf924580674ba7,session-2026-09-04-008
-9,10,images/9/IMG_0846.jpg,bone punch,kerrison,1,135,FALSE,Apple,iPhone 17,FALSE,500,1/41,1.6,5.96,2026-09-04T14:30:14.966-04:00,image-a94d80d026f8cd11,session-2026-09-04-008
-9,10,images/9/IMG_0847.jpg,bone punch,kerrison,1,180,FALSE,Apple,iPhone 17,FALSE,500,1/41,1.6,5.96,2026-09-04T14:30:23.493-04:00,image-ee7c81e1fabce6ea,session-2026-09-04-008
-9,10,images/9/IMG_0848.jpg,bone punch,kerrison,1,225,FALSE,Apple,iPhone 17,FALSE,640,1/37,1.6,5.96,2026-09-04T14:31:04.596-04:00,image-b1a78b50811c1a41,session-2026-09-04-008
-9,10,images/9/IMG_0849.jpg,bone punch,kerrison,1,270,FALSE,Apple,iPhone 17,FALSE,640,1/39,1.6,5.96,2026-09-04T14:31:17.336-04:00,image-1fb888ff99fd894d,session-2026-09-04-008
-9,10,images/9/IMG_0851.jpg,bone punch,kerrison,1,315,FALSE,Apple,iPhone 17,FALSE,640,1/35,1.6,5.96,2026-09-04T14:31:42.246-04:00,image-6aeb12e5c738f796,session-2026-09-04-008
-9,11,images/9/IMG_0852.jpg,bone punch,kerrison,1,0,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:32:54.532-04:00,image-a4869694d3692079,session-2026-09-04-008
-9,11,images/9/IMG_0853.jpg,bone punch,kerrison,1,45,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:33:11.009-04:00,image-bfddf695aa20b053,session-2026-09-04-008
-9,11,images/9/IMG_0854.jpg,bone punch,kerrison,1,90,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:33:31.685-04:00,image-184c016b662f23e8,session-2026-09-04-008
-9,11,images/9/IMG_0855.jpg,bone punch,kerrison,1,135,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-04T14:33:46.482-04:00,image-c08e15520f478a86,session-2026-09-04-008
-9,11,images/9/IMG_0856.jpg,bone punch,kerrison,1,180,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:34:04.693-04:00,image-b41357971a99c784,session-2026-09-04-008
-9,11,images/9/IMG_0857.jpg,bone punch,kerrison,1,225,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:34:23.543-04:00,image-f72cfdcb5bf2e445,session-2026-09-04-008
-9,11,images/9/IMG_0858.jpg,bone punch,kerrison,1,270,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:34:39.222-04:00,image-1af4739b2b8e7b57,session-2026-09-04-008
-9,11,images/9/IMG_0859.jpg,bone punch,kerrison,1,315,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:34:58.643-04:00,image-58c860ae6925abd1,session-2026-09-04-008
-10,12,images/10/IMG_0244.jpg,mallet,mpr surgical,1,0,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T15:57:21.667-04:00,image-97846043ee9f6f5d,session-2026-08-24-003
-10,12,images/10/IMG_0245.jpg,mallet,mpr surgical,1,45,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-24T15:57:34.612-04:00,image-69a31893b463f48d,session-2026-08-24-003
-10,12,images/10/IMG_0246.jpg,mallet,mpr surgical,1,90,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T15:57:42.384-04:00,image-d0341d0b434ff987,session-2026-08-24-003
-10,12,images/10/IMG_0247.jpg,mallet,mpr surgical,1,135,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T15:57:54.949-04:00,image-8ec46cf03a04d7bc,session-2026-08-24-003
-10,12,images/10/IMG_0248.jpg,mallet,mpr surgical,1,180,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T15:58:17.086-04:00,image-2c7b163e15f8468b,session-2026-08-24-003
-10,12,images/10/IMG_0249.jpg,mallet,mpr surgical,1,225,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-24T15:58:31.144-04:00,image-63c82ad67aea33da,session-2026-08-24-003
-10,12,images/10/IMG_0250.jpg,mallet,mpr surgical,1,270,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-24T15:58:41.453-04:00,image-3b3624355872ad14,session-2026-08-24-003
-10,12,images/10/IMG_0251.jpg,mallet,mpr surgical,1,315,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T15:58:54.445-04:00,image-b9bf55bccc3f2132,session-2026-08-24-003
-10,13,images/10/IMG_0252.jpg,mallet,mpr surgical,1,0,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T17:00:01.235-04:00,image-78bcc999c5d2b037,session-2026-08-24-003
-10,13,images/10/IMG_0253.jpg,mallet,mpr surgical,1,45,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T17:00:08.237-04:00,image-a979a6c062574744,session-2026-08-24-003
-10,13,images/10/IMG_0254.jpg,mallet,mpr surgical,1,90,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T17:00:15.597-04:00,image-957f0010bd64467a,session-2026-08-24-003
-10,13,images/10/IMG_0255.jpg,mallet,mpr surgical,1,135,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T17:00:22.279-04:00,image-2b09b651dd0165d8,session-2026-08-24-003
-10,13,images/10/IMG_0959.jpg,mallet,mpr surgical,1,180,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T17:00:29.459-04:00,image-5ec4f8271a103c84,session-2026-08-24-003
-10,13,images/10/IMG_0960.jpg,mallet,mpr surgical,1,225,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T17:00:36.211-04:00,image-1301684efce926cf,session-2026-08-24-003
-10,13,images/10/IMG_0258.jpg,mallet,mpr surgical,1,270,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-24T17:00:43.732-04:00,image-258e3ef14fc35b16,session-2026-08-24-003
-10,13,images/10/IMG_0259.jpg,mallet,mpr surgical,1,315,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-24T17:00:48.402-04:00,image-9a339c8497429c6a,session-2026-08-24-003
-11,14,images/11/IMG_0260.jpg,pliers,lineman,1,0,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:21:43.635-04:00,image-e4cce5b0c878d79d,session-2026-08-25-004
-11,14,images/11/IMG_0261.jpg,pliers,lineman,1,45,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:21:51.573-04:00,image-b7d1b94329656bf4,session-2026-08-25-004
-11,14,images/11/IMG_0262.jpg,pliers,lineman,1,90,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:22:04.911-04:00,image-7f261b5e8730db4c,session-2026-08-25-004
-11,14,images/11/IMG_0263.jpg,pliers,lineman,1,135,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:22:16.492-04:00,image-b63dec8f28d02b4b,session-2026-08-25-004
-11,14,images/11/IMG_0264.jpg,pliers,lineman,1,180,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:22:26.365-04:00,image-43ff42eb1f6ae30e,session-2026-08-25-004
-11,14,images/11/IMG_0265.jpg,pliers,lineman,1,225,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:22:33.301-04:00,image-761e3f794d815e09,session-2026-08-25-004
-11,14,images/11/IMG_0266.jpg,pliers,lineman,1,270,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:22:51.792-04:00,image-cdc50bbd1d4fe8b1,session-2026-08-25-004
-11,14,images/11/IMG_0267.jpg,pliers,lineman,1,315,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:23:00.987-04:00,image-74afac32104f3c4d,session-2026-08-25-004
-11,15,images/11/IMG_0268.jpg,pliers,lineman,1,0,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:23:47.941-04:00,image-dfabb3254d031cff,session-2026-08-25-004
-11,15,images/11/IMG_0269.jpg,pliers,lineman,1,45,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:24:01.303-04:00,image-201b7c7274b6e1cc,session-2026-08-25-004
-11,15,images/11/IMG_0270.jpg,pliers,lineman,1,90,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:24:12.050-04:00,image-043d8d31a51f1781,session-2026-08-25-004
-11,15,images/11/IMG_0271.jpg,pliers,lineman,1,135,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:24:24.630-04:00,image-971767cf1b9bed2f,session-2026-08-25-004
-11,15,images/11/IMG_0272.jpg,pliers,lineman,1,180,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:24:40.003-04:00,image-af6d2b3014bc9cd2,session-2026-08-25-004
-11,15,images/11/IMG_0273.jpg,pliers,lineman,1,225,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:24:51.325-04:00,image-547855e3c5492abc,session-2026-08-25-004
-11,15,images/11/IMG_0274.jpg,pliers,lineman,1,270,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:25:11.614-04:00,image-012a237adc03bd41,session-2026-08-25-004
-11,15,images/11/IMG_0275.jpg,pliers,lineman,1,315,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:25:23.130-04:00,image-5286b526a7da48fd,session-2026-08-25-004
-15,,images/15/IMG_2597.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:20:09.911-04:00,image-d00ee4e9d2593f02,session-2026-09-03-002
-15,,images/15/IMG_2598.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:20:17.779-04:00,image-8f3dc0d0546934f3,session-2026-09-03-002
-15,,images/15/IMG_2599.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:20:24.780-04:00,image-9be317b236f577aa,session-2026-09-03-002
-15,,images/15/IMG_2600.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:20:31.227-04:00,image-eb77adf86d9cfed9,session-2026-09-03-002
-15,,images/15/IMG_2601.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:20:38.039-04:00,image-6ce493ae1bebffcc,session-2026-09-03-002
-15,,images/15/IMG_2602.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/60,1.78,6.86,2026-09-03T13:20:46.007-04:00,image-ac240eb0b03e6242,session-2026-09-03-002
-15,,images/15/IMG_2603.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:20:53.582-04:00,image-28e6d97ff4322dbb,session-2026-09-03-002
-15,,images/15/IMG_2604.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:21:01.399-04:00,image-0693f7fd3202bffa,session-2026-09-03-002
-15,,images/15/IMG_2605.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:21:18.747-04:00,image-2066aae1afbe686f,session-2026-09-03-002
-15,,images/15/IMG_2606.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:21:26.490-04:00,image-38173acab8197bcb,session-2026-09-03-002
-15,,images/15/IMG_2607.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:21:33.009-04:00,image-eb1c9f4af59e3750,session-2026-09-03-002
-15,,images/15/IMG_2608.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:21:39.808-04:00,image-ebeb5e6025074f9e,session-2026-09-03-002
-15,,images/15/IMG_2609.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:21:46.323-04:00,image-251e4e3d7df1ff9c,session-2026-09-03-002
-15,,images/15/IMG_2611.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:22:04.556-04:00,image-831e9129f9157cb5,session-2026-09-03-002
-15,,images/15/IMG_2612.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:22:56.199-04:00,image-dc9eeb6f2dcc3542,session-2026-09-03-002
-15,,images/15/IMG_2613.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:23:02.846-04:00,image-8164234cc3240f77,session-2026-09-03-002
-15,,images/15/IMG_2614.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:23:14.927-04:00,image-6d2169a04f48d44f,session-2026-09-03-002
-15,,images/15/IMG_2615.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:23:25.248-04:00,image-a8271c7fc722a3be,session-2026-09-03-002
-15,,images/15/IMG_2616.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:23:31.964-04:00,image-30c3d0180c2e6557,session-2026-09-03-002
-15,,images/15/IMG_2617.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:23:45.532-04:00,image-6b6843df27441dbb,session-2026-09-03-002
-15,,images/15/IMG_2618.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:23:54.551-04:00,image-e347ad4d8dad8de2,session-2026-09-03-002
-15,,images/15/IMG_2619.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:24:00.589-04:00,image-367081db08d53308,session-2026-09-03-002
-15,,images/15/IMG_2620.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:24:16.588-04:00,image-cfc4e656400c8022,session-2026-09-03-002
-15,,images/15/IMG_2621.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:24:25.063-04:00,image-e3e25a980a141a5f,session-2026-09-03-002
-15,,images/15/IMG_2622.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:24:32.033-04:00,image-4c50e598967b1861,session-2026-09-03-002
-15,,images/15/IMG_2623.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:24:40.785-04:00,image-4f96d81f830e71fa,session-2026-09-03-002
-15,,images/15/IMG_2624.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:24:54.628-04:00,image-e04f48315a7d4659,session-2026-09-03-002
-15,,images/15/IMG_2625.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:25:57.723-04:00,image-c93674eefac94d06,session-2026-09-03-002
-15,,images/15/IMG_2626.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:26:19.825-04:00,image-e67a3fa06f71a6f4,session-2026-09-03-002
-15,,images/15/IMG_2627.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:26:28.830-04:00,image-45a92fb1c6156ebb,session-2026-09-03-002
-15,,images/15/IMG_2628.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:26:39.255-04:00,image-b2cdcd190d932009,session-2026-09-03-002
-15,,images/15/IMG_2629.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:26:47.163-04:00,image-c67a31e78a856f82,session-2026-09-03-002
-15,,images/15/IMG_2630.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:27:03.575-04:00,image-170a8ef08abaeab6,session-2026-09-03-002
-15,,images/15/IMG_2631.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:27:13.615-04:00,image-9beaf644455780f8,session-2026-09-03-002
-15,,images/15/IMG_2632.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:27:20.489-04:00,image-df95f4e9284286d1,session-2026-09-03-002
-15,,images/15/IMG_2633.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:27:30.322-04:00,image-9eec14fe964e4953,session-2026-09-03-002
-15,,images/15/IMG_2634.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:27:56.388-04:00,image-11dda684006f1348,session-2026-09-03-002
-15,,images/15/IMG_2635.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:28:05.006-04:00,image-bfe92fe0eac9d1bc,session-2026-09-03-002
-15,,images/15/IMG_2636.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:28:13.291-04:00,image-d5a219341bb21a73,session-2026-09-03-002
-15,,images/15/IMG_2637.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:28:25.112-04:00,image-e611c97e06cc10f4,session-2026-09-03-002
-15,,images/15/IMG_2639.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:28:48.677-04:00,image-f13fc8fa32bf3a09,session-2026-09-03-002
-15,,images/15/IMG_2654.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/60,1.78,6.86,2026-09-03T13:33:07.515-04:00,image-a1f9eb87f7395590,session-2026-09-03-002
-15,,images/15/IMG_2655.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:33:14.863-04:00,image-9e91517c4b577f97,session-2026-09-03-002
-15,,images/15/IMG_2656.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/57,1.78,6.86,2026-09-03T13:33:27.513-04:00,image-bd0ce3dd82139b76,session-2026-09-03-002
-15,,images/15/IMG_2657.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/57,1.78,6.86,2026-09-03T13:33:35.343-04:00,image-fa88343ba7b1dcda,session-2026-09-03-002
-15,,images/15/IMG_2658.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/60,1.78,6.86,2026-09-03T13:33:43.424-04:00,image-7ffde2521fd4234a,session-2026-09-03-002
-15,,images/15/IMG_2659.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86,2026-09-03T13:33:52.067-04:00,image-9b86af4d2f6163da,session-2026-09-03-002
-15,,images/15/IMG_2660.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/60,1.78,6.86,2026-09-03T13:33:59.939-04:00,image-6f0af856285f5360,session-2026-09-03-002
-15,,images/15/IMG_2661.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/57,1.78,6.86,2026-09-03T13:34:10.024-04:00,image-ad288ec06882cd6f,session-2026-09-03-002
-15,,images/15/IMG_2662.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:34:23.724-04:00,image-fc656e767cf5bced,session-2026-09-03-002
-15,,images/15/IMG_2663.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:34:35.965-04:00,image-21e43eaa7c444fdf,session-2026-09-03-002
-15,,images/15/IMG_2664.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:34:43.534-04:00,image-4b622d8655b9c968,session-2026-09-03-002
-15,,images/15/IMG_2665.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86,2026-09-03T13:34:52.343-04:00,image-b834ebeee6755c72,session-2026-09-03-002
-15,,images/15/IMG_2666.jpg,scissors,lister bandage,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:35:01.686-04:00,image-c3ca0274c82da84c,session-2026-09-03-002
-16,16,images/16/IMG_0560.jpg,forceps,rowe s maxillary,1,0,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-02T18:01:25.587-04:00,image-f9ac71d15ed18b18,session-2026-09-02-006
-16,16,images/16/IMG_0580.jpg,forceps,rowe s maxillary,1,45,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:17:28.700-04:00,image-4a19c4243860c434,session-2026-09-02-006
-16,16,images/16/IMG_0581.jpg,forceps,rowe s maxillary,1,90,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:20:07.489-04:00,image-699ba643f31163c1,session-2026-09-02-006
-16,16,images/16/IMG_0582.jpg,forceps,rowe s maxillary,1,135,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:20:25.630-04:00,image-05466e1cd5dedf10,session-2026-09-02-006
-16,16,images/16/IMG_0584.jpg,forceps,rowe s maxillary,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:21:54.698-04:00,image-b8fbe286c2158a4f,session-2026-09-02-006
-16,16,images/16/IMG_0585.jpg,forceps,rowe s maxillary,1,225,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:22:17.167-04:00,image-161423d9a2021a0b,session-2026-09-02-006
-16,16,images/16/IMG_0586.jpg,forceps,rowe s maxillary,1,270,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:22:49.207-04:00,image-edacb018de9abb72,session-2026-09-02-006
-16,16,images/16/IMG_0587.jpg,forceps,rowe s maxillary,1,315,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:23:37.744-04:00,image-8c3cd92a971ceb87,session-2026-09-02-006
-16,17,images/16/IMG_0588.jpg,forceps,rowe s maxillary,1,0,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:24:17.883-04:00,image-6d17eba8cea9c668,session-2026-09-02-006
-16,17,images/16/IMG_0590.jpg,forceps,rowe s maxillary,1,45,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:25:09.396-04:00,image-566eb4f9f4daeb75,session-2026-09-02-006
-16,17,images/16/IMG_0592.jpg,forceps,rowe s maxillary,1,90,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:26:31.381-04:00,image-0123419070c3bf33,session-2026-09-02-006
-16,17,images/16/IMG_0593.jpg,forceps,rowe s maxillary,1,135,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:26:59.337-04:00,image-cb9f609847bdb9aa,session-2026-09-02-006
-16,17,images/16/IMG_0594.jpg,forceps,rowe s maxillary,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:28:11.413-04:00,image-623b73eb9d788d3f,session-2026-09-02-006
-16,17,images/16/IMG_0595.jpg,forceps,rowe s maxillary,1,225,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:28:26.296-04:00,image-6a398a891a120a14,session-2026-09-02-006
-16,17,images/16/IMG_0596.jpg,forceps,rowe s maxillary,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:29:17.368-04:00,image-657a6b43b3e3e74b,session-2026-09-02-006
-16,17,images/16/IMG_0598.jpg,forceps,rowe s maxillary,1,315,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:29:46.781-04:00,image-d4b79f6b428446d0,session-2026-09-02-006
-16,18,images/16/IMG_0599.jpg,forceps,rowe s maxillary,1,0,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:32:02.959-04:00,image-611e2dfcc4e38df3,session-2026-09-02-006
-16,18,images/16/IMG_0600.jpg,forceps,rowe s maxillary,1,45,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:32:31.154-04:00,image-9d23a53d4d27ae15,session-2026-09-02-006
-16,18,images/16/IMG_0601.jpg,forceps,rowe s maxillary,1,90,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:32:50.663-04:00,image-9db53e592a957337,session-2026-09-02-006
-16,18,images/16/IMG_0603.jpg,forceps,rowe s maxillary,1,135,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:33:30.229-04:00,image-d35b83fe7d01848a,session-2026-09-02-006
-16,18,images/16/IMG_0604.jpg,forceps,rowe s maxillary,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:34:03.879-04:00,image-dc202cdaf00e664b,session-2026-09-02-006
-16,18,images/16/IMG_0605.jpg,forceps,rowe s maxillary,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:34:24.700-04:00,image-cc916189f15b0bfa,session-2026-09-02-006
-16,18,images/16/IMG_0606.jpg,forceps,rowe s maxillary,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:34:50.399-04:00,image-5e7bfc2762e64323,session-2026-09-02-006
-16,18,images/16/IMG_0607.jpg,forceps,rowe s maxillary,1,315,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:35:16.210-04:00,image-7236ee91b9fe3989,session-2026-09-02-006
-16,19,images/16/IMG_0609.jpg,forceps,rowe s maxillary,1,0,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:39:42.266-04:00,image-dc8fc6c3fbc0b06e,session-2026-09-02-006
-16,19,images/16/IMG_0610.jpg,forceps,rowe s maxillary,1,45,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:39:57.766-04:00,image-c67e1c9fd0e8df24,session-2026-09-02-006
-16,19,images/16/IMG_0612.jpg,forceps,rowe s maxillary,1,90,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:41:02.591-04:00,image-d7e074768eeaa2cd,session-2026-09-02-006
-16,19,images/16/IMG_0613.jpg,forceps,rowe s maxillary,1,135,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:41:25.785-04:00,image-45ee8f1818c7dd24,session-2026-09-02-006
-16,19,images/16/IMG_0614.jpg,forceps,rowe s maxillary,1,180,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:42:18.193-04:00,image-26f1379cf832e25a,session-2026-09-02-006
-16,19,images/16/IMG_0615.jpg,forceps,rowe s maxillary,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:42:48.461-04:00,image-4354291eeb43b413,session-2026-09-02-006
-16,19,images/16/IMG_0617.jpg,forceps,rowe s maxillary,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:43:50.463-04:00,image-2d79e135c373f89e,session-2026-09-02-006
-16,19,images/16/IMG_0618.jpg,forceps,rowe s maxillary,1,315,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:44:38.010-04:00,image-106e3b1c1a443e63,session-2026-09-02-006
-16,20,images/16/IMG_0626.jpg,forceps,rowe s maxillary,1,0,FALSE,Apple,iPhone 17,FALSE,2000,1/15,1.6,5.96,2026-09-02T19:35:46.795-04:00,image-044c8696c2ff5b22,session-2026-09-02-006
-16,20,images/16/IMG_0628.jpg,forceps,rowe s maxillary,1,45,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:36:06.029-04:00,image-28b6c3bf9b09f387,session-2026-09-02-006
-16,20,images/16/IMG_0629.jpg,forceps,rowe s maxillary,1,90,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:36:22.886-04:00,image-12f91c1a9d828711,session-2026-09-02-006
-16,20,images/16/IMG_0631.jpg,forceps,rowe s maxillary,1,135,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:36:37.700-04:00,image-f66267e9e58fd26e,session-2026-09-02-006
-16,20,images/16/IMG_0632.jpg,forceps,rowe s maxillary,1,180,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:36:54.403-04:00,image-6a9d077c85ef895b,session-2026-09-02-006
-16,20,images/16/IMG_0634.jpg,forceps,rowe s maxillary,1,225,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:37:18.911-04:00,image-3e03dd67c2886716,session-2026-09-02-006
-16,20,images/16/IMG_0635.jpg,forceps,rowe s maxillary,1,270,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:37:34.826-04:00,image-32b3f250db6da222,session-2026-09-02-006
-16,20,images/16/IMG_0636.jpg,forceps,rowe s maxillary,1,315,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:37:46.332-04:00,image-40e3511578b67223,session-2026-09-02-006
-16,21,images/16/IMG_0637.jpg,forceps,rowe s maxillary,1,0,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:38:17.897-04:00,image-0a1e90552c21d823,session-2026-09-02-006
-16,21,images/16/IMG_0638.jpg,forceps,rowe s maxillary,1,45,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:38:32.239-04:00,image-56a61944f7718988,session-2026-09-02-006
-16,21,images/16/IMG_0639.jpg,forceps,rowe s maxillary,1,90,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:38:41.409-04:00,image-109beff0ab1c634a,session-2026-09-02-006
-16,21,images/16/IMG_0640.jpg,forceps,rowe s maxillary,1,135,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:39:01.530-04:00,image-66abe9426d7a2158,session-2026-09-02-006
-16,21,images/16/IMG_0641.jpg,forceps,rowe s maxillary,1,180,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:39:17.638-04:00,image-9f7418bf92110b47,session-2026-09-02-006
-16,21,images/16/IMG_0642.jpg,forceps,rowe s maxillary,1,225,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:39:32.441-04:00,image-9f0e88116b2f34cd,session-2026-09-02-006
-16,21,images/16/IMG_0644.jpg,forceps,rowe s maxillary,1,270,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:40:02.927-04:00,image-a669ce097b725033,session-2026-09-02-006
-16,21,images/16/IMG_0645.jpg,forceps,rowe s maxillary,1,315,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:40:13.962-04:00,image-38917c5e25e58837,session-2026-09-02-006
-16,22,images/16/IMG_0646.jpg,forceps,rowe s maxillary,1,0,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:40:56.430-04:00,image-7c18174f893ff233,session-2026-09-02-006
-16,22,images/16/IMG_0647.jpg,forceps,rowe s maxillary,1,45,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:41:20.070-04:00,image-5865d05bf70e076c,session-2026-09-02-006
-16,22,images/16/IMG_0648.jpg,forceps,rowe s maxillary,1,90,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:41:38.926-04:00,image-fb337c681a41ec19,session-2026-09-02-006
-16,22,images/16/IMG_0649.jpg,forceps,rowe s maxillary,1,135,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:42:47.405-04:00,image-d907fa09878e1c2a,session-2026-09-02-006
-16,22,images/16/IMG_0650.jpg,forceps,rowe s maxillary,1,180,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:43:17.547-04:00,image-1c6fc9e6cd71814a,session-2026-09-02-006
-16,22,images/16/IMG_0651.jpg,forceps,rowe s maxillary,1,225,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:43:35.681-04:00,image-c07b77a4c52822b8,session-2026-09-02-006
-16,22,images/16/IMG_0652.jpg,forceps,rowe s maxillary,1,270,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:43:54.086-04:00,image-a5a2ebb7a570147a,session-2026-09-02-006
-16,22,images/16/IMG_0653.jpg,forceps,rowe s maxillary,1,315,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:44:33.506-04:00,image-5124784ec7e7ba31,session-2026-09-02-006
-16,23,images/16/IMG_0654.jpg,forceps,rowe s maxillary,1,0,FALSE,Apple,iPhone 17,FALSE,4000,1/15,1.6,5.96,2026-09-02T19:45:08.733-04:00,image-c462fe1ecc65d573,session-2026-09-02-006
-16,23,images/16/IMG_0655.jpg,forceps,rowe s maxillary,1,45,FALSE,Apple,iPhone 17,FALSE,4000,1/15,1.6,5.96,2026-09-02T19:45:25.149-04:00,image-712bd6fe9db99862,session-2026-09-02-006
-16,23,images/16/IMG_0656.jpg,forceps,rowe s maxillary,1,90,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:45:35.918-04:00,image-cd6bdd084364d49f,session-2026-09-02-006
-16,23,images/16/IMG_0657.jpg,forceps,rowe s maxillary,1,135,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:45:47.708-04:00,image-0eef4afec2368ccf,session-2026-09-02-006
-16,23,images/16/IMG_0658.jpg,forceps,rowe s maxillary,1,180,FALSE,Apple,iPhone 17,FALSE,4000,1/15,1.6,5.96,2026-09-02T19:45:59.669-04:00,image-a1b9036f9b7d7800,session-2026-09-02-006
-16,23,images/16/IMG_0659.jpg,forceps,rowe s maxillary,1,225,FALSE,Apple,iPhone 17,FALSE,4000,1/15,1.6,5.96,2026-09-02T19:46:13.027-04:00,image-d3ab4553b1e490ec,session-2026-09-02-006
-16,23,images/16/IMG_0660.jpg,forceps,rowe s maxillary,1,270,FALSE,Apple,iPhone 17,FALSE,4000,1/15,1.6,5.96,2026-09-02T19:46:23.637-04:00,image-fb40d9147c54eb90,session-2026-09-02-006
-16,23,images/16/IMG_0662.jpg,forceps,rowe s maxillary,1,315,FALSE,Apple,iPhone 17,FALSE,4000,1/15,1.6,5.96,2026-09-02T19:47:04.780-04:00,image-70bce60eb7bb5de0,session-2026-09-02-006
-17,,images/17/IMG_2565.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:09:03.639-04:00,image-0baaf984f293dbc2,session-2026-09-03-002
-17,,images/17/IMG_2566.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:09:24.974-04:00,image-98039930e9c991c5,session-2026-09-03-002
-17,,images/17/IMG_2567.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:09:33.725-04:00,image-234146b1f4e16764,session-2026-09-03-002
-17,,images/17/IMG_2568.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:09:40.830-04:00,image-9351bf7ccb74d632,session-2026-09-03-002
-17,,images/17/IMG_2569.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:09:51.340-04:00,image-113d0aa9601e98c4,session-2026-09-03-002
-17,,images/17/IMG_2570.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:10:00.938-04:00,image-2530cf57e7cf60e3,session-2026-09-03-002
-17,,images/17/IMG_2571.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:10:12.869-04:00,image-5c6c8af12c2050b0,session-2026-09-03-002
-17,,images/17/IMG_2572.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:10:19.866-04:00,image-029ce7ed2c9da856,session-2026-09-03-002
-17,,images/17/IMG_2573.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:10:55.094-04:00,image-f5c9e1bdd298a23b,session-2026-09-03-002
-17,,images/17/IMG_2574.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:11:14.077-04:00,image-90ca92340938b479,session-2026-09-03-002
-17,,images/17/IMG_2575.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:11:22.666-04:00,image-43c9e12160349b79,session-2026-09-03-002
-17,,images/17/IMG_2576.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:11:31.382-04:00,image-4060fd235e0fc165,session-2026-09-03-002
-17,,images/17/IMG_2577.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:11:38.655-04:00,image-946c6bc0053d97d3,session-2026-09-03-002
-17,,images/17/IMG_2578.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:11:47.057-04:00,image-69390ca6aadd87e3,session-2026-09-03-002
-17,,images/17/IMG_2579.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:12:00.227-04:00,image-32467425a79c784f,session-2026-09-03-002
-17,,images/17/IMG_2580.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:12:10.642-04:00,image-b38b0e8d17a6225f,session-2026-09-03-002
-17,,images/17/IMG_2581.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:12:19.706-04:00,image-0be51f8476a9a6c4,session-2026-09-03-002
-17,,images/17/IMG_2583.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:14:04.281-04:00,image-801073f29d9818ec,session-2026-09-03-002
-17,,images/17/IMG_2585.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:14:18.251-04:00,image-93f9221a3f3a7aa7,session-2026-09-03-002
-17,,images/17/IMG_2586.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:14:32.567-04:00,image-05b6e693609bbce2,session-2026-09-03-002
-17,,images/17/IMG_2587.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:14:40.373-04:00,image-a1c3c526c16b4b37,session-2026-09-03-002
-17,,images/17/IMG_2588.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:14:56.428-04:00,image-12a34e0b6b08acb9,session-2026-09-03-002
-17,,images/17/IMG_2589.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:15:07.811-04:00,image-610093af1ea901cc,session-2026-09-03-002
-17,,images/17/IMG_2590.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:15:16.319-04:00,image-0fc934600f89e860,session-2026-09-03-002
-17,,images/17/IMG_2591.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:15:22.587-04:00,image-35a1c62d0b1990dc,session-2026-09-03-002
-17,,images/17/IMG_2592.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:15:35.903-04:00,image-f522183f14cd545e,session-2026-09-03-002
-17,,images/17/IMG_2593.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:15:46.574-04:00,image-9f8046891e0e186a,session-2026-09-03-002
-17,,images/17/IMG_2594.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:15:54.895-04:00,image-6389cf1f49a41859,session-2026-09-03-002
-17,,images/17/IMG_2595.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:16:07.815-04:00,image-03e9859df05d8ddc,session-2026-09-03-002
-17,,images/17/IMG_2596.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:16:19.108-04:00,image-9cdf254d51871807,session-2026-09-03-002
-17,,images/17/IMG_2640.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:02.608-04:00,image-4b860f6d230e6805,session-2026-09-03-002
-17,,images/17/IMG_2641.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:08.392-04:00,image-28441537c4fcc35e,session-2026-09-03-002
-17,,images/17/IMG_2642.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:14.969-04:00,image-ab41d3a869de68da,session-2026-09-03-002
-17,,images/17/IMG_2643.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:23.047-04:00,image-0e5e66e18e7824cd,session-2026-09-03-002
-17,,images/17/IMG_2644.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:32.387-04:00,image-6a8a67428d2fcbc1,session-2026-09-03-002
-17,,images/17/IMG_2645.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:39.579-04:00,image-b39fcea2973c5d42,session-2026-09-03-002
-17,,images/17/IMG_2646.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,200,1/60,1.78,6.86,2026-09-03T13:30:46.009-04:00,image-e15657dbfa3c7a47,session-2026-09-03-002
-17,,images/17/IMG_2647.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:54.495-04:00,image-e6174be0c026eeff,session-2026-09-03-002
-17,,images/17/IMG_2648.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:31:01.476-04:00,image-84f088329c9302d5,session-2026-09-03-002
-17,,images/17/IMG_2649.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:31:22.453-04:00,image-5f6593d1ce967145,session-2026-09-03-002
-17,,images/17/IMG_2650.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:31:34.073-04:00,image-9af6dbacd0c4dcf0,session-2026-09-03-002
-17,,images/17/IMG_2651.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:31:43.182-04:00,image-b0eef8cddb38a340,session-2026-09-03-002
-17,,images/17/IMG_2652.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:31:49.708-04:00,image-9faa0503b6c95b52,session-2026-09-03-002
-17,,images/17/IMG_2653.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:32:00.953-04:00,image-7cf68b24c0ec835d,session-2026-09-03-002
-17,,images/17/IMG_2667.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86,2026-09-03T13:35:36.056-04:00,image-f635d41334f27f4e,session-2026-09-03-002
-17,,images/17/IMG_2668.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86,2026-09-03T13:35:41.413-04:00,image-3f6394f540ff6953,session-2026-09-03-002
-17,,images/17/IMG_2669.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:35:47.585-04:00,image-e4dd46e8dc59b9fc,session-2026-09-03-002
-17,,images/17/IMG_2670.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:35:56.804-04:00,image-f0e2a8ac9bea0d20,session-2026-09-03-002
-17,,images/17/IMG_2671.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/60,1.78,6.86,2026-09-03T13:36:03.844-04:00,image-5582b76854bcb6d4,session-2026-09-03-002
-17,,images/17/IMG_2672.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:36:16.380-04:00,image-cf3b081e57a7a17d,session-2026-09-03-002
-17,,images/17/IMG_2676.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:36:59.815-04:00,image-9f1f6adb4eaa3fb2,session-2026-09-03-002
-17,,images/17/IMG_2677.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86,2026-09-03T13:37:07.324-04:00,image-5c80efd82e6fa7ed,session-2026-09-03-002
-17,,images/17/IMG_2678.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:37:19.555-04:00,image-7c9b9b8fb84819a0,session-2026-09-03-002
-17,,images/17/IMG_2679.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:37:28.483-04:00,image-1102c326469d30c1,session-2026-09-03-002
-17,,images/17/IMG_2680.jpg,scissors,mayo,1,,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86,2026-09-03T13:37:36.796-04:00,image-197b7390aaad4e77,session-2026-09-03-002
-22,24,images/22/IMG_0664.jpg,retractor,gelpi retractor,1,0,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:18:53.162-04:00,image-ca23d537b27a55e7,session-2026-09-03-007
-22,24,images/22/IMG_0665.jpg,retractor,gelpi retractor,1,45,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:19:07.657-04:00,image-b8adb0740c5e1c9e,session-2026-09-03-007
-22,24,images/22/IMG_0667.jpg,retractor,gelpi retractor,1,90,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T15:19:50.355-04:00,image-5323a72f5d418595,session-2026-09-03-007
-22,24,images/22/IMG_0668.jpg,retractor,gelpi retractor,1,135,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:20:08.489-04:00,image-631b1a8518325808,session-2026-09-03-007
-22,24,images/22/IMG_0669.jpg,retractor,gelpi retractor,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:20:23.166-04:00,image-4084fed03dcd782c,session-2026-09-03-007
-22,24,images/22/IMG_0671.jpg,retractor,gelpi retractor,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:20:33.649-04:00,image-191392b73abbc91a,session-2026-09-03-007
-22,24,images/22/IMG_0672.jpg,retractor,gelpi retractor,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:20:49.132-04:00,image-428f966d3aed0e9e,session-2026-09-03-007
-22,24,images/22/IMG_0673.jpg,retractor,gelpi retractor,1,315,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:21:04.671-04:00,image-97fbf698150c016f,session-2026-09-03-007
-22,25,images/22/IMG_0674.jpg,retractor,gelpi retractor,1,0,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:22:01.097-04:00,image-2071eec7f35a3108,session-2026-09-03-007
-22,25,images/22/IMG_0675.jpg,retractor,gelpi retractor,1,45,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:22:21.501-04:00,image-b2decb732e0994cd,session-2026-09-03-007
-22,25,images/22/IMG_0676.jpg,retractor,gelpi retractor,1,90,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:23:04.247-04:00,image-167910f654a9c5fc,session-2026-09-03-007
-22,25,images/22/IMG_0677.jpg,retractor,gelpi retractor,1,135,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:23:22.277-04:00,image-1029021f06b6f27c,session-2026-09-03-007
-22,25,images/22/IMG_0678.jpg,retractor,gelpi retractor,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:24:08.897-04:00,image-0a2713f596bc4aac,session-2026-09-03-007
-22,25,images/22/IMG_0679.jpg,retractor,gelpi retractor,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:24:25.425-04:00,image-e30f30462343173b,session-2026-09-03-007
-22,25,images/22/IMG_0680.jpg,retractor,gelpi retractor,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:24:56.440-04:00,image-73758df545b9d2f9,session-2026-09-03-007
-22,25,images/22/IMG_0681.jpg,retractor,gelpi retractor,1,315,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:25:25.250-04:00,image-74fd040cfedeb9dd,session-2026-09-03-007
-22,26,images/22/IMG_0682.jpg,retractor,gelpi retractor,1,0,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:28:39.683-04:00,image-5efd11a5eb545c45,session-2026-09-03-007
-22,26,images/22/IMG_0683.jpg,retractor,gelpi retractor,1,45,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:28:50.500-04:00,image-26cf948541903772,session-2026-09-03-007
-22,26,images/22/IMG_0684.jpg,retractor,gelpi retractor,1,90,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:29:12.632-04:00,image-6f34c02484545c9a,session-2026-09-03-007
-22,26,images/22/IMG_0686.jpg,retractor,gelpi retractor,1,135,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:30:48.409-04:00,image-53ad55181d0e7249,session-2026-09-03-007
-22,26,images/22/IMG_0687.jpg,retractor,gelpi retractor,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:31:15.575-04:00,image-9192b729d7981ce1,session-2026-09-03-007
-22,26,images/22/IMG_0688.jpg,retractor,gelpi retractor,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:31:51.131-04:00,image-8e3e61bbc5aa35f3,session-2026-09-03-007
-22,26,images/22/IMG_0689.jpg,retractor,gelpi retractor,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:32:30.819-04:00,image-71ef8b1dd8eed47c,session-2026-09-03-007
-22,26,images/22/IMG_0690.jpg,retractor,gelpi retractor,1,315,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:33:00.249-04:00,image-66dce5167db58f1d,session-2026-09-03-007
-22,27,images/22/IMG_0691.jpg,retractor,gelpi retractor,1,0,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:33:52.230-04:00,image-fe02b993e09cd37d,session-2026-09-03-007
-22,27,images/22/IMG_0692.jpg,retractor,gelpi retractor,1,45,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:34:09.455-04:00,image-2f94e50ded0ddbc5,session-2026-09-03-007
-22,27,images/22/IMG_0693.jpg,retractor,gelpi retractor,1,90,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:34:43.844-04:00,image-5ac0e56cbcd73bf7,session-2026-09-03-007
-22,27,images/22/IMG_0695.jpg,retractor,gelpi retractor,1,135,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:35:12.958-04:00,image-111464cc23fda808,session-2026-09-03-007
-22,27,images/22/IMG_0696.jpg,retractor,gelpi retractor,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:35:39.283-04:00,image-78ad0b9c1879b5c9,session-2026-09-03-007
-22,27,images/22/IMG_0697.jpg,retractor,gelpi retractor,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:35:55.394-04:00,image-0ba8af9772e4221d,session-2026-09-03-007
-22,27,images/22/IMG_0698.jpg,retractor,gelpi retractor,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:36:28.158-04:00,image-3d2a6e7108550ce0,session-2026-09-03-007
-22,27,images/22/IMG_0699.jpg,retractor,gelpi retractor,1,315,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:36:54.733-04:00,image-aed88e8febc23f93,session-2026-09-03-007
-22,28,images/22/IMG_0700.jpg,retractor,gelpi retractor,1,0,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:40:10.046-04:00,image-5a027e7a4f74d305,session-2026-09-03-007
-22,28,images/22/IMG_0701.jpg,retractor,gelpi retractor,1,45,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:40:35.128-04:00,image-d492d23990e52d88,session-2026-09-03-007
-22,28,images/22/IMG_0702.jpg,retractor,gelpi retractor,1,90,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:41:00.362-04:00,image-1b4e358c22e6e73d,session-2026-09-03-007
-22,28,images/22/IMG_0703.jpg,retractor,gelpi retractor,1,135,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:41:16.073-04:00,image-b445f762dac2dae1,session-2026-09-03-007
-22,28,images/22/IMG_0704.jpg,retractor,gelpi retractor,1,180,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:41:28.760-04:00,image-937a72d360e6155b,session-2026-09-03-007
-22,28,images/22/IMG_0705.jpg,retractor,gelpi retractor,1,225,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:41:45.717-04:00,image-7cc0060799bab76e,session-2026-09-03-007
-22,28,images/22/IMG_0706.jpg,retractor,gelpi retractor,1,270,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:42:26.768-04:00,image-005b92267fc644e1,session-2026-09-03-007
-22,28,images/22/IMG_0707.jpg,retractor,gelpi retractor,1,315,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:42:45.446-04:00,image-005a5a3a4b8b27b3,session-2026-09-03-007
-22,29,images/22/IMG_0708.jpg,retractor,gelpi retractor,1,0,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:44:07.717-04:00,image-7bd5b9bb7d2fe6ba,session-2026-09-03-007
-22,29,images/22/IMG_0709.jpg,retractor,gelpi retractor,1,45,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:44:25.799-04:00,image-61f4030d55ddaefa,session-2026-09-03-007
-22,29,images/22/IMG_0710.jpg,retractor,gelpi retractor,1,90,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:45:05.127-04:00,image-747d494b9d6e0d17,session-2026-09-03-007
-22,29,images/22/IMG_0711.jpg,retractor,gelpi retractor,1,135,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:45:23.203-04:00,image-add7f9767d4d5463,session-2026-09-03-007
-22,29,images/22/IMG_0712.jpg,retractor,gelpi retractor,1,180,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:45:41.422-04:00,image-408a62375522db9e,session-2026-09-03-007
-22,29,images/22/IMG_0713.jpg,retractor,gelpi retractor,1,225,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:46:03.567-04:00,image-60d8874bf39cb462,session-2026-09-03-007
-22,29,images/22/IMG_0714.jpg,retractor,gelpi retractor,1,270,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:46:18.463-04:00,image-418e99194b3e87e6,session-2026-09-03-007
-22,29,images/22/IMG_0716.jpg,retractor,gelpi retractor,1,315,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:47:10.673-04:00,image-68162b77b07c61e1,session-2026-09-03-007
-22,30,images/22/IMG_0717.jpg,retractor,gelpi retractor,1,0,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:48:01.780-04:00,image-ca5c5ac82f969527,session-2026-09-03-007
-22,30,images/22/IMG_0718.jpg,retractor,gelpi retractor,1,45,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:48:15.522-04:00,image-3ff0922836090271,session-2026-09-03-007
-22,30,images/22/IMG_0719.jpg,retractor,gelpi retractor,1,90,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:48:46.134-04:00,image-02061ce79cd4cd04,session-2026-09-03-007
-22,30,images/22/IMG_0720.jpg,retractor,gelpi retractor,1,135,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:49:04.537-04:00,image-aea0d82fbc77977d,session-2026-09-03-007
-22,30,images/22/IMG_0721.jpg,retractor,gelpi retractor,1,180,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:49:26.230-04:00,image-c014951f2027ffa9,session-2026-09-03-007
-22,30,images/22/IMG_0722.jpg,retractor,gelpi retractor,1,225,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:49:47.931-04:00,image-d0fdfd3c187088b0,session-2026-09-03-007
-22,30,images/22/IMG_0723.jpg,retractor,gelpi retractor,1,270,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:50:07.670-04:00,image-9d09982613990a53,session-2026-09-03-007
-22,30,images/22/IMG_0724.jpg,retractor,gelpi retractor,1,315,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:51:09.194-04:00,image-b5c7c08f430ce8b2,session-2026-09-03-007
-22,31,images/22/IMG_0725.jpg,retractor,gelpi retractor,1,0,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:51:48.623-04:00,image-0d1e9431d96a4895,session-2026-09-03-007
-22,31,images/22/IMG_0726.jpg,retractor,gelpi retractor,1,45,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:52:16.214-04:00,image-64484f382d270bed,session-2026-09-03-007
-22,31,images/22/IMG_0727.jpg,retractor,gelpi retractor,1,90,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:52:51.335-04:00,image-e5fedcc81a7c0fee,session-2026-09-03-007
-22,31,images/22/IMG_0728.jpg,retractor,gelpi retractor,1,135,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:53:17.386-04:00,image-9316843e3ebacf30,session-2026-09-03-007
-22,31,images/22/IMG_0729.jpg,retractor,gelpi retractor,1,180,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T15:53:31.523-04:00,image-919d1d9c14883a20,session-2026-09-03-007
-22,31,images/22/IMG_0730.jpg,retractor,gelpi retractor,1,225,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T15:53:53.280-04:00,image-508ec94f01bc51a6,session-2026-09-03-007
-22,31,images/22/IMG_0731.jpg,retractor,gelpi retractor,1,270,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T15:54:13.838-04:00,image-8f1c97b19016f571,session-2026-09-03-007
-22,31,images/22/IMG_0732.jpg,retractor,gelpi retractor,1,315,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:54:42.499-04:00,image-a9498c73d80ab277,session-2026-09-03-007
-23,32,images/23/IMG_0733.jpg,scissors,v mueller affinity metzembaun dissecting,1,0,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:10:29.156-04:00,image-145efe4db4ebc6c0,session-2026-09-03-007
-23,32,images/23/IMG_0734.jpg,scissors,v mueller affinity metzembaun dissecting,1,45,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T16:10:41.874-04:00,image-73899b8ee6e5b146,session-2026-09-03-007
-23,32,images/23/IMG_0735.jpg,scissors,v mueller affinity metzembaun dissecting,1,90,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T16:11:09.115-04:00,image-cdcb4d9cd36ab32d,session-2026-09-03-007
-23,32,images/23/IMG_0736.jpg,scissors,v mueller affinity metzembaun dissecting,1,135,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T16:11:33.340-04:00,image-523dafba79edb4d5,session-2026-09-03-007
-23,32,images/23/IMG_0737.jpg,scissors,v mueller affinity metzembaun dissecting,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:12:06.968-04:00,image-68716f04ef000470,session-2026-09-03-007
-23,32,images/23/IMG_0739.jpg,scissors,v mueller affinity metzembaun dissecting,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:13:29.610-04:00,image-7d6deee2c5f5a0d1,session-2026-09-03-007
-23,32,images/23/IMG_0740.jpg,scissors,v mueller affinity metzembaun dissecting,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:13:39.333-04:00,image-b58c1f3224304eb0,session-2026-09-03-007
-23,32,images/23/IMG_0741.jpg,scissors,v mueller affinity metzembaun dissecting,1,315,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:13:59.599-04:00,image-d40522c087561c49,session-2026-09-03-007
-23,33,images/23/IMG_0742.jpg,scissors,v mueller affinity metzembaun dissecting,1,0,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:14:33.859-04:00,image-72e42a335031a42f,session-2026-09-03-007
-23,33,images/23/IMG_0743.jpg,scissors,v mueller affinity metzembaun dissecting,1,45,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:14:57.986-04:00,image-df3a0ab90dc80fdc,session-2026-09-03-007
-23,33,images/23/IMG_0744.jpg,scissors,v mueller affinity metzembaun dissecting,1,90,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:15:22.386-04:00,image-b129d92576eaae50,session-2026-09-03-007
-23,33,images/23/IMG_0745.jpg,scissors,v mueller affinity metzembaun dissecting,1,135,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:15:47.790-04:00,image-01026f04f0f06da4,session-2026-09-03-007
-23,33,images/23/IMG_0746.jpg,scissors,v mueller affinity metzembaun dissecting,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:16:20.999-04:00,image-70bd7e6dd98c8213,session-2026-09-03-007
-23,33,images/23/IMG_0747.jpg,scissors,v mueller affinity metzembaun dissecting,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:16:37.149-04:00,image-98b5786513b15929,session-2026-09-03-007
-23,33,images/23/IMG_0748.jpg,scissors,v mueller affinity metzembaun dissecting,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:16:48.965-04:00,image-d47f3920aa89d002,session-2026-09-03-007
-23,33,images/23/IMG_0749.jpg,scissors,v mueller affinity metzembaun dissecting,1,315,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:17:12.374-04:00,image-b9afd1d6834766b1,session-2026-09-03-007
-23,34,images/23/IMG_0751.jpg,scissors,v mueller affinity metzembaun dissecting,1,0,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T16:18:40.255-04:00,image-c3c47d4a56cfd0ba,session-2026-09-03-007
-23,34,images/23/IMG_0752.jpg,scissors,v mueller affinity metzembaun dissecting,1,45,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T16:19:10.541-04:00,image-95e097de94efbebf,session-2026-09-03-007
-23,34,images/23/IMG_0754.jpg,scissors,v mueller affinity metzembaun dissecting,1,90,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T16:19:55.778-04:00,image-aabbcf1aab147b26,session-2026-09-03-007
-23,34,images/23/IMG_0755.jpg,scissors,v mueller affinity metzembaun dissecting,1,135,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:21:04.909-04:00,image-890705697034295b,session-2026-09-03-007
-23,34,images/23/IMG_0756.jpg,scissors,v mueller affinity metzembaun dissecting,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:21:30.959-04:00,image-6f39a7656c18a760,session-2026-09-03-007
-23,34,images/23/IMG_0757.jpg,scissors,v mueller affinity metzembaun dissecting,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:21:49.206-04:00,image-e6c406c0afacfedb,session-2026-09-03-007
-23,34,images/23/IMG_0758.jpg,scissors,v mueller affinity metzembaun dissecting,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:22:07.695-04:00,image-92389656b306db73,session-2026-09-03-007
-23,34,images/23/IMG_0759.jpg,scissors,v mueller affinity metzembaun dissecting,1,315,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:22:27.061-04:00,image-8a6ff589e804b0a6,session-2026-09-03-007
-23,35,images/23/IMG_0762.jpg,scissors,v mueller affinity metzembaun dissecting,1,0,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:24:21.403-04:00,image-8a215273324618f7,session-2026-09-03-007
-23,35,images/23/IMG_0763.jpg,scissors,v mueller affinity metzembaun dissecting,1,45,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:24:38.301-04:00,image-c894872e86f1e8a6,session-2026-09-03-007
-23,35,images/23/IMG_0764.jpg,scissors,v mueller affinity metzembaun dissecting,1,90,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:25:30.142-04:00,image-a2d56dd7860d556e,session-2026-09-03-007
-23,35,images/23/IMG_0765.jpg,scissors,v mueller affinity metzembaun dissecting,1,135,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:26:39.492-04:00,image-eb3711dbc5253752,session-2026-09-03-007
-23,35,images/23/IMG_0766.jpg,scissors,v mueller affinity metzembaun dissecting,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:27:00.229-04:00,image-6a815c23371e8870,session-2026-09-03-007
-23,35,images/23/IMG_0767.jpg,scissors,v mueller affinity metzembaun dissecting,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:27:17.888-04:00,image-9da89620c55f8dee,session-2026-09-03-007
-23,35,images/23/IMG_0769.jpg,scissors,v mueller affinity metzembaun dissecting,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:27:35.444-04:00,image-12d24306af552972,session-2026-09-03-007
-23,35,images/23/IMG_0770.jpg,scissors,v mueller affinity metzembaun dissecting,1,315,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:28:22.711-04:00,image-d7dd3b0bac03c947,session-2026-09-03-007
-23,36,images/23/IMG_0771.jpg,scissors,v mueller affinity metzembaun dissecting,1,0,FALSE,Apple,iPhone 17,FALSE,800,1/24,1.6,5.96,2026-09-03T16:31:23.067-04:00,image-70a58ae7b4afe39e,session-2026-09-03-007
-23,36,images/23/IMG_0772.jpg,scissors,v mueller affinity metzembaun dissecting,1,45,FALSE,Apple,iPhone 17,FALSE,1000,1/24,1.6,5.96,2026-09-03T16:31:41.302-04:00,image-62e63494941c6780,session-2026-09-03-007
-23,36,images/23/IMG_0773.jpg,scissors,v mueller affinity metzembaun dissecting,1,90,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:32:13.295-04:00,image-43e332dad1424435,session-2026-09-03-007
-23,36,images/23/IMG_0774.jpg,scissors,v mueller affinity metzembaun dissecting,1,135,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:32:34.389-04:00,image-74b362de4c678051,session-2026-09-03-007
-23,36,images/23/IMG_0775.jpg,scissors,v mueller affinity metzembaun dissecting,1,180,FALSE,Apple,iPhone 17,FALSE,1000,1/18,1.6,5.96,2026-09-03T16:33:26.279-04:00,image-d5f1e1d86cfdcadb,session-2026-09-03-007
-23,36,images/23/IMG_0776.jpg,scissors,v mueller affinity metzembaun dissecting,1,225,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:33:38.636-04:00,image-72d214dc4c2332bd,session-2026-09-03-007
-23,36,images/23/IMG_0777.jpg,scissors,v mueller affinity metzembaun dissecting,1,270,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:33:52.726-04:00,image-04b613093e770f29,session-2026-09-03-007
-23,36,images/23/IMG_0778.jpg,scissors,v mueller affinity metzembaun dissecting,1,315,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:34:14.504-04:00,image-7194687a1901db76,session-2026-09-03-007
-23,37,images/23/IMG_0779.jpg,scissors,v mueller affinity metzembaun dissecting,1,0,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:34:52.818-04:00,image-c603961cba0d4557,session-2026-09-03-007
-23,37,images/23/IMG_0780.jpg,scissors,v mueller affinity metzembaun dissecting,1,45,FALSE,Apple,iPhone 17,FALSE,800,1/24,1.6,5.96,2026-09-03T16:35:12.527-04:00,image-e5d8166a9f28a0ba,session-2026-09-03-007
-23,37,images/23/IMG_0781.jpg,scissors,v mueller affinity metzembaun dissecting,1,90,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:35:25.496-04:00,image-c128f2e1e165eb80,session-2026-09-03-007
-23,37,images/23/IMG_0782.jpg,scissors,v mueller affinity metzembaun dissecting,1,135,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:35:41.224-04:00,image-359407323c0ee9ea,session-2026-09-03-007
-23,37,images/23/IMG_0783.jpg,scissors,v mueller affinity metzembaun dissecting,1,180,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:36:18.714-04:00,image-884710482441401f,session-2026-09-03-007
-23,37,images/23/IMG_0784.jpg,scissors,v mueller affinity metzembaun dissecting,1,225,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:36:27.512-04:00,image-5d7d09165ee4dfaf,session-2026-09-03-007
-23,37,images/23/IMG_0785.jpg,scissors,v mueller affinity metzembaun dissecting,1,270,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:36:37.032-04:00,image-4aa0daaea7767e0c,session-2026-09-03-007
-23,37,images/23/IMG_0786.jpg,scissors,v mueller affinity metzembaun dissecting,1,315,FALSE,Apple,iPhone 17,FALSE,1000,1/29,1.6,5.96,2026-09-03T16:36:54.497-04:00,image-db03b183c941db9b,session-2026-09-03-007
-23,38,images/23/IMG_0787.jpg,scissors,v mueller affinity metzembaun dissecting,1,0,FALSE,Apple,iPhone 17,FALSE,1000,1/28,1.6,5.96,2026-09-03T16:37:59.768-04:00,image-20321d2186d7addd,session-2026-09-03-007
-23,38,images/23/IMG_0788.jpg,scissors,v mueller affinity metzembaun dissecting,1,45,FALSE,Apple,iPhone 17,FALSE,1000,1/29,1.6,5.96,2026-09-03T16:39:02.246-04:00,image-4fb3c873935b4263,session-2026-09-03-007
-23,38,images/23/IMG_0789.jpg,scissors,v mueller affinity metzembaun dissecting,1,90,FALSE,Apple,iPhone 17,FALSE,1000,1/28,1.6,5.96,2026-09-03T16:39:38.923-04:00,image-3eb751ae6699d882,session-2026-09-03-007
-23,38,images/23/IMG_0790.jpg,scissors,v mueller affinity metzembaun dissecting,1,135,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:40:16.535-04:00,image-7c2e37e35f139f18,session-2026-09-03-007
-23,38,images/23/IMG_0791.jpg,scissors,v mueller affinity metzembaun dissecting,1,180,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:40:47.825-04:00,image-3374d6179dfc6ce6,session-2026-09-03-007
-23,38,images/23/IMG_0793.jpg,scissors,v mueller affinity metzembaun dissecting,1,225,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T16:42:09.572-04:00,image-6e85100166addeab,session-2026-09-03-007
-23,38,images/23/IMG_0794.jpg,scissors,v mueller affinity metzembaun dissecting,1,270,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:42:32.216-04:00,image-9f20414899726f70,session-2026-09-03-007
-23,38,images/23/IMG_0796.jpg,scissors,v mueller affinity metzembaun dissecting,1,315,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:43:03.834-04:00,image-9385983cca0026c3,session-2026-09-03-007
-23,39,images/23/IMG_0797.jpg,scissors,v mueller affinity metzembaun dissecting,1,0,FALSE,Apple,iPhone 17,FALSE,1000,1/29,1.6,5.96,2026-09-03T16:43:52.365-04:00,image-7dd6470609beb3b5,session-2026-09-03-007
-23,39,images/23/IMG_0798.jpg,scissors,v mueller affinity metzembaun dissecting,1,45,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:44:17.920-04:00,image-51c020035a40f540,session-2026-09-03-007
-23,39,images/23/IMG_0799.jpg,scissors,v mueller affinity metzembaun dissecting,1,90,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:44:32.700-04:00,image-c0fc8f6dc8d0d9d8,session-2026-09-03-007
-23,39,images/23/IMG_0800.jpg,scissors,v mueller affinity metzembaun dissecting,1,135,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:44:57.428-04:00,image-cbd9e57cc72698c5,session-2026-09-03-007
-23,39,images/23/IMG_0802.jpg,scissors,v mueller affinity metzembaun dissecting,1,180,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:46:43.254-04:00,image-158b18b480c0e4ae,session-2026-09-03-007
-23,39,images/23/IMG_0803.jpg,scissors,v mueller affinity metzembaun dissecting,1,225,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:47:15.225-04:00,image-92785c4b0620c90b,session-2026-09-03-007
-23,39,images/23/IMG_0804.jpg,scissors,v mueller affinity metzembaun dissecting,1,270,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:47:36.030-04:00,image-5ed9a3c994bfc3d4,session-2026-09-03-007
-23,39,images/23/IMG_0805.jpg,scissors,v mueller affinity metzembaun dissecting,1,315,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:47:53.854-04:00,image-8054d252091a2a54,session-2026-09-03-007
-26,40,images/26/IMG_0869.jpg,forceps,hunt tumor,1,0,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:20:55.943-04:00,image-9dd3d65da728213f,session-2026-09-08-009
-26,40,images/26/IMG_0870.jpg,forceps,hunt tumor,1,45,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:21:15.232-04:00,image-3bf6bc58ed99ffee,session-2026-09-08-009
-26,40,images/26/IMG_0871.jpg,forceps,hunt tumor,1,90,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:21:35.178-04:00,image-57d3b02f68eae664,session-2026-09-08-009
-26,40,images/26/IMG_0872.jpg,forceps,hunt tumor,1,135,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:21:44.565-04:00,image-691aa39cc1e3d304,session-2026-09-08-009
-26,40,images/26/IMG_0873.jpg,forceps,hunt tumor,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:22:08.627-04:00,image-4c65a09b27461f34,session-2026-09-08-009
-26,40,images/26/IMG_0874.jpg,forceps,hunt tumor,1,225,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:22:23.333-04:00,image-57c8fd09a201ba96,session-2026-09-08-009
-26,40,images/26/IMG_0875.jpg,forceps,hunt tumor,1,270,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:22:35.295-04:00,image-c8d0723286b2f5db,session-2026-09-08-009
-26,40,images/26/IMG_0876.jpg,forceps,hunt tumor,1,315,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:22:44.927-04:00,image-da7db50109237169,session-2026-09-08-009
-26,41,images/26/IMG_0878.jpg,forceps,hunt tumor,1,0,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:25:38.343-04:00,image-cb3c85c66b2e7866,session-2026-09-08-009
-26,41,images/26/IMG_0879.jpg,forceps,hunt tumor,1,45,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:25:54.012-04:00,image-7e1267a6bfcc1666,session-2026-09-08-009
-26,41,images/26/IMG_0880.jpg,forceps,hunt tumor,1,90,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:26:06.693-04:00,image-048ff7247f371f4f,session-2026-09-08-009
-26,41,images/26/IMG_0881.jpg,forceps,hunt tumor,1,135,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:26:17.841-04:00,image-4ea17e88248bbc30,session-2026-09-08-009
-26,41,images/26/IMG_0882.jpg,forceps,hunt tumor,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:27:27.298-04:00,image-5de133a2c55eb034,session-2026-09-08-009
-26,41,images/26/IMG_0883.jpg,forceps,hunt tumor,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:27:44.953-04:00,image-93f92d92015006f4,session-2026-09-08-009
-26,41,images/26/IMG_0884.jpg,forceps,hunt tumor,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:28:05.369-04:00,image-1a81caeefbc030c5,session-2026-09-08-009
-26,41,images/26/IMG_0885.jpg,forceps,hunt tumor,1,315,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:28:22.682-04:00,image-c392115785e30305,session-2026-09-08-009
-26,42,images/26/IMG_0886.jpg,forceps,hunt tumor,1,0,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:28:57.794-04:00,image-6b61c63030b340d1,session-2026-09-08-009
-26,42,images/26/IMG_0887.jpg,forceps,hunt tumor,1,45,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:29:15.002-04:00,image-cdc45b698a499365,session-2026-09-08-009
-26,42,images/26/IMG_0888.jpg,forceps,hunt tumor,1,90,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:29:28.268-04:00,image-420cd5caff59ca9f,session-2026-09-08-009
-26,42,images/26/IMG_0889.jpg,forceps,hunt tumor,1,135,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:29:38.926-04:00,image-3ec233b6a69dcb79,session-2026-09-08-009
-26,42,images/26/IMG_0890.jpg,forceps,hunt tumor,1,180,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:30:07.920-04:00,image-a7a04118712f97c8,session-2026-09-08-009
-26,42,images/26/IMG_0891.jpg,forceps,hunt tumor,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:30:22.999-04:00,image-a5b025a1493f9034,session-2026-09-08-009
-26,42,images/26/IMG_0893.jpg,forceps,hunt tumor,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:30:50.805-04:00,image-e270fb9a2b80f457,session-2026-09-08-009
-26,42,images/26/IMG_0894.jpg,forceps,hunt tumor,1,315,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:31:12.197-04:00,image-54274530e973e8db,session-2026-09-08-009
-26,43,images/26/IMG_0895.jpg,forceps,hunt tumor,1,0,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:32:09.666-04:00,image-c2f629a8b0c436af,session-2026-09-08-009
-26,43,images/26/IMG_0896.jpg,forceps,hunt tumor,1,45,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:32:21.262-04:00,image-8bca31878123ca70,session-2026-09-08-009
-26,43,images/26/IMG_0897.jpg,forceps,hunt tumor,1,90,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:32:30.764-04:00,image-13b603bb0cc2bcd2,session-2026-09-08-009
-26,43,images/26/IMG_0899.jpg,forceps,hunt tumor,1,135,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:33:00.743-04:00,image-f6c5107800538611,session-2026-09-08-009
-26,43,images/26/IMG_0900.jpg,forceps,hunt tumor,1,180,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:33:15.753-04:00,image-2ce9f1225d8c0a88,session-2026-09-08-009
-26,43,images/26/IMG_0901.jpg,forceps,hunt tumor,1,225,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:33:41.216-04:00,image-636e7cf8b7d1579d,session-2026-09-08-009
-26,43,images/26/IMG_0902.jpg,forceps,hunt tumor,1,270,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:34:00.958-04:00,image-b0f0125b80176a2b,session-2026-09-08-009
-26,43,images/26/IMG_0903.jpg,forceps,hunt tumor,1,315,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:34:25.567-04:00,image-2fba4b99b86972a0,session-2026-09-08-009
-26,44,images/26/IMG_0906.jpg,forceps,hunt tumor,1,0,FALSE,Apple,iPhone 17,FALSE,1000,1/29,1.6,5.96,2026-09-08T16:39:39.772-04:00,image-c6e76bb2c18a5a08,session-2026-09-08-009
-26,44,images/26/IMG_0907.jpg,forceps,hunt tumor,1,45,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:40:02.976-04:00,image-dee93c83f3a79606,session-2026-09-08-009
-26,44,images/26/IMG_0908.jpg,forceps,hunt tumor,1,90,FALSE,Apple,iPhone 17,FALSE,1000,1/29,1.6,5.96,2026-09-08T16:40:21.983-04:00,image-d6db57016a387d19,session-2026-09-08-009
-26,44,images/26/IMG_0909.jpg,forceps,hunt tumor,1,135,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:40:57.205-04:00,image-23458b1c9fdbc937,session-2026-09-08-009
-26,44,images/26/IMG_0911.jpg,forceps,hunt tumor,1,180,FALSE,Apple,iPhone 17,FALSE,1000,1/26,1.6,5.96,2026-09-08T16:41:34.383-04:00,image-e45b58bab70ee902,session-2026-09-08-009
-26,44,images/26/IMG_0912.jpg,forceps,hunt tumor,1,225,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:41:46.243-04:00,image-1dbc3dfa81a0ab49,session-2026-09-08-009
-26,44,images/26/IMG_0913.jpg,forceps,hunt tumor,1,270,FALSE,Apple,iPhone 17,FALSE,1000,1/29,1.6,5.96,2026-09-08T16:41:55.864-04:00,image-a179dca11b744ff8,session-2026-09-08-009
-26,44,images/26/IMG_0914.jpg,forceps,hunt tumor,1,315,FALSE,Apple,iPhone 17,FALSE,1000,1/25,1.6,5.96,2026-09-08T16:42:11.386-04:00,image-3c3894c0e1328dc0,session-2026-09-08-009
-26,45,images/26/IMG_0923.jpg,forceps,hunt tumor,1,0,FALSE,Apple,iPhone 17,FALSE,1000,1/26,1.6,5.96,2026-09-08T16:45:38.622-04:00,image-9052d1d74974ba4a,session-2026-09-08-009
-26,45,images/26/IMG_0924.jpg,forceps,hunt tumor,1,45,FALSE,Apple,iPhone 17,FALSE,1000,1/28,1.6,5.96,2026-09-08T16:46:25.056-04:00,image-ed1dd2c7a55310ca,session-2026-09-08-009
-26,45,images/26/IMG_0925.jpg,forceps,hunt tumor,1,90,FALSE,Apple,iPhone 17,FALSE,1000,1/28,1.6,5.96,2026-09-08T16:46:49.351-04:00,image-59ccab0ec4ac63a6,session-2026-09-08-009
-26,45,images/26/IMG_0926.jpg,forceps,hunt tumor,1,135,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:47:09.362-04:00,image-63c7a2decc5b9d32,session-2026-09-08-009
-26,45,images/26/IMG_0927.jpg,forceps,hunt tumor,1,180,FALSE,Apple,iPhone 17,FALSE,1000,1/24,1.6,5.96,2026-09-08T16:47:42.029-04:00,image-07279ce8b7635293,session-2026-09-08-009
-26,45,images/26/IMG_0929.jpg,forceps,hunt tumor,1,225,FALSE,Apple,iPhone 17,FALSE,1000,1/24,1.6,5.96,2026-09-08T16:48:07.642-04:00,image-c9a1db5d7358e6d2,session-2026-09-08-009
-26,45,images/26/IMG_0930.jpg,forceps,hunt tumor,1,270,FALSE,Apple,iPhone 17,FALSE,1000,1/25,1.6,5.96,2026-09-08T16:48:29.006-04:00,image-4308e6284b01f539,session-2026-09-08-009
-26,45,images/26/IMG_0932.jpg,forceps,hunt tumor,1,315,FALSE,Apple,iPhone 17,FALSE,1000,1/24,1.6,5.96,2026-09-08T16:50:14.339-04:00,image-66692d62284e20ba,session-2026-09-08-009
-26,46,images/26/IMG_0935.jpg,forceps,hunt tumor,1,0,FALSE,Apple,iPhone 17,FALSE,1000,1/26,1.6,5.96,2026-09-08T16:51:12.680-04:00,image-bd8c6dd0ec6576cc,session-2026-09-08-009
-26,46,images/26/IMG_0936.jpg,forceps,hunt tumor,1,45,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:51:43.013-04:00,image-420784a2d291226a,session-2026-09-08-009
-26,46,images/26/IMG_0937.jpg,forceps,hunt tumor,1,90,FALSE,Apple,iPhone 17,FALSE,1000,1/25,1.6,5.96,2026-09-08T16:52:02.654-04:00,image-d8886de72c791fb3,session-2026-09-08-009
-26,46,images/26/IMG_0939.jpg,forceps,hunt tumor,1,135,FALSE,Apple,iPhone 17,FALSE,1000,1/26,1.6,5.96,2026-09-08T16:52:33.315-04:00,image-b8bff0a54e8005bf,session-2026-09-08-009
-26,46,images/26/IMG_0941.jpg,forceps,hunt tumor,1,180,FALSE,Apple,iPhone 17,FALSE,1000,1/25,1.6,5.96,2026-09-08T16:53:11.350-04:00,image-9e501bb24f6792e4,session-2026-09-08-009
-26,46,images/26/IMG_0942.jpg,forceps,hunt tumor,1,225,FALSE,Apple,iPhone 17,FALSE,1000,1/23,1.6,5.96,2026-09-08T16:53:27.234-04:00,image-13a604c18c6dacc0,session-2026-09-08-009
-26,46,images/26/IMG_0943.jpg,forceps,hunt tumor,1,270,FALSE,Apple,iPhone 17,FALSE,1000,1/24,1.6,5.96,2026-09-08T16:53:41.729-04:00,image-566150db0845e03e,session-2026-09-08-009
-26,46,images/26/IMG_0944.jpg,forceps,hunt tumor,1,315,FALSE,Apple,iPhone 17,FALSE,1000,1/28,1.6,5.96,2026-09-08T16:54:00.579-04:00,image-d5932389d9423c17,session-2026-09-08-009
-26,47,images/26/IMG_0947.jpg,forceps,hunt tumor,1,0,FALSE,Apple,iPhone 17,FALSE,1000,1/20,1.6,5.96,2026-09-08T16:55:46.225-04:00,image-e12a905fecd4e3b3,session-2026-09-08-009
-26,47,images/26/IMG_0948.jpg,forceps,hunt tumor,1,45,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:56:04.616-04:00,image-f54b32016e76fdac,session-2026-09-08-009
-26,47,images/26/IMG_0949.jpg,forceps,hunt tumor,1,90,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:56:18.372-04:00,image-93926b4c1a1be21c,session-2026-09-08-009
-26,47,images/26/IMG_0950.jpg,forceps,hunt tumor,1,135,FALSE,Apple,iPhone 17,FALSE,1000,1/23,1.6,5.96,2026-09-08T16:56:27.009-04:00,image-53e331da32b0373e,session-2026-09-08-009
-26,47,images/26/IMG_0951.jpg,forceps,hunt tumor,1,180,FALSE,Apple,iPhone 17,FALSE,1000,1/26,1.6,5.96,2026-09-08T16:56:51.720-04:00,image-e51ea0d177c85f7d,session-2026-09-08-009
-26,47,images/26/IMG_0953.jpg,forceps,hunt tumor,1,225,FALSE,Apple,iPhone 17,FALSE,1000,1/23,1.6,5.96,2026-09-08T16:57:28.712-04:00,image-960a89de71c4e69d,session-2026-09-08-009
-26,47,images/26/IMG_0954.jpg,forceps,hunt tumor,1,270,FALSE,Apple,iPhone 17,FALSE,1000,1/22,1.6,5.96,2026-09-08T16:57:53.093-04:00,image-4231f78305cf36dc,session-2026-09-08-009
-26,47,images/26/IMG_0956.jpg,forceps,hunt tumor,1,315,FALSE,Apple,iPhone 17,FALSE,1000,1/25,1.6,5.96,2026-09-08T16:58:17.292-04:00,image-e0b23ac12f0063c2,session-2026-09-08-009
+Tool IDs,Sample ID,Angle,Filepath,Lights,Make,Model,Flash,ISO,Exposure,Aperture,Focal length (mm),Time Taken,Image ID,Capture Session ID
+0,0,0,images/0/IMG_8585.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,4000,1/15,1.78,6.765,2026-09-01T19:51:50.430-04:00,image-241ea1b4d217d125,session-2026-09-01-005
+0,0,45,images/0/IMG_8586.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,3200,1/15,1.78,6.765,2026-09-01T19:52:19.666-04:00,image-7d5a24cb4a7e30a4,session-2026-09-01-005
+0,0,90,images/0/IMG_8588.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,2500,1/15,1.78,6.765,2026-09-01T19:53:04.191-04:00,image-b30e43e06066f659,session-2026-09-01-005
+0,0,135,images/0/IMG_8589.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,3200,1/15,1.78,6.765,2026-09-01T19:53:30.537-04:00,image-03fd859217391918,session-2026-09-01-005
+0,0,180,images/0/IMG_8590.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,3200,1/15,2.2,2.22,2026-09-01T19:53:52.647-04:00,image-75c6191b19b1d8fd,session-2026-09-01-005
+0,0,225,images/0/IMG_8591.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,4000,1/15,1.78,6.765,2026-09-01T19:54:31.506-04:00,image-3ebefc2965298abf,session-2026-09-01-005
+0,0,270,images/0/IMG_8594.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,4000,1/15,1.78,6.765,2026-09-01T19:56:17.350-04:00,image-24ae4d8eac215d46,session-2026-09-01-005
+0,0,315,images/0/IMG_8595.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,5000,1/15,1.78,6.765,2026-09-01T20:00:03.672-04:00,image-c92984aa153892de,session-2026-09-01-005
+0,1,0,images/0/IMG_8624.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:18:28.183-04:00,image-bbaec2e74ea8bbf3,session-2026-09-01-005
+0,1,45,images/0/IMG_8625.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:18:45.677-04:00,image-e3e05fd88b6fc50c,session-2026-09-01-005
+0,1,90,images/0/IMG_8626.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:18:53.295-04:00,image-209891f5c4d32653,session-2026-09-01-005
+0,1,135,images/0/IMG_8627.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:19:05.227-04:00,image-1f50bf2bf7b2af1a,session-2026-09-01-005
+0,1,180,images/0/IMG_8628.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:19:17.344-04:00,image-7f20c1bca2ead4df,session-2026-09-01-005
+0,1,225,images/0/IMG_8629.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:19:26.966-04:00,image-aea2257e6547993a,session-2026-09-01-005
+0,1,270,images/0/IMG_8630.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:19:36.463-04:00,image-3f7c0497a58fe56d,session-2026-09-01-005
+0,1,315,images/0/IMG_8631.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:19:45.633-04:00,image-5238bb90ca1ff424,session-2026-09-01-005
+1,2,0,images/1/IMG_8599.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,6400,1/15,1.78,6.765,2026-09-01T20:05:46.166-04:00,image-a43667a200299edc,session-2026-09-01-005
+1,2,45,images/1/IMG_8600.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,8000,1/15,1.78,6.765,2026-09-01T20:05:59.455-04:00,image-8f54f30e6bfd2f3f,session-2026-09-01-005
+1,2,90,images/1/IMG_8602.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,8000,1/15,1.78,6.765,2026-09-01T20:06:23.792-04:00,image-cc2603f4d5bc12b7,session-2026-09-01-005
+1,2,135,images/1/IMG_8603.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,10000,1/15,1.78,6.765,2026-09-01T20:06:46.456-04:00,image-74db4150484d9b88,session-2026-09-01-005
+1,2,180,images/1/IMG_8604.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,10000,1/15,1.78,6.765,2026-09-01T20:07:03.191-04:00,image-aebe57e80c846110,session-2026-09-01-005
+1,2,225,images/1/IMG_8605.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,10000,1/15,1.78,6.765,2026-09-01T20:07:17.823-04:00,image-5161c4faa76be42c,session-2026-09-01-005
+1,2,270,images/1/IMG_8606.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,8000,1/15,1.78,6.765,2026-09-01T20:07:28.358-04:00,image-807addc1c1768225,session-2026-09-01-005
+1,2,315,images/1/IMG_8607.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,10000,1/15,1.78,6.765,2026-09-01T20:07:38.860-04:00,image-2ee3076a168c8588,session-2026-09-01-005
+1,3,0,images/1/IMG_8633.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:21:14.942-04:00,image-858a95501596f0f3,session-2026-09-01-005
+1,3,45,images/1/IMG_8634.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:21:31.038-04:00,image-8493587800f6243c,session-2026-09-01-005
+1,3,90,images/1/IMG_8635.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:21:49.523-04:00,image-9cb34f66c8bca33d,session-2026-09-01-005
+1,3,135,images/1/IMG_8637.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:22:22.165-04:00,image-0d3b779ed66d7fd6,session-2026-09-01-005
+1,3,180,images/1/IMG_8638.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:22:36.170-04:00,image-4c71241c5f2b8d5c,session-2026-09-01-005
+1,3,225,images/1/IMG_8639.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:22:58.374-04:00,image-ff97c522003b8627,session-2026-09-01-005
+1,3,270,images/1/IMG_8640.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:23:07.701-04:00,image-355c0ceee3df8c66,session-2026-09-01-005
+1,3,315,images/1/IMG_8641.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:23:23.300-04:00,image-39aab54738e96f7c,session-2026-09-01-005
+2,4,0,images/2/IMG_8608.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:13:52.840-04:00,image-ce409fb38329c172,session-2026-09-01-005
+2,4,45,images/2/IMG_8609.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:04.376-04:00,image-8090b4497c54fb07,session-2026-09-01-005
+2,4,90,images/2/IMG_8610.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:14.465-04:00,image-fb20908f2361be0d,session-2026-09-01-005
+2,4,135,images/2/IMG_8611.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:22.268-04:00,image-80c6a1a10ef4b195,session-2026-09-01-005
+2,4,180,images/2/IMG_8612.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:33.164-04:00,image-9990e1a28c29c00f,session-2026-09-01-005
+2,4,225,images/2/IMG_8613.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:42.502-04:00,image-3139179e00158894,session-2026-09-01-005
+2,4,270,images/2/IMG_8614.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:49.946-04:00,image-50a46c27667bf057,session-2026-09-01-005
+2,4,315,images/2/IMG_8615.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:14:59.127-04:00,image-de2101c47bcf08b6,session-2026-09-01-005
+3,5,0,images/3/IMG_8616.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:05.272-04:00,image-7ead347aea9b9f59,session-2026-09-01-005
+3,5,45,images/3/IMG_8617.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:11.922-04:00,image-4148646e37a361d5,session-2026-09-01-005
+3,5,90,images/3/IMG_8618.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:19.914-04:00,image-e63cb35bdc649864,session-2026-09-01-005
+3,5,135,images/3/IMG_8619.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:27.403-04:00,image-11643f71fb51593d,session-2026-09-01-005
+3,5,180,images/3/IMG_8620.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:36.097-04:00,image-2f1431483bfdff45,session-2026-09-01-005
+3,5,225,images/3/IMG_8621.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:45.633-04:00,image-4bac1bbb0ad11a82,session-2026-09-01-005
+3,5,270,images/3/IMG_8622.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:53.654-04:00,image-6b74317ce8e6ef3a,session-2026-09-01-005
+3,5,315,images/3/IMG_8623.jpg,FALSE,Apple,iPhone 16 Pro Max,FALSE,12500,1/15,1.78,6.765,2026-09-01T20:16:59.802-04:00,image-87ca33198a335f5e,session-2026-09-01-005
+8,6,0,images/8/IMG_0807.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/45,1.6,5.96,2026-09-04T13:43:54.555-04:00,image-ab168fff52107709,session-2026-09-04-008
+8,6,45,images/8/IMG_0808.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/52,1.6,5.96,2026-09-04T13:44:19.340-04:00,image-37226add553aeae3,session-2026-09-04-008
+8,6,90,images/8/IMG_0809.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/52,1.6,5.96,2026-09-04T13:44:42.000-04:00,image-32cf7f9266a4533d,session-2026-09-04-008
+8,6,135,images/8/IMG_0810.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/50,1.6,5.96,2026-09-04T13:45:15.852-04:00,image-bfcfcbd88d43f5cd,session-2026-09-04-008
+8,6,180,images/8/IMG_0811.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/52,1.6,5.96,2026-09-04T13:45:36.719-04:00,image-331cbc1a0ab8dbdf,session-2026-09-04-008
+8,6,225,images/8/IMG_0812.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/49,1.6,5.96,2026-09-04T13:46:11.311-04:00,image-dfb60055f8f5c3b6,session-2026-09-04-008
+8,6,270,images/8/IMG_0813.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/32,1.6,5.96,2026-09-04T13:47:08.742-04:00,image-28c0cc7d3c2ecdc6,session-2026-09-04-008
+8,6,315,images/8/IMG_0814.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/49,1.6,5.96,2026-09-04T13:47:30.806-04:00,image-26c926e0c4ca4f9c,session-2026-09-04-008
+8,7,0,images/8/IMG_0815.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/51,1.6,5.96,2026-09-04T13:48:23.381-04:00,image-594e79564f49f4d0,session-2026-09-04-008
+8,7,45,images/8/IMG_0816.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/50,1.6,5.96,2026-09-04T13:49:08.072-04:00,image-2a620ee4031afd1a,session-2026-09-04-008
+8,7,90,images/8/IMG_0817.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/50,1.6,5.96,2026-09-04T13:49:42.659-04:00,image-fef5fc9763df4f95,session-2026-09-04-008
+8,7,135,images/8/IMG_0818.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/53,1.6,5.96,2026-09-04T13:49:53.611-04:00,image-0c53eb30da22eedb,session-2026-09-04-008
+8,7,180,images/8/IMG_0819.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/51,1.6,5.96,2026-09-04T13:50:05.940-04:00,image-2523daad1ad3d155,session-2026-09-04-008
+8,7,225,images/8/IMG_0820.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/52,1.6,5.96,2026-09-04T13:50:31.496-04:00,image-e3935924717f6bb9,session-2026-09-04-008
+8,7,270,images/8/IMG_0821.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/50,1.6,5.96,2026-09-04T13:51:02.057-04:00,image-41116e2305fc3cd7,session-2026-09-04-008
+8,7,315,images/8/IMG_0822.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/46,1.6,5.96,2026-09-04T13:51:28.645-04:00,image-8eb75edf599c9ca4,session-2026-09-04-008
+8,8,0,images/8/IMG_0823.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/44,1.6,5.96,2026-09-04T13:52:15.086-04:00,image-130e04de72ec613d,session-2026-09-04-008
+8,8,45,images/8/IMG_0824.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/50,1.6,5.96,2026-09-04T13:54:51.171-04:00,image-acafdc6f67c1f3a1,session-2026-09-04-008
+8,8,90,images/8/IMG_0826.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/46,1.6,5.96,2026-09-04T13:55:02.533-04:00,image-0a5e3a5e4de9d486,session-2026-09-04-008
+8,8,135,images/8/IMG_0827.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/48,1.6,5.96,2026-09-04T13:55:52.287-04:00,image-a456bd008e5b67d0,session-2026-09-04-008
+8,8,180,images/8/IMG_0828.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/45,1.6,5.96,2026-09-04T13:56:28.825-04:00,image-da409a9abf0d2944,session-2026-09-04-008
+8,8,225,images/8/IMG_0829.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/48,1.6,5.96,2026-09-04T13:56:53.924-04:00,image-2472b03506e5eaaa,session-2026-09-04-008
+8,8,270,images/8/IMG_0831.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/54,1.6,5.96,2026-09-04T13:57:39.949-04:00,image-55a1c48d0a88c359,session-2026-09-04-008
+8,8,315,images/8/IMG_0832.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/53,1.6,5.96,2026-09-04T13:57:57.421-04:00,image-4663b8119ac54c37,session-2026-09-04-008
+8,9,0,images/8/IMG_0833.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/50,1.6,5.96,2026-09-04T13:59:26.574-04:00,image-60bb375cf5d0490e,session-2026-09-04-008
+8,9,45,images/8/IMG_0834.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/49,1.6,5.96,2026-09-04T13:59:38.247-04:00,image-f4fef70770b30439,session-2026-09-04-008
+8,9,90,images/8/IMG_0835.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/49,1.6,5.96,2026-09-04T14:00:03.537-04:00,image-4c29ecfb82a30e9a,session-2026-09-04-008
+8,9,135,images/8/IMG_0836.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/47,1.6,5.96,2026-09-04T14:01:00.884-04:00,image-2313973c794bbf3e,session-2026-09-04-008
+8,9,180,images/8/IMG_0837.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/51,1.6,5.96,2026-09-04T14:01:35.740-04:00,image-e5bf0fcadc295ec6,session-2026-09-04-008
+8,9,225,images/8/IMG_0838.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/34,1.6,5.96,2026-09-04T14:01:59.123-04:00,image-eab224bea3a63596,session-2026-09-04-008
+8,9,270,images/8/IMG_0839.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/33,1.6,5.96,2026-09-04T14:02:30.324-04:00,image-de09df5fe51b03f0,session-2026-09-04-008
+8,9,315,images/8/IMG_0840.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/40,1.6,5.96,2026-09-04T14:02:50.775-04:00,image-5693709ad4df8f67,session-2026-09-04-008
+9,10,0,images/9/IMG_0843.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/31,1.6,5.96,2026-09-04T14:29:33.874-04:00,image-33a6e9f3d27041a4,session-2026-09-04-008
+9,10,45,images/9/IMG_0844.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/37,1.6,5.96,2026-09-04T14:29:43.391-04:00,image-23e4c82b2e43b96a,session-2026-09-04-008
+9,10,90,images/9/IMG_0845.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/40,1.6,5.96,2026-09-04T14:30:06.408-04:00,image-43bf924580674ba7,session-2026-09-04-008
+9,10,135,images/9/IMG_0846.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/41,1.6,5.96,2026-09-04T14:30:14.966-04:00,image-a94d80d026f8cd11,session-2026-09-04-008
+9,10,180,images/9/IMG_0847.jpg,FALSE,Apple,iPhone 17,FALSE,500,1/41,1.6,5.96,2026-09-04T14:30:23.493-04:00,image-ee7c81e1fabce6ea,session-2026-09-04-008
+9,10,225,images/9/IMG_0848.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/37,1.6,5.96,2026-09-04T14:31:04.596-04:00,image-b1a78b50811c1a41,session-2026-09-04-008
+9,10,270,images/9/IMG_0849.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/39,1.6,5.96,2026-09-04T14:31:17.336-04:00,image-1fb888ff99fd894d,session-2026-09-04-008
+9,10,315,images/9/IMG_0851.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/35,1.6,5.96,2026-09-04T14:31:42.246-04:00,image-6aeb12e5c738f796,session-2026-09-04-008
+9,11,0,images/9/IMG_0852.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:32:54.532-04:00,image-a4869694d3692079,session-2026-09-04-008
+9,11,45,images/9/IMG_0853.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:33:11.009-04:00,image-bfddf695aa20b053,session-2026-09-04-008
+9,11,90,images/9/IMG_0854.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:33:31.685-04:00,image-184c016b662f23e8,session-2026-09-04-008
+9,11,135,images/9/IMG_0855.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-04T14:33:46.482-04:00,image-c08e15520f478a86,session-2026-09-04-008
+9,11,180,images/9/IMG_0856.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:34:04.693-04:00,image-b41357971a99c784,session-2026-09-04-008
+9,11,225,images/9/IMG_0857.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:34:23.543-04:00,image-f72cfdcb5bf2e445,session-2026-09-04-008
+9,11,270,images/9/IMG_0858.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:34:39.222-04:00,image-1af4739b2b8e7b57,session-2026-09-04-008
+9,11,315,images/9/IMG_0859.jpg,FALSE,Apple,iPhone 17,FALSE,640,1/30,1.6,5.96,2026-09-04T14:34:58.643-04:00,image-58c860ae6925abd1,session-2026-09-04-008
+10,12,0,images/10/IMG_0244.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T15:57:21.667-04:00,image-97846043ee9f6f5d,session-2026-08-24-003
+10,12,45,images/10/IMG_0245.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-24T15:57:34.612-04:00,image-69a31893b463f48d,session-2026-08-24-003
+10,12,90,images/10/IMG_0246.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T15:57:42.384-04:00,image-d0341d0b434ff987,session-2026-08-24-003
+10,12,135,images/10/IMG_0247.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T15:57:54.949-04:00,image-8ec46cf03a04d7bc,session-2026-08-24-003
+10,12,180,images/10/IMG_0248.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T15:58:17.086-04:00,image-2c7b163e15f8468b,session-2026-08-24-003
+10,12,225,images/10/IMG_0249.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-24T15:58:31.144-04:00,image-63c82ad67aea33da,session-2026-08-24-003
+10,12,270,images/10/IMG_0250.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-24T15:58:41.453-04:00,image-3b3624355872ad14,session-2026-08-24-003
+10,12,315,images/10/IMG_0251.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T15:58:54.445-04:00,image-b9bf55bccc3f2132,session-2026-08-24-003
+10,13,0,images/10/IMG_0252.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T17:00:01.235-04:00,image-78bcc999c5d2b037,session-2026-08-24-003
+10,13,45,images/10/IMG_0253.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T17:00:08.237-04:00,image-a979a6c062574744,session-2026-08-24-003
+10,13,90,images/10/IMG_0254.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T17:00:15.597-04:00,image-957f0010bd64467a,session-2026-08-24-003
+10,13,135,images/10/IMG_0255.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T17:00:22.279-04:00,image-2b09b651dd0165d8,session-2026-08-24-003
+10,13,180,images/10/IMG_0959.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T17:00:29.459-04:00,image-5ec4f8271a103c84,session-2026-08-24-003
+10,13,225,images/10/IMG_0960.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,200,1/60,1.78,6.765,2026-08-24T17:00:36.211-04:00,image-1301684efce926cf,session-2026-08-24-003
+10,13,270,images/10/IMG_0258.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-24T17:00:43.732-04:00,image-258e3ef14fc35b16,session-2026-08-24-003
+10,13,315,images/10/IMG_0259.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-24T17:00:48.402-04:00,image-9a339c8497429c6a,session-2026-08-24-003
+11,14,0,images/11/IMG_0260.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:21:43.635-04:00,image-e4cce5b0c878d79d,session-2026-08-25-004
+11,14,45,images/11/IMG_0261.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:21:51.573-04:00,image-b7d1b94329656bf4,session-2026-08-25-004
+11,14,90,images/11/IMG_0262.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:22:04.911-04:00,image-7f261b5e8730db4c,session-2026-08-25-004
+11,14,135,images/11/IMG_0263.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:22:16.492-04:00,image-b63dec8f28d02b4b,session-2026-08-25-004
+11,14,180,images/11/IMG_0264.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:22:26.365-04:00,image-43ff42eb1f6ae30e,session-2026-08-25-004
+11,14,225,images/11/IMG_0265.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:22:33.301-04:00,image-761e3f794d815e09,session-2026-08-25-004
+11,14,270,images/11/IMG_0266.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:22:51.792-04:00,image-cdc50bbd1d4fe8b1,session-2026-08-25-004
+11,14,315,images/11/IMG_0267.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:23:00.987-04:00,image-74afac32104f3c4d,session-2026-08-25-004
+11,15,0,images/11/IMG_0268.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:23:47.941-04:00,image-dfabb3254d031cff,session-2026-08-25-004
+11,15,45,images/11/IMG_0269.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:24:01.303-04:00,image-201b7c7274b6e1cc,session-2026-08-25-004
+11,15,90,images/11/IMG_0270.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:24:12.050-04:00,image-043d8d31a51f1781,session-2026-08-25-004
+11,15,135,images/11/IMG_0271.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:24:24.630-04:00,image-971767cf1b9bed2f,session-2026-08-25-004
+11,15,180,images/11/IMG_0272.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:24:40.003-04:00,image-af6d2b3014bc9cd2,session-2026-08-25-004
+11,15,225,images/11/IMG_0273.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:24:51.325-04:00,image-547855e3c5492abc,session-2026-08-25-004
+11,15,270,images/11/IMG_0274.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:25:11.614-04:00,image-012a237adc03bd41,session-2026-08-25-004
+11,15,315,images/11/IMG_0275.jpg,TRUE,Apple,iPhone 15 Pro,FALSE,160,1/60,1.78,6.765,2026-08-25T13:25:23.130-04:00,image-5286b526a7da48fd,session-2026-08-25-004
+16,16,0,images/16/IMG_0560.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-02T18:01:25.587-04:00,image-f9ac71d15ed18b18,session-2026-09-02-006
+16,16,45,images/16/IMG_0580.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:17:28.700-04:00,image-4a19c4243860c434,session-2026-09-02-006
+16,16,90,images/16/IMG_0581.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:20:07.489-04:00,image-699ba643f31163c1,session-2026-09-02-006
+16,16,135,images/16/IMG_0582.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:20:25.630-04:00,image-05466e1cd5dedf10,session-2026-09-02-006
+16,16,180,images/16/IMG_0584.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:21:54.698-04:00,image-b8fbe286c2158a4f,session-2026-09-02-006
+16,16,225,images/16/IMG_0585.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:22:17.167-04:00,image-161423d9a2021a0b,session-2026-09-02-006
+16,16,270,images/16/IMG_0586.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:22:49.207-04:00,image-edacb018de9abb72,session-2026-09-02-006
+16,16,315,images/16/IMG_0587.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:23:37.744-04:00,image-8c3cd92a971ceb87,session-2026-09-02-006
+16,17,0,images/16/IMG_0588.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:24:17.883-04:00,image-6d17eba8cea9c668,session-2026-09-02-006
+16,17,45,images/16/IMG_0590.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:25:09.396-04:00,image-566eb4f9f4daeb75,session-2026-09-02-006
+16,17,90,images/16/IMG_0592.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:26:31.381-04:00,image-0123419070c3bf33,session-2026-09-02-006
+16,17,135,images/16/IMG_0593.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:26:59.337-04:00,image-cb9f609847bdb9aa,session-2026-09-02-006
+16,17,180,images/16/IMG_0594.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:28:11.413-04:00,image-623b73eb9d788d3f,session-2026-09-02-006
+16,17,225,images/16/IMG_0595.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:28:26.296-04:00,image-6a398a891a120a14,session-2026-09-02-006
+16,17,270,images/16/IMG_0596.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:29:17.368-04:00,image-657a6b43b3e3e74b,session-2026-09-02-006
+16,17,315,images/16/IMG_0598.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:29:46.781-04:00,image-d4b79f6b428446d0,session-2026-09-02-006
+16,18,0,images/16/IMG_0599.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:32:02.959-04:00,image-611e2dfcc4e38df3,session-2026-09-02-006
+16,18,45,images/16/IMG_0600.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:32:31.154-04:00,image-9d23a53d4d27ae15,session-2026-09-02-006
+16,18,90,images/16/IMG_0601.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:32:50.663-04:00,image-9db53e592a957337,session-2026-09-02-006
+16,18,135,images/16/IMG_0603.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:33:30.229-04:00,image-d35b83fe7d01848a,session-2026-09-02-006
+16,18,180,images/16/IMG_0604.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:34:03.879-04:00,image-dc202cdaf00e664b,session-2026-09-02-006
+16,18,225,images/16/IMG_0605.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:34:24.700-04:00,image-cc916189f15b0bfa,session-2026-09-02-006
+16,18,270,images/16/IMG_0606.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:34:50.399-04:00,image-5e7bfc2762e64323,session-2026-09-02-006
+16,18,315,images/16/IMG_0607.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:35:16.210-04:00,image-7236ee91b9fe3989,session-2026-09-02-006
+16,19,0,images/16/IMG_0609.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:39:42.266-04:00,image-dc8fc6c3fbc0b06e,session-2026-09-02-006
+16,19,45,images/16/IMG_0610.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:39:57.766-04:00,image-c67e1c9fd0e8df24,session-2026-09-02-006
+16,19,90,images/16/IMG_0612.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:41:02.591-04:00,image-d7e074768eeaa2cd,session-2026-09-02-006
+16,19,135,images/16/IMG_0613.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:41:25.785-04:00,image-45ee8f1818c7dd24,session-2026-09-02-006
+16,19,180,images/16/IMG_0614.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-02T18:42:18.193-04:00,image-26f1379cf832e25a,session-2026-09-02-006
+16,19,225,images/16/IMG_0615.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:42:48.461-04:00,image-4354291eeb43b413,session-2026-09-02-006
+16,19,270,images/16/IMG_0617.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:43:50.463-04:00,image-2d79e135c373f89e,session-2026-09-02-006
+16,19,315,images/16/IMG_0618.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-02T18:44:38.010-04:00,image-106e3b1c1a443e63,session-2026-09-02-006
+16,20,0,images/16/IMG_0626.jpg,FALSE,Apple,iPhone 17,FALSE,2000,1/15,1.6,5.96,2026-09-02T19:35:46.795-04:00,image-044c8696c2ff5b22,session-2026-09-02-006
+16,20,45,images/16/IMG_0628.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:36:06.029-04:00,image-28b6c3bf9b09f387,session-2026-09-02-006
+16,20,90,images/16/IMG_0629.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:36:22.886-04:00,image-12f91c1a9d828711,session-2026-09-02-006
+16,20,135,images/16/IMG_0631.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:36:37.700-04:00,image-f66267e9e58fd26e,session-2026-09-02-006
+16,20,180,images/16/IMG_0632.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:36:54.403-04:00,image-6a9d077c85ef895b,session-2026-09-02-006
+16,20,225,images/16/IMG_0634.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:37:18.911-04:00,image-3e03dd67c2886716,session-2026-09-02-006
+16,20,270,images/16/IMG_0635.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:37:34.826-04:00,image-32b3f250db6da222,session-2026-09-02-006
+16,20,315,images/16/IMG_0636.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:37:46.332-04:00,image-40e3511578b67223,session-2026-09-02-006
+16,21,0,images/16/IMG_0637.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:38:17.897-04:00,image-0a1e90552c21d823,session-2026-09-02-006
+16,21,45,images/16/IMG_0638.jpg,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:38:32.239-04:00,image-56a61944f7718988,session-2026-09-02-006
+16,21,90,images/16/IMG_0639.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:38:41.409-04:00,image-109beff0ab1c634a,session-2026-09-02-006
+16,21,135,images/16/IMG_0640.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:39:01.530-04:00,image-66abe9426d7a2158,session-2026-09-02-006
+16,21,180,images/16/IMG_0641.jpg,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:39:17.638-04:00,image-9f7418bf92110b47,session-2026-09-02-006
+16,21,225,images/16/IMG_0642.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:39:32.441-04:00,image-9f0e88116b2f34cd,session-2026-09-02-006
+16,21,270,images/16/IMG_0644.jpg,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:40:02.927-04:00,image-a669ce097b725033,session-2026-09-02-006
+16,21,315,images/16/IMG_0645.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:40:13.962-04:00,image-38917c5e25e58837,session-2026-09-02-006
+16,22,0,images/16/IMG_0646.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:40:56.430-04:00,image-7c18174f893ff233,session-2026-09-02-006
+16,22,45,images/16/IMG_0647.jpg,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:41:20.070-04:00,image-5865d05bf70e076c,session-2026-09-02-006
+16,22,90,images/16/IMG_0648.jpg,FALSE,Apple,iPhone 17,FALSE,2500,1/15,1.6,5.96,2026-09-02T19:41:38.926-04:00,image-fb337c681a41ec19,session-2026-09-02-006
+16,22,135,images/16/IMG_0649.jpg,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:42:47.405-04:00,image-d907fa09878e1c2a,session-2026-09-02-006
+16,22,180,images/16/IMG_0650.jpg,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:43:17.547-04:00,image-1c6fc9e6cd71814a,session-2026-09-02-006
+16,22,225,images/16/IMG_0651.jpg,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:43:35.681-04:00,image-c07b77a4c52822b8,session-2026-09-02-006
+16,22,270,images/16/IMG_0652.jpg,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:43:54.086-04:00,image-a5a2ebb7a570147a,session-2026-09-02-006
+16,22,315,images/16/IMG_0653.jpg,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:44:33.506-04:00,image-5124784ec7e7ba31,session-2026-09-02-006
+16,23,0,images/16/IMG_0654.jpg,FALSE,Apple,iPhone 17,FALSE,4000,1/15,1.6,5.96,2026-09-02T19:45:08.733-04:00,image-c462fe1ecc65d573,session-2026-09-02-006
+16,23,45,images/16/IMG_0655.jpg,FALSE,Apple,iPhone 17,FALSE,4000,1/15,1.6,5.96,2026-09-02T19:45:25.149-04:00,image-712bd6fe9db99862,session-2026-09-02-006
+16,23,90,images/16/IMG_0656.jpg,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:45:35.918-04:00,image-cd6bdd084364d49f,session-2026-09-02-006
+16,23,135,images/16/IMG_0657.jpg,FALSE,Apple,iPhone 17,FALSE,3200,1/15,1.6,5.96,2026-09-02T19:45:47.708-04:00,image-0eef4afec2368ccf,session-2026-09-02-006
+16,23,180,images/16/IMG_0658.jpg,FALSE,Apple,iPhone 17,FALSE,4000,1/15,1.6,5.96,2026-09-02T19:45:59.669-04:00,image-a1b9036f9b7d7800,session-2026-09-02-006
+16,23,225,images/16/IMG_0659.jpg,FALSE,Apple,iPhone 17,FALSE,4000,1/15,1.6,5.96,2026-09-02T19:46:13.027-04:00,image-d3ab4553b1e490ec,session-2026-09-02-006
+16,23,270,images/16/IMG_0660.jpg,FALSE,Apple,iPhone 17,FALSE,4000,1/15,1.6,5.96,2026-09-02T19:46:23.637-04:00,image-fb40d9147c54eb90,session-2026-09-02-006
+16,23,315,images/16/IMG_0662.jpg,FALSE,Apple,iPhone 17,FALSE,4000,1/15,1.6,5.96,2026-09-02T19:47:04.780-04:00,image-70bce60eb7bb5de0,session-2026-09-02-006
+22,24,0,images/22/IMG_0664.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:18:53.162-04:00,image-ca23d537b27a55e7,session-2026-09-03-007
+22,24,45,images/22/IMG_0665.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:19:07.657-04:00,image-b8adb0740c5e1c9e,session-2026-09-03-007
+22,24,90,images/22/IMG_0667.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T15:19:50.355-04:00,image-5323a72f5d418595,session-2026-09-03-007
+22,24,135,images/22/IMG_0668.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:20:08.489-04:00,image-631b1a8518325808,session-2026-09-03-007
+22,24,180,images/22/IMG_0669.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:20:23.166-04:00,image-4084fed03dcd782c,session-2026-09-03-007
+22,24,225,images/22/IMG_0671.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:20:33.649-04:00,image-191392b73abbc91a,session-2026-09-03-007
+22,24,270,images/22/IMG_0672.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:20:49.132-04:00,image-428f966d3aed0e9e,session-2026-09-03-007
+22,24,315,images/22/IMG_0673.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:21:04.671-04:00,image-97fbf698150c016f,session-2026-09-03-007
+22,25,0,images/22/IMG_0674.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:22:01.097-04:00,image-2071eec7f35a3108,session-2026-09-03-007
+22,25,45,images/22/IMG_0675.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:22:21.501-04:00,image-b2decb732e0994cd,session-2026-09-03-007
+22,25,90,images/22/IMG_0676.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:23:04.247-04:00,image-167910f654a9c5fc,session-2026-09-03-007
+22,25,135,images/22/IMG_0677.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:23:22.277-04:00,image-1029021f06b6f27c,session-2026-09-03-007
+22,25,180,images/22/IMG_0678.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:24:08.897-04:00,image-0a2713f596bc4aac,session-2026-09-03-007
+22,25,225,images/22/IMG_0679.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:24:25.425-04:00,image-e30f30462343173b,session-2026-09-03-007
+22,25,270,images/22/IMG_0680.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:24:56.440-04:00,image-73758df545b9d2f9,session-2026-09-03-007
+22,25,315,images/22/IMG_0681.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:25:25.250-04:00,image-74fd040cfedeb9dd,session-2026-09-03-007
+22,26,0,images/22/IMG_0682.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:28:39.683-04:00,image-5efd11a5eb545c45,session-2026-09-03-007
+22,26,45,images/22/IMG_0683.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-03T15:28:50.500-04:00,image-26cf948541903772,session-2026-09-03-007
+22,26,90,images/22/IMG_0684.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:29:12.632-04:00,image-6f34c02484545c9a,session-2026-09-03-007
+22,26,135,images/22/IMG_0686.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:30:48.409-04:00,image-53ad55181d0e7249,session-2026-09-03-007
+22,26,180,images/22/IMG_0687.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:31:15.575-04:00,image-9192b729d7981ce1,session-2026-09-03-007
+22,26,225,images/22/IMG_0688.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:31:51.131-04:00,image-8e3e61bbc5aa35f3,session-2026-09-03-007
+22,26,270,images/22/IMG_0689.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:32:30.819-04:00,image-71ef8b1dd8eed47c,session-2026-09-03-007
+22,26,315,images/22/IMG_0690.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:33:00.249-04:00,image-66dce5167db58f1d,session-2026-09-03-007
+22,27,0,images/22/IMG_0691.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:33:52.230-04:00,image-fe02b993e09cd37d,session-2026-09-03-007
+22,27,45,images/22/IMG_0692.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:34:09.455-04:00,image-2f94e50ded0ddbc5,session-2026-09-03-007
+22,27,90,images/22/IMG_0693.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:34:43.844-04:00,image-5ac0e56cbcd73bf7,session-2026-09-03-007
+22,27,135,images/22/IMG_0695.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:35:12.958-04:00,image-111464cc23fda808,session-2026-09-03-007
+22,27,180,images/22/IMG_0696.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:35:39.283-04:00,image-78ad0b9c1879b5c9,session-2026-09-03-007
+22,27,225,images/22/IMG_0697.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:35:55.394-04:00,image-0ba8af9772e4221d,session-2026-09-03-007
+22,27,270,images/22/IMG_0698.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:36:28.158-04:00,image-3d2a6e7108550ce0,session-2026-09-03-007
+22,27,315,images/22/IMG_0699.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T15:36:54.733-04:00,image-aed88e8febc23f93,session-2026-09-03-007
+22,28,0,images/22/IMG_0700.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:40:10.046-04:00,image-5a027e7a4f74d305,session-2026-09-03-007
+22,28,45,images/22/IMG_0701.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:40:35.128-04:00,image-d492d23990e52d88,session-2026-09-03-007
+22,28,90,images/22/IMG_0702.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:41:00.362-04:00,image-1b4e358c22e6e73d,session-2026-09-03-007
+22,28,135,images/22/IMG_0703.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:41:16.073-04:00,image-b445f762dac2dae1,session-2026-09-03-007
+22,28,180,images/22/IMG_0704.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:41:28.760-04:00,image-937a72d360e6155b,session-2026-09-03-007
+22,28,225,images/22/IMG_0705.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:41:45.717-04:00,image-7cc0060799bab76e,session-2026-09-03-007
+22,28,270,images/22/IMG_0706.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:42:26.768-04:00,image-005b92267fc644e1,session-2026-09-03-007
+22,28,315,images/22/IMG_0707.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:42:45.446-04:00,image-005a5a3a4b8b27b3,session-2026-09-03-007
+22,29,0,images/22/IMG_0708.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:44:07.717-04:00,image-7bd5b9bb7d2fe6ba,session-2026-09-03-007
+22,29,45,images/22/IMG_0709.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:44:25.799-04:00,image-61f4030d55ddaefa,session-2026-09-03-007
+22,29,90,images/22/IMG_0710.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:45:05.127-04:00,image-747d494b9d6e0d17,session-2026-09-03-007
+22,29,135,images/22/IMG_0711.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:45:23.203-04:00,image-add7f9767d4d5463,session-2026-09-03-007
+22,29,180,images/22/IMG_0712.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:45:41.422-04:00,image-408a62375522db9e,session-2026-09-03-007
+22,29,225,images/22/IMG_0713.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:46:03.567-04:00,image-60d8874bf39cb462,session-2026-09-03-007
+22,29,270,images/22/IMG_0714.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:46:18.463-04:00,image-418e99194b3e87e6,session-2026-09-03-007
+22,29,315,images/22/IMG_0716.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:47:10.673-04:00,image-68162b77b07c61e1,session-2026-09-03-007
+22,30,0,images/22/IMG_0717.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:48:01.780-04:00,image-ca5c5ac82f969527,session-2026-09-03-007
+22,30,45,images/22/IMG_0718.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:48:15.522-04:00,image-3ff0922836090271,session-2026-09-03-007
+22,30,90,images/22/IMG_0719.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:48:46.134-04:00,image-02061ce79cd4cd04,session-2026-09-03-007
+22,30,135,images/22/IMG_0720.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:49:04.537-04:00,image-aea0d82fbc77977d,session-2026-09-03-007
+22,30,180,images/22/IMG_0721.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:49:26.230-04:00,image-c014951f2027ffa9,session-2026-09-03-007
+22,30,225,images/22/IMG_0722.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:49:47.931-04:00,image-d0fdfd3c187088b0,session-2026-09-03-007
+22,30,270,images/22/IMG_0723.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:50:07.670-04:00,image-9d09982613990a53,session-2026-09-03-007
+22,30,315,images/22/IMG_0724.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:51:09.194-04:00,image-b5c7c08f430ce8b2,session-2026-09-03-007
+22,31,0,images/22/IMG_0725.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:51:48.623-04:00,image-0d1e9431d96a4895,session-2026-09-03-007
+22,31,45,images/22/IMG_0726.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:52:16.214-04:00,image-64484f382d270bed,session-2026-09-03-007
+22,31,90,images/22/IMG_0727.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:52:51.335-04:00,image-e5fedcc81a7c0fee,session-2026-09-03-007
+22,31,135,images/22/IMG_0728.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:53:17.386-04:00,image-9316843e3ebacf30,session-2026-09-03-007
+22,31,180,images/22/IMG_0729.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T15:53:31.523-04:00,image-919d1d9c14883a20,session-2026-09-03-007
+22,31,225,images/22/IMG_0730.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T15:53:53.280-04:00,image-508ec94f01bc51a6,session-2026-09-03-007
+22,31,270,images/22/IMG_0731.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T15:54:13.838-04:00,image-8f1c97b19016f571,session-2026-09-03-007
+22,31,315,images/22/IMG_0732.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T15:54:42.499-04:00,image-a9498c73d80ab277,session-2026-09-03-007
+23,32,0,images/23/IMG_0733.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:10:29.156-04:00,image-145efe4db4ebc6c0,session-2026-09-03-007
+23,32,45,images/23/IMG_0734.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T16:10:41.874-04:00,image-73899b8ee6e5b146,session-2026-09-03-007
+23,32,90,images/23/IMG_0735.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T16:11:09.115-04:00,image-cdcb4d9cd36ab32d,session-2026-09-03-007
+23,32,135,images/23/IMG_0736.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T16:11:33.340-04:00,image-523dafba79edb4d5,session-2026-09-03-007
+23,32,180,images/23/IMG_0737.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:12:06.968-04:00,image-68716f04ef000470,session-2026-09-03-007
+23,32,225,images/23/IMG_0739.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:13:29.610-04:00,image-7d6deee2c5f5a0d1,session-2026-09-03-007
+23,32,270,images/23/IMG_0740.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:13:39.333-04:00,image-b58c1f3224304eb0,session-2026-09-03-007
+23,32,315,images/23/IMG_0741.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:13:59.599-04:00,image-d40522c087561c49,session-2026-09-03-007
+23,33,0,images/23/IMG_0742.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:14:33.859-04:00,image-72e42a335031a42f,session-2026-09-03-007
+23,33,45,images/23/IMG_0743.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:14:57.986-04:00,image-df3a0ab90dc80fdc,session-2026-09-03-007
+23,33,90,images/23/IMG_0744.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:15:22.386-04:00,image-b129d92576eaae50,session-2026-09-03-007
+23,33,135,images/23/IMG_0745.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:15:47.790-04:00,image-01026f04f0f06da4,session-2026-09-03-007
+23,33,180,images/23/IMG_0746.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:16:20.999-04:00,image-70bd7e6dd98c8213,session-2026-09-03-007
+23,33,225,images/23/IMG_0747.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:16:37.149-04:00,image-98b5786513b15929,session-2026-09-03-007
+23,33,270,images/23/IMG_0748.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:16:48.965-04:00,image-d47f3920aa89d002,session-2026-09-03-007
+23,33,315,images/23/IMG_0749.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:17:12.374-04:00,image-b9afd1d6834766b1,session-2026-09-03-007
+23,34,0,images/23/IMG_0751.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T16:18:40.255-04:00,image-c3c47d4a56cfd0ba,session-2026-09-03-007
+23,34,45,images/23/IMG_0752.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T16:19:10.541-04:00,image-95e097de94efbebf,session-2026-09-03-007
+23,34,90,images/23/IMG_0754.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-03T16:19:55.778-04:00,image-aabbcf1aab147b26,session-2026-09-03-007
+23,34,135,images/23/IMG_0755.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:21:04.909-04:00,image-890705697034295b,session-2026-09-03-007
+23,34,180,images/23/IMG_0756.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:21:30.959-04:00,image-6f39a7656c18a760,session-2026-09-03-007
+23,34,225,images/23/IMG_0757.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:21:49.206-04:00,image-e6c406c0afacfedb,session-2026-09-03-007
+23,34,270,images/23/IMG_0758.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:22:07.695-04:00,image-92389656b306db73,session-2026-09-03-007
+23,34,315,images/23/IMG_0759.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:22:27.061-04:00,image-8a6ff589e804b0a6,session-2026-09-03-007
+23,35,0,images/23/IMG_0762.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:24:21.403-04:00,image-8a215273324618f7,session-2026-09-03-007
+23,35,45,images/23/IMG_0763.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:24:38.301-04:00,image-c894872e86f1e8a6,session-2026-09-03-007
+23,35,90,images/23/IMG_0764.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:25:30.142-04:00,image-a2d56dd7860d556e,session-2026-09-03-007
+23,35,135,images/23/IMG_0765.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:26:39.492-04:00,image-eb3711dbc5253752,session-2026-09-03-007
+23,35,180,images/23/IMG_0766.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:27:00.229-04:00,image-6a815c23371e8870,session-2026-09-03-007
+23,35,225,images/23/IMG_0767.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:27:17.888-04:00,image-9da89620c55f8dee,session-2026-09-03-007
+23,35,270,images/23/IMG_0769.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:27:35.444-04:00,image-12d24306af552972,session-2026-09-03-007
+23,35,315,images/23/IMG_0770.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-03T16:28:22.711-04:00,image-d7dd3b0bac03c947,session-2026-09-03-007
+23,36,0,images/23/IMG_0771.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/24,1.6,5.96,2026-09-03T16:31:23.067-04:00,image-70a58ae7b4afe39e,session-2026-09-03-007
+23,36,45,images/23/IMG_0772.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/24,1.6,5.96,2026-09-03T16:31:41.302-04:00,image-62e63494941c6780,session-2026-09-03-007
+23,36,90,images/23/IMG_0773.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:32:13.295-04:00,image-43e332dad1424435,session-2026-09-03-007
+23,36,135,images/23/IMG_0774.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:32:34.389-04:00,image-74b362de4c678051,session-2026-09-03-007
+23,36,180,images/23/IMG_0775.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/18,1.6,5.96,2026-09-03T16:33:26.279-04:00,image-d5f1e1d86cfdcadb,session-2026-09-03-007
+23,36,225,images/23/IMG_0776.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:33:38.636-04:00,image-72d214dc4c2332bd,session-2026-09-03-007
+23,36,270,images/23/IMG_0777.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:33:52.726-04:00,image-04b613093e770f29,session-2026-09-03-007
+23,36,315,images/23/IMG_0778.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:34:14.504-04:00,image-7194687a1901db76,session-2026-09-03-007
+23,37,0,images/23/IMG_0779.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:34:52.818-04:00,image-c603961cba0d4557,session-2026-09-03-007
+23,37,45,images/23/IMG_0780.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/24,1.6,5.96,2026-09-03T16:35:12.527-04:00,image-e5d8166a9f28a0ba,session-2026-09-03-007
+23,37,90,images/23/IMG_0781.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:35:25.496-04:00,image-c128f2e1e165eb80,session-2026-09-03-007
+23,37,135,images/23/IMG_0782.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:35:41.224-04:00,image-359407323c0ee9ea,session-2026-09-03-007
+23,37,180,images/23/IMG_0783.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:36:18.714-04:00,image-884710482441401f,session-2026-09-03-007
+23,37,225,images/23/IMG_0784.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:36:27.512-04:00,image-5d7d09165ee4dfaf,session-2026-09-03-007
+23,37,270,images/23/IMG_0785.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:36:37.032-04:00,image-4aa0daaea7767e0c,session-2026-09-03-007
+23,37,315,images/23/IMG_0786.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/29,1.6,5.96,2026-09-03T16:36:54.497-04:00,image-db03b183c941db9b,session-2026-09-03-007
+23,38,0,images/23/IMG_0787.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/28,1.6,5.96,2026-09-03T16:37:59.768-04:00,image-20321d2186d7addd,session-2026-09-03-007
+23,38,45,images/23/IMG_0788.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/29,1.6,5.96,2026-09-03T16:39:02.246-04:00,image-4fb3c873935b4263,session-2026-09-03-007
+23,38,90,images/23/IMG_0789.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/28,1.6,5.96,2026-09-03T16:39:38.923-04:00,image-3eb751ae6699d882,session-2026-09-03-007
+23,38,135,images/23/IMG_0790.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:40:16.535-04:00,image-7c2e37e35f139f18,session-2026-09-03-007
+23,38,180,images/23/IMG_0791.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:40:47.825-04:00,image-3374d6179dfc6ce6,session-2026-09-03-007
+23,38,225,images/23/IMG_0793.jpg,FALSE,Apple,iPhone 17,FALSE,800,1/30,1.6,5.96,2026-09-03T16:42:09.572-04:00,image-6e85100166addeab,session-2026-09-03-007
+23,38,270,images/23/IMG_0794.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:42:32.216-04:00,image-9f20414899726f70,session-2026-09-03-007
+23,38,315,images/23/IMG_0796.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:43:03.834-04:00,image-9385983cca0026c3,session-2026-09-03-007
+23,39,0,images/23/IMG_0797.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/29,1.6,5.96,2026-09-03T16:43:52.365-04:00,image-7dd6470609beb3b5,session-2026-09-03-007
+23,39,45,images/23/IMG_0798.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:44:17.920-04:00,image-51c020035a40f540,session-2026-09-03-007
+23,39,90,images/23/IMG_0799.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:44:32.700-04:00,image-c0fc8f6dc8d0d9d8,session-2026-09-03-007
+23,39,135,images/23/IMG_0800.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:44:57.428-04:00,image-cbd9e57cc72698c5,session-2026-09-03-007
+23,39,180,images/23/IMG_0802.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:46:43.254-04:00,image-158b18b480c0e4ae,session-2026-09-03-007
+23,39,225,images/23/IMG_0803.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:47:15.225-04:00,image-92785c4b0620c90b,session-2026-09-03-007
+23,39,270,images/23/IMG_0804.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:47:36.030-04:00,image-5ed9a3c994bfc3d4,session-2026-09-03-007
+23,39,315,images/23/IMG_0805.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/30,1.6,5.96,2026-09-03T16:47:53.854-04:00,image-8054d252091a2a54,session-2026-09-03-007
+26,40,0,images/26/IMG_0869.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:20:55.943-04:00,image-9dd3d65da728213f,session-2026-09-08-009
+26,40,45,images/26/IMG_0870.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:21:15.232-04:00,image-3bf6bc58ed99ffee,session-2026-09-08-009
+26,40,90,images/26/IMG_0871.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:21:35.178-04:00,image-57d3b02f68eae664,session-2026-09-08-009
+26,40,135,images/26/IMG_0872.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:21:44.565-04:00,image-691aa39cc1e3d304,session-2026-09-08-009
+26,40,180,images/26/IMG_0873.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:22:08.627-04:00,image-4c65a09b27461f34,session-2026-09-08-009
+26,40,225,images/26/IMG_0874.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:22:23.333-04:00,image-57c8fd09a201ba96,session-2026-09-08-009
+26,40,270,images/26/IMG_0875.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:22:35.295-04:00,image-c8d0723286b2f5db,session-2026-09-08-009
+26,40,315,images/26/IMG_0876.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:22:44.927-04:00,image-da7db50109237169,session-2026-09-08-009
+26,41,0,images/26/IMG_0878.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:25:38.343-04:00,image-cb3c85c66b2e7866,session-2026-09-08-009
+26,41,45,images/26/IMG_0879.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:25:54.012-04:00,image-7e1267a6bfcc1666,session-2026-09-08-009
+26,41,90,images/26/IMG_0880.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:26:06.693-04:00,image-048ff7247f371f4f,session-2026-09-08-009
+26,41,135,images/26/IMG_0881.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:26:17.841-04:00,image-4ea17e88248bbc30,session-2026-09-08-009
+26,41,180,images/26/IMG_0882.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:27:27.298-04:00,image-5de133a2c55eb034,session-2026-09-08-009
+26,41,225,images/26/IMG_0883.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:27:44.953-04:00,image-93f92d92015006f4,session-2026-09-08-009
+26,41,270,images/26/IMG_0884.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:28:05.369-04:00,image-1a81caeefbc030c5,session-2026-09-08-009
+26,41,315,images/26/IMG_0885.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:28:22.682-04:00,image-c392115785e30305,session-2026-09-08-009
+26,42,0,images/26/IMG_0886.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:28:57.794-04:00,image-6b61c63030b340d1,session-2026-09-08-009
+26,42,45,images/26/IMG_0887.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:29:15.002-04:00,image-cdc45b698a499365,session-2026-09-08-009
+26,42,90,images/26/IMG_0888.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:29:28.268-04:00,image-420cd5caff59ca9f,session-2026-09-08-009
+26,42,135,images/26/IMG_0889.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:29:38.926-04:00,image-3ec233b6a69dcb79,session-2026-09-08-009
+26,42,180,images/26/IMG_0890.jpg,TRUE,Apple,iPhone 17,FALSE,160,1/60,1.6,5.96,2026-09-08T16:30:07.920-04:00,image-a7a04118712f97c8,session-2026-09-08-009
+26,42,225,images/26/IMG_0891.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:30:22.999-04:00,image-a5b025a1493f9034,session-2026-09-08-009
+26,42,270,images/26/IMG_0893.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:30:50.805-04:00,image-e270fb9a2b80f457,session-2026-09-08-009
+26,42,315,images/26/IMG_0894.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:31:12.197-04:00,image-54274530e973e8db,session-2026-09-08-009
+26,43,0,images/26/IMG_0895.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:32:09.666-04:00,image-c2f629a8b0c436af,session-2026-09-08-009
+26,43,45,images/26/IMG_0896.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:32:21.262-04:00,image-8bca31878123ca70,session-2026-09-08-009
+26,43,90,images/26/IMG_0897.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:32:30.764-04:00,image-13b603bb0cc2bcd2,session-2026-09-08-009
+26,43,135,images/26/IMG_0899.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:33:00.743-04:00,image-f6c5107800538611,session-2026-09-08-009
+26,43,180,images/26/IMG_0900.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:33:15.753-04:00,image-2ce9f1225d8c0a88,session-2026-09-08-009
+26,43,225,images/26/IMG_0901.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:33:41.216-04:00,image-636e7cf8b7d1579d,session-2026-09-08-009
+26,43,270,images/26/IMG_0902.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:34:00.958-04:00,image-b0f0125b80176a2b,session-2026-09-08-009
+26,43,315,images/26/IMG_0903.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-08T16:34:25.567-04:00,image-2fba4b99b86972a0,session-2026-09-08-009
+26,44,0,images/26/IMG_0906.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/29,1.6,5.96,2026-09-08T16:39:39.772-04:00,image-c6e76bb2c18a5a08,session-2026-09-08-009
+26,44,45,images/26/IMG_0907.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:40:02.976-04:00,image-dee93c83f3a79606,session-2026-09-08-009
+26,44,90,images/26/IMG_0908.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/29,1.6,5.96,2026-09-08T16:40:21.983-04:00,image-d6db57016a387d19,session-2026-09-08-009
+26,44,135,images/26/IMG_0909.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:40:57.205-04:00,image-23458b1c9fdbc937,session-2026-09-08-009
+26,44,180,images/26/IMG_0911.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/26,1.6,5.96,2026-09-08T16:41:34.383-04:00,image-e45b58bab70ee902,session-2026-09-08-009
+26,44,225,images/26/IMG_0912.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:41:46.243-04:00,image-1dbc3dfa81a0ab49,session-2026-09-08-009
+26,44,270,images/26/IMG_0913.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/29,1.6,5.96,2026-09-08T16:41:55.864-04:00,image-a179dca11b744ff8,session-2026-09-08-009
+26,44,315,images/26/IMG_0914.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/25,1.6,5.96,2026-09-08T16:42:11.386-04:00,image-3c3894c0e1328dc0,session-2026-09-08-009
+26,45,0,images/26/IMG_0923.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/26,1.6,5.96,2026-09-08T16:45:38.622-04:00,image-9052d1d74974ba4a,session-2026-09-08-009
+26,45,45,images/26/IMG_0924.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/28,1.6,5.96,2026-09-08T16:46:25.056-04:00,image-ed1dd2c7a55310ca,session-2026-09-08-009
+26,45,90,images/26/IMG_0925.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/28,1.6,5.96,2026-09-08T16:46:49.351-04:00,image-59ccab0ec4ac63a6,session-2026-09-08-009
+26,45,135,images/26/IMG_0926.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:47:09.362-04:00,image-63c7a2decc5b9d32,session-2026-09-08-009
+26,45,180,images/26/IMG_0927.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/24,1.6,5.96,2026-09-08T16:47:42.029-04:00,image-07279ce8b7635293,session-2026-09-08-009
+26,45,225,images/26/IMG_0929.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/24,1.6,5.96,2026-09-08T16:48:07.642-04:00,image-c9a1db5d7358e6d2,session-2026-09-08-009
+26,45,270,images/26/IMG_0930.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/25,1.6,5.96,2026-09-08T16:48:29.006-04:00,image-4308e6284b01f539,session-2026-09-08-009
+26,45,315,images/26/IMG_0932.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/24,1.6,5.96,2026-09-08T16:50:14.339-04:00,image-66692d62284e20ba,session-2026-09-08-009
+26,46,0,images/26/IMG_0935.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/26,1.6,5.96,2026-09-08T16:51:12.680-04:00,image-bd8c6dd0ec6576cc,session-2026-09-08-009
+26,46,45,images/26/IMG_0936.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:51:43.013-04:00,image-420784a2d291226a,session-2026-09-08-009
+26,46,90,images/26/IMG_0937.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/25,1.6,5.96,2026-09-08T16:52:02.654-04:00,image-d8886de72c791fb3,session-2026-09-08-009
+26,46,135,images/26/IMG_0939.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/26,1.6,5.96,2026-09-08T16:52:33.315-04:00,image-b8bff0a54e8005bf,session-2026-09-08-009
+26,46,180,images/26/IMG_0941.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/25,1.6,5.96,2026-09-08T16:53:11.350-04:00,image-9e501bb24f6792e4,session-2026-09-08-009
+26,46,225,images/26/IMG_0942.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/23,1.6,5.96,2026-09-08T16:53:27.234-04:00,image-13a604c18c6dacc0,session-2026-09-08-009
+26,46,270,images/26/IMG_0943.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/24,1.6,5.96,2026-09-08T16:53:41.729-04:00,image-566150db0845e03e,session-2026-09-08-009
+26,46,315,images/26/IMG_0944.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/28,1.6,5.96,2026-09-08T16:54:00.579-04:00,image-d5932389d9423c17,session-2026-09-08-009
+26,47,0,images/26/IMG_0947.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/20,1.6,5.96,2026-09-08T16:55:46.225-04:00,image-e12a905fecd4e3b3,session-2026-09-08-009
+26,47,45,images/26/IMG_0948.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:56:04.616-04:00,image-f54b32016e76fdac,session-2026-09-08-009
+26,47,90,images/26/IMG_0949.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/27,1.6,5.96,2026-09-08T16:56:18.372-04:00,image-93926b4c1a1be21c,session-2026-09-08-009
+26,47,135,images/26/IMG_0950.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/23,1.6,5.96,2026-09-08T16:56:27.009-04:00,image-53e331da32b0373e,session-2026-09-08-009
+26,47,180,images/26/IMG_0951.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/26,1.6,5.96,2026-09-08T16:56:51.720-04:00,image-e51ea0d177c85f7d,session-2026-09-08-009
+26,47,225,images/26/IMG_0953.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/23,1.6,5.96,2026-09-08T16:57:28.712-04:00,image-960a89de71c4e69d,session-2026-09-08-009
+26,47,270,images/26/IMG_0954.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/22,1.6,5.96,2026-09-08T16:57:53.093-04:00,image-4231f78305cf36dc,session-2026-09-08-009
+26,47,315,images/26/IMG_0956.jpg,FALSE,Apple,iPhone 17,FALSE,1000,1/25,1.6,5.96,2026-09-08T16:58:17.292-04:00,image-e0b23ac12f0063c2,session-2026-09-08-009
+33,48,0,images/33/IMG_0970.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-11T16:42:45.235-04:00,image-038f1d3a80c8fe7f,session-2026-09-11-010
+33,48,45,images/33/IMG_0971.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-11T16:43:21.329-04:00,image-ccde6bedc3dfd0f6,session-2026-09-11-010
+33,48,90,images/33/IMG_0973.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-11T16:44:12.997-04:00,image-6299a7c775c3aad7,session-2026-09-11-010
+33,48,135,images/33/IMG_0974.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-11T16:44:30.727-04:00,image-2dc19198fd34fbed,session-2026-09-11-010
+33,48,180,images/33/IMG_0975.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-11T16:45:18.780-04:00,image-fc3dfc1a37f742a8,session-2026-09-11-010
+33,48,225,images/33/IMG_0976.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-11T16:45:40.792-04:00,image-6ede997d32e2275a,session-2026-09-11-010
+33,48,270,images/33/IMG_0977.jpg,TRUE,Apple,iPhone 17,FALSE,100,1/60,1.6,5.96,2026-09-11T16:46:02.352-04:00,image-ff3c7b8acda43107,session-2026-09-11-010
+33,48,315,images/33/IMG_0978.jpg,TRUE,Apple,iPhone 17,FALSE,125,1/60,1.6,5.96,2026-09-11T16:46:26.051-04:00,image-484b0525d6ec6b73,session-2026-09-11-010
+4,,,images/4/IMG_2430.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-02T12:32:04.625-04:00,image-c729345a587a7e30,session-2026-09-02-001
+4,,,images/4/IMG_2431.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:32:13.799-04:00,image-f6c6336d4e6b88e3,session-2026-09-02-001
+4,,,images/4/IMG_2432.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:32:23.116-04:00,image-27fa784325966064,session-2026-09-02-001
+4,,,images/4/IMG_2433.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:32:38.696-04:00,image-876175ee8a2d5795,session-2026-09-02-001
+4,,,images/4/IMG_2434.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:32:48.645-04:00,image-5f123fcfecd3bbdc,session-2026-09-02-001
+4,,,images/4/IMG_2435.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:32:57.988-04:00,image-d5dd571563e3cd89,session-2026-09-02-001
+4,,,images/4/IMG_2436.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:33:09.426-04:00,image-efa8a85242aa814f,session-2026-09-02-001
+4,,,images/4/IMG_2438.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:33:48.843-04:00,image-3e45fe4f8535c05b,session-2026-09-02-001
+4,,,images/4/IMG_2439.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:33:59.648-04:00,image-5028d474eb9f0431,session-2026-09-02-001
+4,,,images/4/IMG_2440.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:34:26.645-04:00,image-b5490de785e94a8a,session-2026-09-02-001
+4,,,images/4/IMG_2441.jpg,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:34:55.619-04:00,image-efe3dd13ec028c7d,session-2026-09-02-001
+4,,,images/4/IMG_2443.jpg,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:35:20.873-04:00,image-fc34054f06e9cb37,session-2026-09-02-001
+4,,,images/4/IMG_2444.jpg,,Apple,iPhone 14 Pro Max,FALSE,640,1/60,1.78,6.86,2026-09-02T12:35:35.775-04:00,image-436cbef430c20da2,session-2026-09-02-001
+4,,,images/4/IMG_2445.jpg,,Apple,iPhone 14 Pro Max,FALSE,640,1/60,1.78,6.86,2026-09-02T12:35:50.378-04:00,image-de72de0bfdb332b5,session-2026-09-02-001
+4,,,images/4/IMG_2446.jpg,,Apple,iPhone 14 Pro Max,FALSE,640,1/60,1.78,6.86,2026-09-02T12:36:05.375-04:00,image-fe3a4f1a5b203f9c,session-2026-09-02-001
+4,,,images/4/IMG_2447.jpg,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:36:18.235-04:00,image-7f0992ad6f6626fe,session-2026-09-02-001
+4,,,images/4/IMG_2448.jpg,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:36:31.088-04:00,image-921245142b723c7b,session-2026-09-02-001
+4,,,images/4/IMG_2449.jpg,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:36:40.340-04:00,image-56b9853efc605a79,session-2026-09-02-001
+4,,,images/4/IMG_2450.jpg,,Apple,iPhone 14 Pro Max,FALSE,640,1/60,1.78,6.86,2026-09-02T12:37:06.405-04:00,image-d1320198bce6a06c,session-2026-09-02-001
+4,,,images/4/IMG_2451.jpg,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:37:17.544-04:00,image-8e344fa5781dea81,session-2026-09-02-001
+4,,,images/4/IMG_2452.jpg,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:37:24.556-04:00,image-d1796dd8b9bdba0e,session-2026-09-02-001
+4,,,images/4/IMG_2453.jpg,,Apple,iPhone 14 Pro Max,FALSE,640,1/60,1.78,6.86,2026-09-02T12:37:36.438-04:00,image-cf01eca079d6b2de,session-2026-09-02-001
+4,,,images/4/IMG_2454.jpg,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:37:51.243-04:00,image-5d7d11fba0155d89,session-2026-09-02-001
+4,,,images/4/IMG_2455.jpg,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:38:06.485-04:00,image-719f04804205160f,session-2026-09-02-001
+4,,,images/4/IMG_2456.jpg,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:38:20.579-04:00,image-23497360887d127a,session-2026-09-02-001
+4,,,images/4/IMG_2457.jpg,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:38:31.645-04:00,image-658ebc50cb8572e7,session-2026-09-02-001
+4,,,images/4/IMG_2458.jpg,,Apple,iPhone 14 Pro Max,FALSE,500,1/60,1.78,6.86,2026-09-02T12:38:40.746-04:00,image-f6143dfde67d38f9,session-2026-09-02-001
+4,,,images/4/IMG_2459.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:41:41.261-04:00,image-b5ea4ed85174c5ed,session-2026-09-02-001
+4,,,images/4/IMG_2460.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:41:51.645-04:00,image-4a30fb452546fa1e,session-2026-09-02-001
+4,,,images/4/IMG_2461.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:42:19.679-04:00,image-633e25474ffc6427,session-2026-09-02-001
+4,,,images/4/IMG_2462.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:42:30.427-04:00,image-61a3a1174866b97c,session-2026-09-02-001
+4,,,images/4/IMG_2463.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:42:40.254-04:00,image-05fbb21bcf13455e,session-2026-09-02-001
+4,,,images/4/IMG_2464.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:42:48.472-04:00,image-ab18b36cf811882e,session-2026-09-02-001
+4,,,images/4/IMG_2465.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:42:57.074-04:00,image-a3f16d80b288e03b,session-2026-09-02-001
+4,,,images/4/IMG_2466.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:43:05.755-04:00,image-484ab8e6c8ecae5b,session-2026-09-02-001
+4,,,images/4/IMG_2467.jpg,,Apple,iPhone 14 Pro Max,FALSE,125,1/60,1.78,6.86,2026-09-02T12:43:15.272-04:00,image-04240ed733384391,session-2026-09-02-001
+15,,,images/15/IMG_2597.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:20:09.911-04:00,image-d00ee4e9d2593f02,session-2026-09-03-002
+15,,,images/15/IMG_2598.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:20:17.779-04:00,image-8f3dc0d0546934f3,session-2026-09-03-002
+15,,,images/15/IMG_2599.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:20:24.780-04:00,image-9be317b236f577aa,session-2026-09-03-002
+15,,,images/15/IMG_2600.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:20:31.227-04:00,image-eb77adf86d9cfed9,session-2026-09-03-002
+15,,,images/15/IMG_2601.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:20:38.039-04:00,image-6ce493ae1bebffcc,session-2026-09-03-002
+15,,,images/15/IMG_2602.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/60,1.78,6.86,2026-09-03T13:20:46.007-04:00,image-ac240eb0b03e6242,session-2026-09-03-002
+15,,,images/15/IMG_2603.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:20:53.582-04:00,image-28e6d97ff4322dbb,session-2026-09-03-002
+15,,,images/15/IMG_2604.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:21:01.399-04:00,image-0693f7fd3202bffa,session-2026-09-03-002
+15,,,images/15/IMG_2605.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:21:18.747-04:00,image-2066aae1afbe686f,session-2026-09-03-002
+15,,,images/15/IMG_2606.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:21:26.490-04:00,image-38173acab8197bcb,session-2026-09-03-002
+15,,,images/15/IMG_2607.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:21:33.009-04:00,image-eb1c9f4af59e3750,session-2026-09-03-002
+15,,,images/15/IMG_2608.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:21:39.808-04:00,image-ebeb5e6025074f9e,session-2026-09-03-002
+15,,,images/15/IMG_2609.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:21:46.323-04:00,image-251e4e3d7df1ff9c,session-2026-09-03-002
+15,,,images/15/IMG_2611.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:22:04.556-04:00,image-831e9129f9157cb5,session-2026-09-03-002
+15,,,images/15/IMG_2612.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:22:56.199-04:00,image-dc9eeb6f2dcc3542,session-2026-09-03-002
+15,,,images/15/IMG_2613.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:23:02.846-04:00,image-8164234cc3240f77,session-2026-09-03-002
+15,,,images/15/IMG_2614.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:23:14.927-04:00,image-6d2169a04f48d44f,session-2026-09-03-002
+15,,,images/15/IMG_2615.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:23:25.248-04:00,image-a8271c7fc722a3be,session-2026-09-03-002
+15,,,images/15/IMG_2616.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:23:31.964-04:00,image-30c3d0180c2e6557,session-2026-09-03-002
+15,,,images/15/IMG_2617.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:23:45.532-04:00,image-6b6843df27441dbb,session-2026-09-03-002
+15,,,images/15/IMG_2618.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:23:54.551-04:00,image-e347ad4d8dad8de2,session-2026-09-03-002
+15,,,images/15/IMG_2619.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:24:00.589-04:00,image-367081db08d53308,session-2026-09-03-002
+15,,,images/15/IMG_2620.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:24:16.588-04:00,image-cfc4e656400c8022,session-2026-09-03-002
+15,,,images/15/IMG_2621.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:24:25.063-04:00,image-e3e25a980a141a5f,session-2026-09-03-002
+15,,,images/15/IMG_2622.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:24:32.033-04:00,image-4c50e598967b1861,session-2026-09-03-002
+15,,,images/15/IMG_2623.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:24:40.785-04:00,image-4f96d81f830e71fa,session-2026-09-03-002
+15,,,images/15/IMG_2624.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:24:54.628-04:00,image-e04f48315a7d4659,session-2026-09-03-002
+15,,,images/15/IMG_2625.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:25:57.723-04:00,image-c93674eefac94d06,session-2026-09-03-002
+15,,,images/15/IMG_2626.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:26:19.825-04:00,image-e67a3fa06f71a6f4,session-2026-09-03-002
+15,,,images/15/IMG_2627.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:26:28.830-04:00,image-45a92fb1c6156ebb,session-2026-09-03-002
+15,,,images/15/IMG_2628.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:26:39.255-04:00,image-b2cdcd190d932009,session-2026-09-03-002
+15,,,images/15/IMG_2629.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:26:47.163-04:00,image-c67a31e78a856f82,session-2026-09-03-002
+15,,,images/15/IMG_2630.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:27:03.575-04:00,image-170a8ef08abaeab6,session-2026-09-03-002
+15,,,images/15/IMG_2631.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:27:13.615-04:00,image-9beaf644455780f8,session-2026-09-03-002
+15,,,images/15/IMG_2632.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:27:20.489-04:00,image-df95f4e9284286d1,session-2026-09-03-002
+15,,,images/15/IMG_2633.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:27:30.322-04:00,image-9eec14fe964e4953,session-2026-09-03-002
+15,,,images/15/IMG_2634.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:27:56.388-04:00,image-11dda684006f1348,session-2026-09-03-002
+15,,,images/15/IMG_2635.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:28:05.006-04:00,image-bfe92fe0eac9d1bc,session-2026-09-03-002
+15,,,images/15/IMG_2636.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:28:13.291-04:00,image-d5a219341bb21a73,session-2026-09-03-002
+15,,,images/15/IMG_2637.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:28:25.112-04:00,image-e611c97e06cc10f4,session-2026-09-03-002
+15,,,images/15/IMG_2639.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:28:48.677-04:00,image-f13fc8fa32bf3a09,session-2026-09-03-002
+15,,,images/15/IMG_2654.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/60,1.78,6.86,2026-09-03T13:33:07.515-04:00,image-a1f9eb87f7395590,session-2026-09-03-002
+15,,,images/15/IMG_2655.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:33:14.863-04:00,image-9e91517c4b577f97,session-2026-09-03-002
+15,,,images/15/IMG_2656.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/57,1.78,6.86,2026-09-03T13:33:27.513-04:00,image-bd0ce3dd82139b76,session-2026-09-03-002
+15,,,images/15/IMG_2657.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/57,1.78,6.86,2026-09-03T13:33:35.343-04:00,image-fa88343ba7b1dcda,session-2026-09-03-002
+15,,,images/15/IMG_2658.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/60,1.78,6.86,2026-09-03T13:33:43.424-04:00,image-7ffde2521fd4234a,session-2026-09-03-002
+15,,,images/15/IMG_2659.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86,2026-09-03T13:33:52.067-04:00,image-9b86af4d2f6163da,session-2026-09-03-002
+15,,,images/15/IMG_2660.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/60,1.78,6.86,2026-09-03T13:33:59.939-04:00,image-6f0af856285f5360,session-2026-09-03-002
+15,,,images/15/IMG_2661.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/57,1.78,6.86,2026-09-03T13:34:10.024-04:00,image-ad288ec06882cd6f,session-2026-09-03-002
+15,,,images/15/IMG_2662.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:34:23.724-04:00,image-fc656e767cf5bced,session-2026-09-03-002
+15,,,images/15/IMG_2663.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:34:35.965-04:00,image-21e43eaa7c444fdf,session-2026-09-03-002
+15,,,images/15/IMG_2664.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:34:43.534-04:00,image-4b622d8655b9c968,session-2026-09-03-002
+15,,,images/15/IMG_2665.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86,2026-09-03T13:34:52.343-04:00,image-b834ebeee6755c72,session-2026-09-03-002
+15,,,images/15/IMG_2666.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:35:01.686-04:00,image-c3ca0274c82da84c,session-2026-09-03-002
+17,,,images/17/IMG_2565.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:09:03.639-04:00,image-0baaf984f293dbc2,session-2026-09-03-002
+17,,,images/17/IMG_2566.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:09:24.974-04:00,image-98039930e9c991c5,session-2026-09-03-002
+17,,,images/17/IMG_2567.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:09:33.725-04:00,image-234146b1f4e16764,session-2026-09-03-002
+17,,,images/17/IMG_2568.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:09:40.830-04:00,image-9351bf7ccb74d632,session-2026-09-03-002
+17,,,images/17/IMG_2569.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:09:51.340-04:00,image-113d0aa9601e98c4,session-2026-09-03-002
+17,,,images/17/IMG_2570.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:10:00.938-04:00,image-2530cf57e7cf60e3,session-2026-09-03-002
+17,,,images/17/IMG_2571.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:10:12.869-04:00,image-5c6c8af12c2050b0,session-2026-09-03-002
+17,,,images/17/IMG_2572.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:10:19.866-04:00,image-029ce7ed2c9da856,session-2026-09-03-002
+17,,,images/17/IMG_2573.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:10:55.094-04:00,image-f5c9e1bdd298a23b,session-2026-09-03-002
+17,,,images/17/IMG_2574.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:11:14.077-04:00,image-90ca92340938b479,session-2026-09-03-002
+17,,,images/17/IMG_2575.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:11:22.666-04:00,image-43c9e12160349b79,session-2026-09-03-002
+17,,,images/17/IMG_2576.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:11:31.382-04:00,image-4060fd235e0fc165,session-2026-09-03-002
+17,,,images/17/IMG_2577.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:11:38.655-04:00,image-946c6bc0053d97d3,session-2026-09-03-002
+17,,,images/17/IMG_2578.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:11:47.057-04:00,image-69390ca6aadd87e3,session-2026-09-03-002
+17,,,images/17/IMG_2579.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:12:00.227-04:00,image-32467425a79c784f,session-2026-09-03-002
+17,,,images/17/IMG_2580.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:12:10.642-04:00,image-b38b0e8d17a6225f,session-2026-09-03-002
+17,,,images/17/IMG_2581.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:12:19.706-04:00,image-0be51f8476a9a6c4,session-2026-09-03-002
+17,,,images/17/IMG_2583.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:14:04.281-04:00,image-801073f29d9818ec,session-2026-09-03-002
+17,,,images/17/IMG_2585.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:14:18.251-04:00,image-93f9221a3f3a7aa7,session-2026-09-03-002
+17,,,images/17/IMG_2586.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:14:32.567-04:00,image-05b6e693609bbce2,session-2026-09-03-002
+17,,,images/17/IMG_2587.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:14:40.373-04:00,image-a1c3c526c16b4b37,session-2026-09-03-002
+17,,,images/17/IMG_2588.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:14:56.428-04:00,image-12a34e0b6b08acb9,session-2026-09-03-002
+17,,,images/17/IMG_2589.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:15:07.811-04:00,image-610093af1ea901cc,session-2026-09-03-002
+17,,,images/17/IMG_2590.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:15:16.319-04:00,image-0fc934600f89e860,session-2026-09-03-002
+17,,,images/17/IMG_2591.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:15:22.587-04:00,image-35a1c62d0b1990dc,session-2026-09-03-002
+17,,,images/17/IMG_2592.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:15:35.903-04:00,image-f522183f14cd545e,session-2026-09-03-002
+17,,,images/17/IMG_2593.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:15:46.574-04:00,image-9f8046891e0e186a,session-2026-09-03-002
+17,,,images/17/IMG_2594.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:15:54.895-04:00,image-6389cf1f49a41859,session-2026-09-03-002
+17,,,images/17/IMG_2595.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:16:07.815-04:00,image-03e9859df05d8ddc,session-2026-09-03-002
+17,,,images/17/IMG_2596.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:16:19.108-04:00,image-9cdf254d51871807,session-2026-09-03-002
+17,,,images/17/IMG_2640.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:02.608-04:00,image-4b860f6d230e6805,session-2026-09-03-002
+17,,,images/17/IMG_2641.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:08.392-04:00,image-28441537c4fcc35e,session-2026-09-03-002
+17,,,images/17/IMG_2642.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:14.969-04:00,image-ab41d3a869de68da,session-2026-09-03-002
+17,,,images/17/IMG_2643.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:23.047-04:00,image-0e5e66e18e7824cd,session-2026-09-03-002
+17,,,images/17/IMG_2644.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:32.387-04:00,image-6a8a67428d2fcbc1,session-2026-09-03-002
+17,,,images/17/IMG_2645.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:39.579-04:00,image-b39fcea2973c5d42,session-2026-09-03-002
+17,,,images/17/IMG_2646.jpg,,Apple,iPhone 14 Pro Max,FALSE,200,1/60,1.78,6.86,2026-09-03T13:30:46.009-04:00,image-e15657dbfa3c7a47,session-2026-09-03-002
+17,,,images/17/IMG_2647.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:30:54.495-04:00,image-e6174be0c026eeff,session-2026-09-03-002
+17,,,images/17/IMG_2648.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:31:01.476-04:00,image-84f088329c9302d5,session-2026-09-03-002
+17,,,images/17/IMG_2649.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:31:22.453-04:00,image-5f6593d1ce967145,session-2026-09-03-002
+17,,,images/17/IMG_2650.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:31:34.073-04:00,image-9af6dbacd0c4dcf0,session-2026-09-03-002
+17,,,images/17/IMG_2651.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:31:43.182-04:00,image-b0eef8cddb38a340,session-2026-09-03-002
+17,,,images/17/IMG_2652.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:31:49.708-04:00,image-9faa0503b6c95b52,session-2026-09-03-002
+17,,,images/17/IMG_2653.jpg,,Apple,iPhone 14 Pro Max,FALSE,160,1/60,1.78,6.86,2026-09-03T13:32:00.953-04:00,image-7cf68b24c0ec835d,session-2026-09-03-002
+17,,,images/17/IMG_2667.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86,2026-09-03T13:35:36.056-04:00,image-f635d41334f27f4e,session-2026-09-03-002
+17,,,images/17/IMG_2668.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86,2026-09-03T13:35:41.413-04:00,image-3f6394f540ff6953,session-2026-09-03-002
+17,,,images/17/IMG_2669.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:35:47.585-04:00,image-e4dd46e8dc59b9fc,session-2026-09-03-002
+17,,,images/17/IMG_2670.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:35:56.804-04:00,image-f0e2a8ac9bea0d20,session-2026-09-03-002
+17,,,images/17/IMG_2671.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/60,1.78,6.86,2026-09-03T13:36:03.844-04:00,image-5582b76854bcb6d4,session-2026-09-03-002
+17,,,images/17/IMG_2672.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:36:16.380-04:00,image-cf3b081e57a7a17d,session-2026-09-03-002
+17,,,images/17/IMG_2676.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:36:59.815-04:00,image-9f1f6adb4eaa3fb2,session-2026-09-03-002
+17,,,images/17/IMG_2677.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86,2026-09-03T13:37:07.324-04:00,image-5c80efd82e6fa7ed,session-2026-09-03-002
+17,,,images/17/IMG_2678.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/59,1.78,6.86,2026-09-03T13:37:19.555-04:00,image-7c9b9b8fb84819a0,session-2026-09-03-002
+17,,,images/17/IMG_2679.jpg,,Apple,iPhone 14 Pro Max,FALSE,800,1/60,1.78,6.86,2026-09-03T13:37:28.483-04:00,image-1102c326469d30c1,session-2026-09-03-002
+17,,,images/17/IMG_2680.jpg,,Apple,iPhone 14 Pro Max,FALSE,1000,1/58,1.78,6.86,2026-09-03T13:37:36.796-04:00,image-197b7390aaad4e77,session-2026-09-03-002

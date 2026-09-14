@@ -108,3 +108,62 @@
 {"decision": "accepted", "key": "image-55a1c48d0a88c359", "prompt": "scissors"}
 {"decision": "accepted", "key": "image-4663b8119ac54c37", "prompt": "scissors"}
 {"decision": "accepted", "key": "image-60bb375cf5d0490e", "prompt": "scissors"}
+{"decision": "accepted", "key": "image-f4fef70770b30439", "prompt": "scissors"}
+{"decision": "accepted", "key": "image-4c29ecfb82a30e9a", "prompt": "scissors"}
+{"decision": "accepted", "key": "image-2313973c794bbf3e", "prompt": "scissors"}
+{"decision": "accepted", "key": "image-e5bf0fcadc295ec6", "prompt": "scissors"}
+{"decision": "accepted", "key": "image-eab224bea3a63596", "prompt": "scissors"}
+{"decision": "accepted", "key": "image-de09df5fe51b03f0", "prompt": "scissors"}
+{"decision": "accepted", "key": "image-5693709ad4df8f67", "prompt": "scissors"}
+{"decision": "skipped", "key": "image-33a6e9f3d27041a4", "prompt": "bone punch"}
+{"decision": "skipped", "key": "image-23e4c82b2e43b96a", "prompt": "bone punch"}
+{"decision": "skipped", "key": "image-43bf924580674ba7", "prompt": "bone punch"}
+{"action": "reprompt", "decision": "in_progress", "key": "image-a94d80d026f8cd11", "prompt": "surgical tool"}
+{"action": "reprompt", "decision": "in_progress", "key": "image-a94d80d026f8cd11", "prompt": "metal tool"}
+{"decision": "accepted", "key": "image-a94d80d026f8cd11", "prompt": "metal tool"}
+{"action": "reprompt", "decision": "in_progress", "key": "image-ee7c81e1fabce6ea", "prompt": "metal tool"}
+{"decision": "accepted", "key": "image-ee7c81e1fabce6ea", "prompt": "metal tool"}
+{"action": "reprompt", "decision": "in_progress", "key": "image-b1a78b50811c1a41", "prompt": "metal tool"}
+{"decision": "accepted", "key": "image-b1a78b50811c1a41", "prompt": "metal tool"}
+{"action": "reprompt", "decision": "in_progress", "key": "image-1fb888ff99fd894d", "prompt": "metal tool"}
+{"decision": "accepted", "key": "image-1fb888ff99fd894d", "prompt": "metal tool"}
+{"action": "reprompt", "decision": "in_progress", "key": "image-6aeb12e5c738f796", "prompt": "metal tool"}
+{"decision": "skipped", "key": "image-6aeb12e5c738f796", "prompt": "metal tool"}
+{"action": "reprompt", "decision": "in_progress", "key": "image-a4869694d3692079", "prompt": "metal tool"}
+{"decision": "skipped", "key": "image-a4869694d3692079", "prompt": "metal tool"}
+{"decision": "skipped", "key": "image-bfddf695aa20b053", "prompt": "bone punch"}
+{"decision": "skipped", "key": "image-184c016b662f23e8", "prompt": "bone punch"}
+{"decision": "skipped", "key": "image-c08e15520f478a86", "prompt": "bone punch"}
+{"decision": "skipped", "key": "image-b41357971a99c784", "prompt": "bone punch"}
+{"decision": "skipped", "key": "image-f72cfdcb5bf2e445", "prompt": "bone punch"}
+{"decision": "skipped", "key": "image-1af4739b2b8e7b57", "prompt": "bone punch"}
+{"decision": "skipped", "key": "image-58c860ae6925abd1", "prompt": "bone punch"}
+{"decision": "accepted", "key": "image-97846043ee9f6f5d", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-69a31893b463f48d", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-d0341d0b434ff987", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-8ec46cf03a04d7bc", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-2c7b163e15f8468b", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-63c82ad67aea33da", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-3b3624355872ad14", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-b9bf55bccc3f2132", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-78bcc999c5d2b037", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-a979a6c062574744", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-957f0010bd64467a", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-2b09b651dd0165d8", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-5ec4f8271a103c84", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-1301684efce926cf", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-258e3ef14fc35b16", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-9a339c8497429c6a", "prompt": "mallet"}
+{"decision": "accepted", "key": "image-e4cce5b0c878d79d", "prompt": "pliers"}
+{"decision": "accepted", "key": "image-b7d1b94329656bf4", "prompt": "pliers"}
+{"decision": "accepted", "key": "image-7f261b5e8730db4c", "prompt": "pliers"}
+{"decision": "accepted", "key": "image-b63dec8f28d02b4b", "prompt": "pliers"}
+{"decision": "accepted", "key": "image-43ff42eb1f6ae30e", "prompt": "pliers"}
+{"decision": "accepted", "key": "image-761e3f794d815e09", "prompt": "pliers"}
+{"decision": "accepted", "key": "image-cdc50bbd1d4fe8b1", "prompt": "pliers"}
+{"decision": "accepted", "key": "image-74afac32104f3c4d", "prompt": "pliers"}
+{"decision": "accepted", "key": "image-dfabb3254d031cff", "prompt": "pliers"}
+{"decision": "accepted", "key": "image-201b7c7274b6e1cc", "prompt": "pliers"}
+{"decision": "accepted", "key": "image-043d8d31a51f1781", "prompt": "pliers"}
+{"decision": "accepted", "key": "image-971767cf1b9bed2f", "prompt": "pliers"}
+{"decision": "accepted", "key": "image-af6d2b3014bc9cd2", "prompt": "pliers"}

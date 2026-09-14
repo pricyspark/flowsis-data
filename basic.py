@@ -4,6 +4,14 @@ from datetime import datetime
 from fractions import Fraction
 from pathlib import Path
 
+from annotations import (
+    IMAGE_OBJECT_FIELDS,
+    assign_capture_sessions,
+    read_csv,
+    stable_media_id,
+    write_image_manifests,
+)
+
 from PIL import ExifTags, Image, UnidentifiedImageError
 import pillow_heif
 
@@ -42,10 +50,10 @@ def sort_key(value: str) -> tuple[int, int | str]:
 
 def normalize_label(value: str) -> str:
     without_punctuation = "".join(
-        " " if unicodedata.category(character).startswith("P") else character
+        "" if unicodedata.category(character).startswith("P") else character
         for character in value
     )
-    return " ".join(without_punctuation.lower().split())
+    return "".join(without_punctuation.lower().split())
 
 
 def prompt_required(label: str) -> str:
@@ -259,6 +267,7 @@ def main(
     images_dir: Path = IMAGES_DIR,
     raw_images_dir: Path = RAW_IMAGES_DIR,
     manifest_path: Path = MANIFEST_PATH,
+    object_manifest_path: Path | None = None,
 ) -> None:
     if not images_dir.is_dir():
         print(f"Could not find {images_dir.name}/. Run img_convert.py first.")
@@ -287,12 +296,10 @@ def main(
             row["Time Taken"] = ""
 
     required_columns = {
-        "Tool ID",
+        "Image ID",
+        "Capture Session ID",
         "Sample ID",
         "Filepath",
-        "Tool Class",
-        "Tool Name",
-        "Confidence",
         "Angle",
         *METADATA_COLUMNS,
     }
@@ -302,8 +309,22 @@ def main(
         print(f"{manifest_path.name} is missing columns: {missing}")
         return
 
+    object_manifest_path = object_manifest_path or manifest_path.with_name(
+        "image_object_manifest.csv"
+    )
+    objects = read_csv(object_manifest_path)
+    objects_by_image: dict[str, list[dict[str, str]]] = {}
+    for obj in objects:
+        objects_by_image.setdefault(obj["Image ID"], []).append(obj)
+    missing_instances = [
+        row["Filepath"] for row in rows
+        if not objects_by_image.get(row["Image ID"])
+    ]
+    if missing_instances:
+        raise ValueError(f"Images have no instance metadata: {missing_instances}")
+
     normalized_labels = 0
-    for row in rows:
+    for row in objects:
         for column in ("Tool Class", "Tool Name"):
             normalized = normalize_label(row[column])
             if normalized != row[column]:
@@ -340,7 +361,10 @@ def main(
         key=lambda path: sort_key(path.name),
     )
     rows_by_tool = {
-        tool_dir.name: [row for row in rows if row["Tool ID"] == tool_dir.name]
+        tool_dir.name: [
+            row for row in rows
+            if Path(row["Filepath"]).parts[1] == tool_dir.name
+        ]
         for tool_dir in tool_dirs
     }
     new_tool_ids = [
@@ -388,17 +412,26 @@ def main(
                 print(f"Skipping tool ID {tool_id}.")
                 continue
 
+        existing_objects = [
+            obj for row in existing_rows
+            for obj in objects_by_image[row["Image ID"]]
+        ]
+        if any(len(objects_by_image[row["Image ID"]]) != 1 for row in existing_rows):
+            raise ValueError(
+                f"Folder {tool_id} contains multi-tool images. Add instance metadata "
+                "explicitly; basic.py only infers metadata for single-tool folders."
+            )
         if existing_rows:
             tool_class = next(
-                (row["Tool Class"] for row in existing_rows if row["Tool Class"]),
+                (row["Tool Class"] for row in existing_objects if row["Tool Class"]),
                 "",
             )
             tool_name = next(
-                (row["Tool Name"] for row in existing_rows if row["Tool Name"]),
+                (row["Tool Name"] for row in existing_objects if row["Tool Name"]),
                 "",
             )
             confidence = next(
-                (row["Confidence"] for row in existing_rows if row["Confidence"]),
+                (row["Confidence"] for row in existing_objects if row["Confidence"]),
                 "",
             )
             if not tool_class:
@@ -423,11 +456,8 @@ def main(
             row = dict.fromkeys(fieldnames, "")
             row.update(
                 {
-                    "Tool ID": tool_id,
+                    "Image ID": stable_media_id("image", filepath),
                     "Filepath": filepath,
-                    "Tool Class": tool_class,
-                    "Tool Name": tool_name,
-                    "Confidence": confidence,
                 }
             )
 
@@ -445,6 +475,17 @@ def main(
                 ) as error:
                     print(f"Warning: could not read metadata from {source}: {error}")
 
+            obj = dict.fromkeys(IMAGE_OBJECT_FIELDS, "")
+            obj.update({
+                "Image ID": row["Image ID"],
+                "Instance ID": "instance-0",
+                "Tool ID": tool_id,
+                "Tool Class": tool_class,
+                "Tool Name": tool_name,
+                "Confidence": confidence,
+            })
+            objects.append(obj)
+            objects_by_image[row["Image ID"]] = [obj]
             rows.append(row)
             new_rows_by_path[filepath] = row
             added_rows += 1
@@ -471,35 +512,11 @@ def main(
                 "left blank; later complete batches are unaffected."
             )
 
-    rows.sort(
-        key=lambda row: (
-            sort_key(row["Tool ID"]),
-            sort_key(row["Sample ID"]),
-            sort_key(row["Angle"]),
-            row["Filepath"].lower(),
-        )
-    )
-
-    sample_id_map: dict[tuple[str, str], str] = {}
-    remapped_samples = 0
-    for row in rows:
-        sample_id = row["Sample ID"]
-        if not sample_id.strip():
-            continue
-        sample_key = (row["Tool ID"], sample_id)
-        if sample_key not in sample_id_map:
-            sample_id_map[sample_key] = str(len(sample_id_map))
-            remapped_samples += sample_id_map[sample_key] != sample_id
-        row["Sample ID"] = sample_id_map[sample_key]
-
-    if not (added_rows or metadata_updates or normalized_labels or remapped_samples):
-        print("The manifest was not changed.")
-        return
-
-    with manifest_path.open("w", newline="", encoding="utf-8") as file:
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
+    for row, session in zip(rows, assign_capture_sessions(rows), strict=True):
+        if not row["Capture Session ID"]:
+            row["Capture Session ID"] = session
+    write_image_manifests(manifest_path, rows, object_manifest_path, objects)
+    print("Refreshed manifest navigation columns and sorted by completion and tool IDs.")
 
     if metadata_updates:
         print(f"Filled {metadata_updates} empty metadata field(s).")
@@ -507,8 +524,6 @@ def main(
         print(f"Normalized {normalized_labels} tool class or name field(s).")
     if added_rows:
         print(f"Added {added_rows} row(s) to {manifest_path.name}.")
-    if remapped_samples:
-        print(f"Remapped {remapped_samples} sample ID(s) into increasing tool order.")
 
 
 if __name__ == "__main__":
