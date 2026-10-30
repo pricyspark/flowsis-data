@@ -7,7 +7,7 @@ You will need Python and Git to use this repo. If you do not have Python, you ca
 Once you have Python and Git, in your command line (called Terminal in MacOS and Linux) type:
 
 ```shell
-# Navigate to home. If you prefer to clone to somewhere else, nagivate there.
+# Navigate to home. If you prefer to clone to somewhere else, navigate there.
 cd ~
 # Clone the repo to your local machine
 git clone https://github.com/pricyspark/flowsis-data.git
@@ -16,6 +16,17 @@ cd flowsis-data
 conda env create -f environment.yml -y
 conda activate flowsis-data
 ```
+
+`environment.yml` already installs `dvc` and `dvc-gdrive`; no separate pip install
+is needed. To update an existing environment:
+
+```shell
+conda env update -n flowsis-data -f environment.yml
+conda activate flowsis-data
+```
+
+Continue with [DVC authentication and first download](#dvc-authentication-and-first-download)
+to retrieve the dataset. Cloning Git alone does not download `data/`.
 
 ## Usage
 
@@ -33,6 +44,7 @@ data/
   image_manifest.csv
   image_object_manifest.csv
   image_review.jsonl
+  video_manifest.csv
 ```
 
 Paths stored inside manifests remain relative to `data/`, such as
@@ -41,29 +53,152 @@ with `data/`. Annotation commands default to `--data-dir data`; their dataset
 path options are relative to that directory, while absolute paths are preserved.
 Use `--data-dir /path/to/dataset` to annotate a standalone dataset.
 
-### One-time DVC storage setup
+### DVC authentication and first download
 
-DVC has been initialized. Before publishing the migration, configure a shared
-Google Drive folder and create the first dataset snapshot:
+The repository already contains DVC initialization, the `storage` remote in
+`.dvc/config`, and the dataset pointer `data.dvc`. On a new clone, use those
+settings; there is no need to run `dvc init`, `dvc remote add`, or `dvc add`.
+The remote uses Google Drive (`gdrive://`), with a custom Google OAuth desktop
+application. Its Google Cloud project enables access to Drive; the data itself
+is stored in the shared Drive folder, not in a Google Cloud Storage bucket.
+
+Before connecting, ask the project maintainer for:
+
+- Access to the shared Drive folder using your Google account. Viewers with
+  downloads enabled can pull; Editors can pull and push. GitHub access does not
+  grant Drive access. Share with named accounts or a Google Group;
+  DVC does not guarantee support for "Anyone with the link" sharing.
+- The project's OAuth client ID and client secret, supplied outside Git.
+- An entry for your exact Google account in the OAuth app's test-user list if
+  the app's publishing status is **Testing**.
+
+Configure the OAuth values once per clone on each machine, replacing the
+placeholders with the values supplied by the maintainer:
 
 ```shell
-# For existing environments; new environments include this dependency.
-python -m pip install dvc-gdrive
-dvc remote add -d storage gdrive://YOUR_FOLDER_ID
-dvc add data
-dvc push
+dvc remote modify --local storage gdrive_client_id 'YOUR_CLIENT_ID'
+dvc remote modify --local storage gdrive_client_secret 'YOUR_CLIENT_SECRET'
+git check-ignore .dvc/config.local
 ```
 
-Share the folder with each collaborator's Google account. Use a dedicated folder:
-DVC stores content-addressed cache objects there, rather than a browsable copy
-of the dataset layout. The first transfer requires authentication. If Google's
-default DVC application is blocked, configure your own OAuth client following
-[the DVC Google Drive guide](https://doc.dvc.org/user-guide/data-management/remote-storage/google-drive).
-Keep credentials outside Git.
+Always use `--local` for these values. It writes them to `.dvc/config.local`,
+which `.dvc/.gitignore` excludes from Git. Without `--local`, DVC writes to the
+shared `.dvc/config`; committing OAuth values there can trigger GitHub's secret
+scanning. Never commit personal authentication tokens or credential files.
 
-After a successful upload, stage the old dataset paths' deletions along with
-`data.dvc`, `.dvc/config`, and ignore rules. Do not commit the contents of `data/`.
-This migration does not remove historical data from Git; history cleanup is separate.
+Download the dataset and check its local status:
+
+```shell
+dvc pull
+dvc status
+```
+
+On the first connection, follow the Google login link DVC prints or opens.
+Choose the account granted Drive access and, when applicable, test-user access.
+Complete consent and let the browser return to DVC's localhost callback while
+the command is still running. DVC caches your personal authorization locally;
+each collaborator signs in individually. See the
+[DVC Google Drive authentication documentation](https://doc.dvc.org/user-guide/data-management/remote-storage/google-drive#authorization).
+
+The download restores images, masks, manifests, and review logs under `data/`.
+Files there appear ignored or grayed out in Git-aware editors because DVC tracks
+them as a dataset; Git tracks the small `data.dvc` pointer. `git status` alone
+cannot show unsnapshotted data changes; use `dvc status` too.
+
+### Daily synchronization
+
+Before collecting data or annotating, finish publishing any previous local
+work, then download incoming code and dataset changes:
+
+```shell
+git status
+dvc status
+git pull --ff-only
+dvc pull
+```
+
+If either status reports local changes, preserve or publish them before pulling.
+If Git reports divergent branches, reconcile the commits first. When both
+contributors changed `data.dvc`, preserve both sets of actual data, combine them
+in `data/`, and run `dvc add data` again. Choosing one pointer alone does not
+merge image files or annotations. Coordinate annotation work on different images.
+
+After adding captures or editing annotations, follow the
+[publishing steps](#publish-dataset-changes). Upload the DVC data before pushing
+its Git pointer so collaborators can download the referenced files.
+
+### Maintainer setup for a replacement Google Drive remote
+
+These steps are only needed when creating a replacement remote or OAuth app.
+The existing remote is already configured.
+
+1. Create a dedicated Drive folder and share it with collaborators' Google
+   accounts or a Google Group. Give contributors Editor access. DVC stores
+   content-addressed cache objects there; use `dvc pull` to reconstruct the
+   normal dataset layout rather than editing those remote objects in Drive.
+2. In [Google Cloud Console](https://console.cloud.google.com/), select or create
+   a project. Under **APIs & Services → Library**, enable **Google Drive API**.
+3. Under **Google Auth Platform**, configure **Branding** with the app name and
+   contact details. In **Audience**, select the audience appropriate to your
+   team. For an External app in **Testing**, add each collaborator's exact login
+   email under **Test users**, including your own.
+4. Under **Clients**, create an OAuth client of type **Desktop app**. Obtain its
+   client ID and secret. In **Data Access**, configure the scopes DVC requests:
+   `https://www.googleapis.com/auth/drive` and
+   `https://www.googleapis.com/auth/drive.appdata`. These allow broad Drive
+   access; collaborators should understand the consent request.
+5. Set the remote folder URL. `FOLDER_ID` is the ID in the Drive folder's web
+   address, not the Google Cloud project ID or OAuth client ID:
+
+   ```shell
+   # For a new remote only:
+   dvc remote add --default storage gdrive://FOLDER_ID
+   # To change the existing storage remote instead:
+   dvc remote modify storage url gdrive://FOLDER_ID
+   ```
+
+6. Configure the OAuth values with the `--local` commands above, then upload:
+
+   ```shell
+   dvc status
+   dvc push
+   dvc status --cloud
+   ```
+
+   If the dataset itself changed, run `dvc add data` before pushing. Commit the
+   shared remote URL in `.dvc/config` and any updated `data.dvc`. Keep OAuth
+   values in `.dvc/config.local`; distribute them separately to collaborators.
+
+Follow the [DVC Google Drive setup guide](https://doc.dvc.org/user-guide/data-management/remote-storage/google-drive)
+for additional authentication options. External apps in Testing have seven-day
+authorizations, including refresh tokens, so users may need to authenticate
+again. Publishing an app and completing Google's verification are separate
+steps; changing publishing status does not automatically verify Drive scopes.
+See [Google's audience and publishing-status documentation](https://support.google.com/cloud/answer/15549945?hl=en).
+
+### DVC troubleshooting and older dataset versions
+
+| Symptom | What to check |
+| --- | --- |
+| Google blocks the default DVC app | Configure this project's custom OAuth client with `--local`, as above. |
+| `403: access_denied`, mentioning developer-approved testers | Match the login email to **Audience → Test users**. Confirm the authorization request's client ID belongs to that same Cloud project, then retry with a fresh `dvc pull` or `dvc push`. |
+| An unverified-app warning appears | Allowed testers may still see a warning. Confirm it names the expected app; use the continuation option if Google offers one. A blocked page without that option needs its stated access restriction resolved. |
+| Organization policy blocks authorization | Ask your Google Workspace administrator to allow the app; adding a test user does not override organization restrictions. |
+| Login stops working after about seven days | The app may still be in Testing. Reauthorize; consult the DVC authentication guide if cached credentials prevent a fresh login. |
+| Login succeeds but data access fails | Verify Drive folder access for the account used, and Editor access for uploads. OAuth test-user access and folder permissions are separate. |
+| Missing files or cache objects during `dvc pull` | Ask the contributor who published the pointer to run `dvc push` for that version. |
+| GitHub blocks a push containing OAuth values | Move them from `.dvc/config` to `.dvc/config.local` and remove them from every affected outgoing commit, not only the current file. |
+
+To restore a prior dataset, preserve local work, check out its Git commit, and
+run `dvc pull`. Git selects the version pointer; DVC restores the matching data.
+You can return to the latest version with `git switch main` followed by
+`dvc pull`. Referenced objects must still exist in the remote or local cache.
+
+The local `.dvc/cache/` may use additional disk space. Do not manually delete
+objects from the shared Drive folder or run remote garbage collection without
+coordinating which historical dataset versions everyone needs to retain.
+Migrating to DVC does not remove old media from Git history; that is a separate,
+coordinated history-cleanup operation.
 
 ### Collect and prepare images
 
@@ -94,13 +229,13 @@ arrangements. During review, reject incompatible arrangements with
 `order impossible`, or skip them with `s` for later review. Ignore regions are
 for uncertain pixels, not a substitute for resolving an incompatible arrangement.
 The converter preserves subdirectories, so
-`raw-images/multi/setup-001/IMG_1001.HEIC` becomes
-`images/multi/setup-001/IMG_1001.jpg`.
+`data/raw-images/multi/setup-001/IMG_1001.HEIC` becomes
+`data/images/multi/setup-001/IMG_1001.jpg`.
 
 Pull incoming code and dataset changes before making local edits:
 
 ```shell
-git pull
+git pull --ff-only
 dvc pull
 ```
 
@@ -235,11 +370,14 @@ codex login
 
 The results are saved as `verification_report.html`, which you can open in a web browser, and `verification_report.json`, which contains the same results in a machine-readable format. To run only the CSV and file checks without Codex, use `python verify_data.py --static-only`.
 
+### Publish dataset changes
+
 Once the manifest is correct, snapshot and upload the dataset. Coordinate edits
 with collaborators; resolve incoming changes before replacing local data.
 
 ```shell
 git status
+dvc status
 ```
 
 Update the dataset pointer and upload its referenced data before committing:
@@ -247,16 +385,20 @@ Update the dataset pointer and upload its referenced data before committing:
 ```shell
 dvc add data
 dvc push
-git add data.dvc .gitignore
+git add data.dvc
+git diff --cached --stat
 ```
 
-The files are now "staged". We commit staged changes so they are saved to the Git history. Each commit needs a message to describe the change. Format your commit message using your name, the tools, and the samples added:
+The updated dataset pointer is now staged. Stage any intended code or documentation
+changes separately; the dataset contents and local credentials stay outside Git.
+We commit staged changes so they are saved to the Git history. Each commit needs a message to describe the change. Format your commit message using your name, the tools, and the samples added:
 
 ```shell
 git commit -m "Jane Doe" -m "tools: x, y, z" -m "samples: a, b, c, d, e, f"
 ```
 
-Finally, push it to GitHub to upload it online so everyone can now see them.
+After `dvc push` succeeds, push the commit to GitHub so collaborators can retrieve
+the new pointer and download its data with `dvc pull`.
 
 ```shell
 git push
@@ -325,8 +467,9 @@ python annotate.py images --skipped-first
 Basic preparation assigns `Image ID` and `Capture Session ID`. Annotation reads
 tool metadata from instance rows. Review the suggested capture sessions before splitting
 training data. Outputs are `image_object_manifest.csv`, `masks/images/<tool ID>/<image stem>.npz`,
-and the append-only `image_review.jsonl`. Commit these together with the updated
-`image_manifest.csv` so masks and resume decisions stay synchronized. Mask
+and the append-only `image_review.jsonl`, all under `data/`. Snapshot these together
+with the updated `image_manifest.csv` using `dvc add data`, then publish the dataset
+and pointer as described above so masks and resume decisions stay synchronized. Mask
 bundles retain the format consumed by `flowsis` training. `--auto-accept` bypasses
 human review and should only be used when that is intended.
 
@@ -338,10 +481,10 @@ Export PNG previews without running SAM3 or opening a graphical window:
 # Preview the first 32 saved image bundles.
 python visualize_masks.py
 # Preview every saved bundle for one tool.
-python visualize_masks.py masks/images/12 --count 0
+python visualize_masks.py data/masks/images/12 --count 0
 # Preview one image or extracted video frame.
-python visualize_masks.py masks/images/12/IMG_1001.npz
-python visualize_masks.py masks/videos --count 32
+python visualize_masks.py data/masks/images/12/IMG_1001.npz
+python visualize_masks.py data/masks/videos --count 32
 # Specify the source explicitly for a bundle in a custom location.
 python visualize_masks.py /path/to/mask.npz --image /path/to/image.jpg
 ```
@@ -360,7 +503,7 @@ The script uses NumPy, Pillow, and Matplotlib from the existing environment.
 
 Before mask annotation, prepare multi-tool captures in this order:
 
-1. Place originals under `raw-images/multi/<setup>/`, grouping images with the
+1. Place originals under `data/raw-images/multi/<setup>/`, grouping images with the
    same tools and overall setup. Tool positions and rotations may vary freely.
 2. Run `python img_convert.py` and inspect any conversion failures.
 3. Declare the known physical tools for the entire arrangement in one command:
