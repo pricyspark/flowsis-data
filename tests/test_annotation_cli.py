@@ -12,9 +12,17 @@ from masks import load_mask_bundle
 
 
 @pytest.mark.parametrize("empty", [False, True])
-def test_image_cli_writes_local_outputs_and_resumes(tmp_path, monkeypatch, empty):
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--auto-accept"])
+@pytest.mark.parametrize("data_dir", [".", "data"])
+def test_image_cli_writes_local_outputs_and_resumes(
+    tmp_path, monkeypatch, empty, data_dir
+):
+    dataset = tmp_path / data_dir
+    dataset.mkdir(exist_ok=True)
+    monkeypatch.chdir(dataset)
+    argv = ["annotate.py", "images", "--auto-accept"]
+    if data_dir == ".":
+        argv.extend(["--data-dir", "."])
+    monkeypatch.setattr(sys, "argv", argv)
     Path("images/7").mkdir(parents=True)
     Image.new("RGB", (12, 10)).save("images/7/tool.jpg")
     with Path("image_manifest.csv").open("w", newline="") as file:
@@ -58,7 +66,9 @@ def test_image_cli_writes_local_outputs_and_resumes(tmp_path, monkeypatch, empty
             return [candidates]
 
     monkeypatch.setattr(annotate, "Sam3ImageBackend", Backend)
-    annotate.main()
+    with monkeypatch.context() as context:
+        context.chdir(tmp_path)
+        annotate.main()
     row = read_csv("image_object_manifest.csv")[0]
     bundle = load_mask_bundle("masks/images/7/tool.npz")
     assert row["Confidence"] == "0.8"
@@ -74,7 +84,9 @@ def test_image_cli_writes_local_outputs_and_resumes(tmp_path, monkeypatch, empty
         assert Path(row["Mask Path"]) == Path("masks/images/7/tool.npz")
     assert row["Image ID"] == read_csv("image_manifest.csv")[0]["Image ID"]
     assert annotate.ReviewLog(Path("image_review.jsonl")).completed(row["Image ID"])
-    annotate.main()
+    with monkeypatch.context() as context:
+        context.chdir(tmp_path)
+        annotate.main()
     assert calls == [["scissors"]]
 
 
@@ -83,7 +95,15 @@ def test_skipped_priority_is_stable_across_batches(
     tmp_path, monkeypatch, skipped_first
 ):
     monkeypatch.chdir(tmp_path)
-    argv = ["annotate.py", "images", "--single-tool", "--batch-size", "2"]
+    argv = [
+        "annotate.py",
+        "images",
+        "--data-dir",
+        ".",
+        "--single-tool",
+        "--batch-size",
+        "2",
+    ]
     if skipped_first:
         argv.append("--skipped-first")
     monkeypatch.setattr(sys, "argv", argv)
@@ -152,7 +172,7 @@ def test_default_single_tool_review_never_requires_instance_commands(
     tmp_path, monkeypatch, capsys, count, commands, selected_index
 ):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images"])
+    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--data-dir", "."])
     Path("images/7").mkdir(parents=True)
     Image.new("RGB", (12, 10)).save("images/7/tool.jpg")
     write_csv(
@@ -236,9 +256,9 @@ def test_auto_accept_rejects_multiple_single_tool_predictions():
 
 @pytest.mark.parametrize("flag", ["--merge-masks", "--single-tool"])
 def test_fragment_merging_remains_opt_in(monkeypatch, flag):
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", flag])
+    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--data-dir", ".", flag])
     assert annotate.parse_args().single_tool
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images"])
+    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--data-dir", "."])
     assert not annotate.parse_args().single_tool
 
 
@@ -249,7 +269,7 @@ def test_default_cli_selects_review_per_image_in_mixed_batch(
     from image_review import ImageReview
 
     monkeypatch.chdir(tmp_path)
-    argv = ["annotate.py", "images"]
+    argv = ["annotate.py", "images", "--data-dir", "."]
     if multi_only:
         argv.append("--multi-tool")
     monkeypatch.setattr(sys, "argv", argv)
@@ -318,7 +338,10 @@ def test_multi_tool_filter_with_no_matches_does_not_load_model(
     tmp_path, monkeypatch, capsys
 ):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--multi-tool"])
+    monkeypatch.setattr(
+        sys, "argv",
+        ["annotate.py", "images", "--data-dir", ".", "--multi-tool"],
+    )
     write_csv(
         "image_manifest.csv",
         [{"Image ID": "single", "Filepath": "images/single.jpg"}],

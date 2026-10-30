@@ -179,7 +179,7 @@ def test_cli_saves_ordered_tools_and_resumes(monkeypatch, tmp_path):
         tmp_path,
         [instance("a", "12"), instance("b", "13"), instance("c", "14", "forceps")],
     )
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images"])
+    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--data-dir", "."])
     prompts_seen = []
 
     class Backend:
@@ -237,7 +237,7 @@ def test_unsafe_automatic_multi_tool_modes_fail_before_model_load(
 ):
     monkeypatch.chdir(tmp_path)
     setup_manifest(tmp_path, [instance("a", "12"), instance("b", "13")])
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", flag])
+    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--data-dir", ".", flag])
     monkeypatch.setattr(
         annotate,
         "Sam3ImageBackend",
@@ -250,7 +250,7 @@ def test_unsafe_automatic_multi_tool_modes_fail_before_model_load(
 def test_high_iou_candidates_survive_until_review(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     setup_manifest(tmp_path, [instance("a", "12"), instance("b", "13")])
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images"])
+    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--data-dir", "."])
     mask = candidates()[0].mask
 
     class Backend:
@@ -294,7 +294,7 @@ def test_declare_sample_preserves_metadata_and_reopen_clears_annotations(
         "argv",
         [
             "annotate.py",
-            "declare",
+            "declare", "--data-dir", ".",
             "--sample-id",
             "4",
             "--tool-id",
@@ -308,7 +308,7 @@ def test_declare_sample_preserves_metadata_and_reopen_clears_annotations(
     log.append("image-1", "accepted")
     argv = [
         "annotate.py",
-        "declare",
+        "declare", "--data-dir", ".",
         "--sample-id",
         "4",
         "--tool-id",
@@ -338,7 +338,7 @@ def test_resolved_rows_follow_mask_order_and_reject_missing_identity():
 def test_explicit_empty_image_retains_resolved_tool_metadata(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     setup_manifest(tmp_path, [instance("a", "12"), instance("b", "13")])
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images"])
+    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--data-dir", "."])
 
     class Backend:
         def __init__(self, *args, **kwargs):
@@ -371,7 +371,7 @@ def test_declare_new_image_and_reject_duplicate_tool(monkeypatch, tmp_path):
     Image.new("RGB", (12, 10)).save("images/new.jpg")
     argv = [
         "annotate.py",
-        "declare",
+        "declare", "--data-dir", ".",
         "--filepath",
         "images/new.jpg",
         "--tool-id",
@@ -405,7 +405,17 @@ def test_declare_folder_with_known_tool_ids(monkeypatch, tmp_path, folder):
     monkeypatch.setattr(
         sys,
         "argv",
-        ["annotate.py", "declare", "--folder", folder, "--tool-ids", "12", "13"],
+        [
+            "annotate.py",
+            "declare",
+            "--data-dir",
+            ".",
+            "--folder",
+            folder,
+            "--tool-ids",
+            "12",
+            "13",
+        ],
     )
     annotate.main()
     images = read_csv("image_manifest.csv")
@@ -445,7 +455,7 @@ def test_declare_invalid_lookup_leaves_manifests_unchanged(
         "argv",
         [
             "annotate.py",
-            "declare",
+            "declare", "--data-dir", ".",
             "--filepath",
             "images/tools.jpg",
             "--tool-ids",
@@ -467,7 +477,17 @@ def test_declare_rejects_invalid_or_empty_folder(monkeypatch, tmp_path, folder):
     setup_manifest(tmp_path, [instance("a", "12")])
     (tmp_path / "images/multi/empty").mkdir(parents=True)
     monkeypatch.setattr(
-        sys, "argv", ["annotate.py", "declare", "--folder", folder, "--tool-id", "12"]
+        sys, "argv",
+        [
+            "annotate.py",
+            "declare",
+            "--data-dir",
+            ".",
+            "--folder",
+            folder,
+            "--tool-id",
+            "12",
+        ],
     )
     with pytest.raises(ValueError, match="folder|Folder"):
         annotate.main()
@@ -790,7 +810,7 @@ def test_nonoverlapping_masks_need_no_order(monkeypatch, tmp_path, capsys):
 def test_impossible_order_rejects_image_without_saving(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     setup_manifest(tmp_path, [instance("a", "12"), instance("b", "13")])
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images"])
+    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--data-dir", "."])
 
     class Backend:
         def __init__(self, *args, **kwargs):

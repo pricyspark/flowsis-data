@@ -13,5 +13,7 @@ dependencies:
   - matplotlib
   - pytest
   - pip
+  - dvc
+  - dvc-gdrive
   - pip:
     - pillow_heif

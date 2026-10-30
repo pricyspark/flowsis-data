@@ -44,7 +44,7 @@ def write_video(path, times=(0, 1, 3, 4)):
 
 
 def parse(monkeypatch, *arguments):
-    monkeypatch.setattr(sys, "argv", ["annotate.py", *arguments])
+    monkeypatch.setattr(sys, "argv", ["annotate.py", *arguments, "--data-dir", "."])
     return annotate.parse_args()
 
 

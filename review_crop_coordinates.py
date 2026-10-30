@@ -12,7 +12,7 @@ from square_crop import CORNERS, MarkerDetectionError, find_marker_corners
 
 
 ROOT = Path(__file__).resolve().parent
-RAW_IMAGES_DIR = ROOT / "raw-images"
+RAW_IMAGES_DIR = ROOT / "data/raw-images"
 IMAGE_EXTENSIONS = {
     ".avif",
     ".heic",

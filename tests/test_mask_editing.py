@@ -239,7 +239,10 @@ def test_cli_saves_drawn_and_subtracted_masks_with_stable_tool_identity(
     monkeypatch, tmp_path, method
 ):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--multi-tool"])
+    monkeypatch.setattr(
+        sys, "argv",
+        ["annotate.py", "images", "--data-dir", ".", "--multi-tool"],
+    )
     Path("images/multi").mkdir(parents=True)
     Image.new("RGB", (120, 100)).save("images/multi/tools.png")
     write_csv(

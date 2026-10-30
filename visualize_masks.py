@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".avif"}
 
 
-def find_image(mask_path: Path, root: Path = ROOT) -> Path:
+def find_image(mask_path: Path, root: Path = ROOT / "data") -> Path:
     """Resolve the image/frame mirrored by a standard repository mask path."""
     try:
         relative = mask_path.resolve().relative_to((root / "masks").resolve())
@@ -129,8 +129,8 @@ def main() -> None:
         "path",
         nargs="?",
         type=Path,
-        default=ROOT / "masks/images",
-        help="one .npz bundle or a directory searched recursively (default: masks/images)",
+        default=ROOT / "data/masks/images",
+        help="one .npz bundle or a directory searched recursively (default: data/masks/images)",
     )
     parser.add_argument("--image", type=Path, help="source image for a single bundle")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "mask-review")

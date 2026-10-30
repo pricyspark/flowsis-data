@@ -210,7 +210,10 @@ def test_reviewer_refines_tools_independently_and_restores_original(monkeypatch)
 
 def test_cli_saves_refined_masks_in_original_coordinates(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--multi-tool"])
+    monkeypatch.setattr(
+        sys, "argv",
+        ["annotate.py", "images", "--data-dir", ".", "--multi-tool"],
+    )
     Path("images/multi").mkdir(parents=True)
     Image.new("RGB", (120, 100)).save("images/multi/tools.png")
     write_csv(

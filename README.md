@@ -19,15 +19,61 @@ conda activate flowsis-data
 
 ## Usage
 
-We will use Git pushes and pulls to sychronize data. I recommend briefly researching the basics of what Git is, and what pushes and pulls do. If you already have a preferred Git GUI, use that. Otherwise, this guide will give command line interface (CLI) instructions to enter into the terminal.
+Git synchronizes code and DVC version pointers. DVC synchronizes the dataset
+with shared storage. Run commands from the repository root unless stated otherwise.
+
+All source media, annotations, manifests, and review logs live under `data/`:
+
+```text
+data/
+  raw-images/
+  images/
+  masks/images/
+  videos/
+  image_manifest.csv
+  image_object_manifest.csv
+  image_review.jsonl
+```
+
+Paths stored inside manifests remain relative to `data/`, such as
+`images/12/photo.jpg` and `masks/images/12/photo.npz`. Do not prefix these values
+with `data/`. Annotation commands default to `--data-dir data`; their dataset
+path options are relative to that directory, while absolute paths are preserved.
+Use `--data-dir /path/to/dataset` to annotate a standalone dataset.
+
+### One-time DVC storage setup
+
+DVC has been initialized. Before publishing the migration, configure a shared
+Google Drive folder and create the first dataset snapshot:
+
+```shell
+# For existing environments; new environments include this dependency.
+python -m pip install dvc-gdrive
+dvc remote add -d storage gdrive://YOUR_FOLDER_ID
+dvc add data
+dvc push
+```
+
+Share the folder with each collaborator's Google account. Use a dedicated folder:
+DVC stores content-addressed cache objects there, rather than a browsable copy
+of the dataset layout. The first transfer requires authentication. If Google's
+default DVC application is blocked, configure your own OAuth client following
+[the DVC Google Drive guide](https://doc.dvc.org/user-guide/data-management/remote-storage/google-drive).
+Keep credentials outside Git.
+
+After a successful upload, stage the old dataset paths' deletions along with
+`data.dvc`, `.dvc/config`, and ignore rules. Do not commit the contents of `data/`.
+This migration does not remove historical data from Git; history cleanup is separate.
+
+### Collect and prepare images
 
 Download your original images, unzip them if needed, and place them in
-`raw-images`. For single-tool captures, use the physical Tool ID as the folder
+`data/raw-images`. For single-tool captures, use the physical Tool ID as the folder
 name. For multiple tools, use the reserved `multi` folder with a subdirectory
 for each capture group with the same tools and overall setup:
 
 ```text
-raw-images/
+data/raw-images/
   12/                         # Single-tool captures of physical tool 12
   13/                         # Single-tool captures of physical tool 13
   multi/
@@ -51,10 +97,11 @@ The converter preserves subdirectories, so
 `raw-images/multi/setup-001/IMG_1001.HEIC` becomes
 `images/multi/setup-001/IMG_1001.jpg`.
 
-Pull any incoming changes before processing:
+Pull incoming code and dataset changes before making local edits:
 
 ```shell
 git pull
+dvc pull
 ```
 
 Convert and crop the raw images. The converter isolates the blue marker in each image quadrant, matches its inner corner with an L-shaped convolution kernel, applies a perspective correction, and saves the finished 2160×2160 JPG in `images`. If a marker is missing, incomplete, or does not match the kernel reliably, it does not create the JPG and lists the failed image and reason after processing finishes.
@@ -156,7 +203,7 @@ unchanged setup.
 `prepare_manifests.py` creates a pending instance for each new single-tool image and reuses
 existing tool details from object rows. Annotation fields stay blank until review;
 identification `Confidence` is separate from `Annotation Confidence`. Existing
-masks and review fields are preserved when adding images. Commit both manifests
+masks and review fields are preserved when adding images. Snapshot both manifests with DVC
 together.
 
 Multiple tools can be represented by additional instance rows with the same
@@ -188,16 +235,19 @@ codex login
 
 The results are saved as `verification_report.html`, which you can open in a web browser, and `verification_report.json`, which contains the same results in a machine-readable format. To run only the CSV and file checks without Codex, use `python verify_data.py --static-only`.
 
-Once the manifest is correct, use Git to synchronize it with GitHub. Before pushing, pull again to check for incoming changes.
+Once the manifest is correct, snapshot and upload the dataset. Coordinate edits
+with collaborators; resolve incoming changes before replacing local data.
 
 ```shell
-git pull
+git status
 ```
 
-Add the files we want to synchronize to GitHub:
+Update the dataset pointer and upload its referenced data before committing:
 
 ```shell
-git add *
+dvc add data
+dvc push
+git add data.dvc .gitignore
 ```
 
 The files are now "staged". We commit staged changes so they are saved to the Git history. Each commit needs a message to describe the change. Format your commit message using your name, the tools, and the samples added:
@@ -797,7 +847,7 @@ NPZ layout and CSV columns remain unchanged.
 
 ### Single-tool video prototype
 
-Put MP4 originals in `videos/<Tool ID>/`, for example `videos/12/opening.mp4`.
+Put MP4 originals in `data/videos/<Tool ID>/`, for example `data/videos/12/opening.mp4`.
 Each video must contain at most the one known physical instrument, already
 identified in `image_object_manifest.csv`. The tool can be absent or fully
 occluded in individual frames. Conflicting image class/name metadata is reported
@@ -905,14 +955,14 @@ image-style snapshot:
 
 ```shell
 python annotate.py export-video-training
-cd video_training
+cd data/video_training
 flowsis-build-annotated-dataset \
   --image-manifest image_manifest.csv \
   --object-manifest image_object_manifest.csv \
   --review-log image_review.jsonl \
   --image-mask-dir masks/images \
   --video-review-log /dev/null \
-  --output-path ../../flowsis/data/new/video-segmentation-dataset
+  --output-path ../../../flowsis/data/new/video-segmentation-dataset
 ```
 
 The export keeps frame IDs, physical Tool IDs, and capture sessions. It includes
@@ -932,23 +982,23 @@ Use `python annotate.py --help` and each command's `--help` for options.
 ### Build training data in flowsis
 
 The existing training builder resolves mask paths against its working directory.
-Keep running from the `flowsis-data` root, including after moving or cloning this
-repository, and use the environment where `flowsis` is installed:
+Run the builder from `flowsis-data/data`, and use the environment where
+`flowsis` is installed:
 
 ```shell
 conda activate flowsis
+cd data
 flowsis-build-annotated-dataset \
   --image-manifest image_manifest.csv \
   --object-manifest image_object_manifest.csv \
   --review-log image_review.jsonl \
   --image-mask-dir masks/images \
   --video-review-log /dev/null \
-  --output-path ../flowsis/data/new/segmentation-dataset
+  --output-path ../../flowsis/data/new/segmentation-dataset
 ```
 
-Paths stored by annotation are relative to the directory where it runs, so use
-the repository root consistently. Custom output directories must also remain
-accessible from that directory.
+Paths stored by annotation are relative to the dataset directory. Run the
+training builder from that directory so both image and mask paths resolve.
 
 Run annotation tests without downloading model weights:
 

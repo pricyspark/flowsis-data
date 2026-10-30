@@ -17,7 +17,7 @@ from annotations import (
 from PIL import ExifTags, Image, UnidentifiedImageError
 import pillow_heif
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent / "data"
 IMAGES_DIR = ROOT / "images"
 RAW_IMAGES_DIR = ROOT / "raw-images"
 MANIFEST_PATH = ROOT / "image_manifest.csv"

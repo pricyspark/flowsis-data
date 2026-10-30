@@ -835,7 +835,11 @@ def annotate_images(args: argparse.Namespace) -> None:
                     for source in instances
                 ]
                 if explicit or selected:
-                    replacements = resolved_image_rows(normalized, selected, mask_path)
+                    replacements = resolved_image_rows(
+                        normalized,
+                        selected,
+                        mask_path.resolve().relative_to(manifest.parent.resolve()),
+                    )
                 else:
                     # Preserve legacy accepted-empty semantics for single-tool captures.
                     replacements = [
@@ -1133,7 +1137,32 @@ def parse_args() -> argparse.Namespace:
     from video_annotation import add_video_commands
 
     add_video_commands(commands)
-    return parser.parse_args()
+    data_paths = (
+        "manifest",
+        "object_manifest",
+        "review_log",
+        "mask_dir",
+        "frame_manifest",
+        "video_dir",
+        "frame_dir",
+        "image_object_manifest",
+        "output_dir",
+    )
+    for command in commands.choices.values():
+        command.add_argument(
+            "--data-dir",
+            type=Path,
+            default=Path("data"),
+            help=(
+                "Dataset directory; dataset path options are relative to it "
+                "(default: data)."
+            ),
+        )
+    args = parser.parse_args()
+    for name in data_paths:
+        if hasattr(args, name):
+            setattr(args, name, args.data_dir / getattr(args, name))
+    return args
 
 
 def main() -> None:

@@ -22,11 +22,11 @@ from masks import load_mask_bundle, mask2xywh, mask_overlap
 from PIL import Image, ImageDraw, ImageFont, ImageOps, UnidentifiedImageError
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent / "data"
 MANIFEST_PATH = ROOT / "image_manifest.csv"
 IMAGES_DIR = ROOT / "images"
-REPORT_JSON_PATH = ROOT / "verification_report.json"
-REPORT_HTML_PATH = ROOT / "verification_report.html"
+REPORT_JSON_PATH = ROOT.parent / "verification_report.json"
+REPORT_HTML_PATH = ROOT.parent / "verification_report.html"
 IMAGE_EXTENSIONS = {".avif", ".jpeg", ".jpg", ".png", ".webp"}
 EXPECTED_ANGLES = set(range(0, 360, 45))
 REQUIRED_COLUMNS = {

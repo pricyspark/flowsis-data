@@ -8,7 +8,7 @@ import pillow_heif
 
 from square_crop import MarkerDetectionError, crop_marked_square
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent / "data"
 SOURCE_DIR = ROOT / "raw-images"
 OUTPUT_DIR = ROOT / "images"
 IMAGE_EXTENSIONS = {
