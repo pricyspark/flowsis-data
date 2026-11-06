@@ -50,7 +50,11 @@ def test_review_log_latest_decision_controls_resume(tmp_path: Path) -> None:
 
 
 def test_image_prompt_defaults_to_coarse_class() -> None:
-    row = {"Tool Name": "iris", "Tool Class": "scissors"}
+    row = {
+        "Tool Name": "iris",
+        "Tool Class": "scissors",
+        "Manufacturer": "Example Instruments",
+    }
 
     assert image_prompt(row, "tool-class", {}) == "scissors"
     assert image_prompt(row, "name-and-class", {}) == "iris scissors"

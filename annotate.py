@@ -853,6 +853,7 @@ def annotate_images(args: argparse.Namespace) -> None:
                                     "Tool ID",
                                     "Tool Class",
                                     "Tool Name",
+                                    "Manufacturer",
                                     "Confidence",
                                 }
                                 else ""
@@ -997,6 +998,7 @@ def declare_instances(args: argparse.Namespace) -> None:
             "Tool ID",
             "Tool Class",
             "Tool Name",
+            "Manufacturer",
             "Confidence",
         }
         objects = [

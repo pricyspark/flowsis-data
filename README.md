@@ -1,5 +1,7 @@
 # FlowSIS Data
 
+Open work: [support uncertain pixels and partially valid annotations in training](#deferred-work-partial-supervision).
+
 ## Installation
 
 You will need Python and Git to use this repo. If you do not have Python, you can try and install it. It is easiest on Linux and MacOS. On Windows, I recommend using WSL2 to emulate Linux. If you are comfortable with a terminal and command line I recommend installing Python with Miniforge, otherwise you can use Anaconda, which has a graphics user interface (GUI). Installation for both of these is relatively simple. If you cannot install Python use the lab PC, which runs Linux. Similarly, install Git based on your system.
@@ -270,12 +272,18 @@ python prepare_manifests.py
 For single-tool folders, the script lists each new tool ID and asks you for its class, name, and confidence. Tool classes and names are automatically changed to lowercase with punctuation removed. Confidence must be a number from 0 to 1. If it finds undocumented images for a tool ID that is already in the manifest, it warns you and asks whether to add or skip them. Pressing Enter skips that tool. If you continue, the script reuses the tool's existing class, name, and confidence. It reads the original files in `raw-images` to fill in the capture time, camera make, model, flash, ISO, exposure, aperture, and focal length in millimeters when that metadata is available. Capture times are stored with their date and timezone, for example `2026-09-01T19:51:50.430-04:00`. The metadata is written only to the CSV; it is not copied into the JPG files.
 
 `multi/` is reserved for explicit intake. The preparation script never treats
-`multi` as a Tool ID, creates inferred instances there, or assigns sample IDs
-and angles from its filenames. It reports converted multi-tool images that have
+`multi` as a Tool ID, creates inferred instances there, or assigns angles from
+its filenames. It reports converted multi-tool images that have
 not been registered, and registered multi-tool images with no instance rows,
 with instructions to run `annotate.py declare`. These images do not interrupt
-single-tool preparation. Declared multi-tool images still receive available
-camera metadata and refreshed navigation columns; their identities, masks,
+single-tool preparation. Once every image in a setup folder is declared with
+the same tool set, preparation automatically assigns one globally unique
+Sample ID to that folder. Added images reuse the folder's existing ID. Separate
+setup folders receive separate IDs even if their tool sets match; nested image
+subdirectories remain part of their top-level setup. Conflicting tool sets,
+multiple existing IDs, or an ID used outside the setup are reported for review
+without changing that setup's assignments. Declared images receive available
+camera metadata and refreshed navigation columns; identities, masks, existing
 sample IDs, and angles are preserved.
 
 Use the two manifests as spreadsheets. The columns you need for manual review
@@ -284,14 +292,14 @@ are at the left; internal IDs and mask details are farther to the right.
 | File | What to check and edit |
 | --- | --- |
 | `image_manifest.csv` | Sample ID, Angle, Filepath, Lights, and other capture details. |
-| `image_object_manifest.csv` | Tool ID, Tool Class, Tool Name, and identification Confidence for each tool in an image. |
+| `image_object_manifest.csv` | Tool ID, Tool Class, Tool Name, optional Manufacturer, and identification Confidence for each tool in an image. |
 
 The image manifest starts with `Tool IDs`, `Sample ID`, `Angle`, `Filepath`, and
 `Lights`. `Tool IDs` is a summary: `0` means one tool, and `0;12` means tools 0
 and 12. Change physical tool identities in the **object manifest**, then run
 `python prepare_manifests.py` to refresh this summary.
 
-The object manifest starts with tool ID, class, name, confidence, sample ID,
+The object manifest starts with tool ID, class, name, manufacturer, confidence, sample ID,
 and filepath. Its sample ID and filepath are copied from the image manifest
 so you can find an image without looking up its internal ID. Edit these two
 fields in the **image manifest**, then run `python prepare_manifests.py` to refresh the
@@ -335,8 +343,18 @@ existing sample IDs and angles. Filename order only provides initial suggestions
 for new, unassigned single-tool batches; check that each batch really is one
 unchanged setup.
 
+To renumber assigned samples consecutively from zero in numeric Tool ID order, run
+`python prepare_manifests.py --renumber-samples`. This preserves sample membership,
+angles, and image/instance IDs and refreshes the Sample ID copies in the object manifest.
+Unassigned images remain unassigned. Visual review validity is independent of sample
+numbers; the next verification run updates the active saved reviews to the new numbers.
+
 `prepare_manifests.py` creates a pending instance for each new single-tool image and reuses
 existing tool details from object rows. Annotation fields stay blank until review;
+new tools prompt for an optional Manufacturer (press Enter to leave it blank).
+Manufacturer is preserved as metadata and excluded from model prompts and class labels.
+Keep design names in Tool Name, with lowercase words separated by underscores;
+store brands separately (for example, name `leksell`, manufacturer `jarit`).
 identification `Confidence` is separate from `Annotation Confidence`. Existing
 masks and review fields are preserved when adding images. Snapshot both manifests with DVC
 together.
@@ -369,6 +387,31 @@ codex login
 ```
 
 The results are saved as `verification_report.html`, which you can open in a web browser, and `verification_report.json`, which contains the same results in a machine-readable format. To run only the CSV and file checks without Codex, use `python verify_data.py --static-only`.
+
+Visual reviews are saved after each successful batch in `data/visual_review_log.json`.
+Keep this file with the manifests to share completed reviews across machines.
+The log records the image IDs, paths, content hashes, physical tool IDs, labels,
+angles, review policy, requested model, timestamp, and findings for each sample.
+Unchanged samples reuse their saved findings, including warnings; the reports mark
+them as reused and retain the original review timestamp. Static checks always run.
+If every check is reusable, verification does not start Codex or ask for confirmation.
+
+Adding, removing, or changing an image within a sample, editing its labels or angles,
+or changing the review instructions or requested model triggers another review of
+that entire sample. The complete sample provides context for tool consistency and
+rotation checks. New samples do not invalidate other samples from the same tool.
+Sample renumbering, row order, manufacturer, and mask-annotation edits do not invalidate
+visual checks. Class/name taxonomy suggestions are cached separately, using individual
+object labels rather than joined multi-tool labels, so taxonomy changes alone do not
+repeat image reviews. The review prompt explicitly describes the surgical context,
+including the surgical lineman pliers subtype for Tool ID 11.
+
+Use `python verify_data.py --force-review` to review all assigned samples and taxonomy
+again, or `--review-log PATH` to choose another log. Failed or invalid agent responses
+are not cached. An unreadable or corrupt log stops visual review before any paid calls;
+repair it or select a new log. Older reports without input fingerprints cannot establish
+that a previous review still applies and are not imported automatically. The first
+visual run establishes the fingerprinted baseline. `--static-only` leaves this log untouched.
 
 ### Publish dataset changes
 
@@ -526,14 +569,14 @@ Before mask annotation, prepare multi-tool captures in this order:
    Identify new tools in the manifest before declaring them in multi-tool images;
    the declaration command no longer accepts metadata overrides.
 
-4. In `image_manifest.csv`, assign one globally unique Sample ID to the images
-   with the same physical tools and overall setup, even when tool positions and
-   rotations vary. Leave `Angle` blank for these randomized captures; any image
-   count is valid. A setup folder name does not automatically assign a Sample ID.
-   Review each tool's ID, class, name, and identification confidence in
-   `image_object_manifest.csv`.
-5. Run `python prepare_manifests.py` to fill available camera metadata and
-   refresh navigation columns. It preserves your manual sample and angle values.
+4. Keep each setup folder limited to the same physical tools and overall setup,
+   even when tool positions and rotations vary. Preparation assigns one Sample
+   ID per fully declared folder; any image count is valid. Leave `Angle` blank
+   for these randomized captures. Review each tool's ID, class, name, and
+   identification confidence in `image_object_manifest.csv`.
+5. Run `python prepare_manifests.py` to assign the setup's Sample ID, fill
+   available camera metadata, and refresh navigation columns. It preserves
+   existing sample IDs and angle values.
 6. Run `python verify_data.py --static-only` and resolve manifest errors before
    annotation.
 7. Run `python annotate.py images` to assign and review masks.
@@ -545,7 +588,7 @@ if an image already has one instance row.
 
 For individual images, use `--filepath images/multi/setup-001/IMG_1001.jpg`
 (repeat `--filepath` for several images). Alternatively, `--sample-id 15` targets
-every image of an existing, manually assigned sample, including a randomized
+every image of an existing sample, including a randomized
 multi-tool sample. All target modes accept `--tool-ids 12 13` or repeated `--tool-id 12 --tool-id 13`.
 Instance IDs are generated from the image and physical tool ID; `--instance-id`
 allows an explicit identifier when declaring exactly one tool. Duplicate instance
@@ -1122,26 +1165,11 @@ Do not pass the new video review log to the legacy MP4 training branch.
 
 Use `python annotate.py --help` and each command's `--help` for options.
 
-### Build training data in flowsis
+### Build training data
 
-The existing training builder resolves mask paths against its working directory.
-Run the builder from `flowsis-data/data`, and use the environment where
-`flowsis` is installed:
-
-```shell
-conda activate flowsis
-cd data
-flowsis-build-annotated-dataset \
-  --image-manifest image_manifest.csv \
-  --object-manifest image_object_manifest.csv \
-  --review-log image_review.jsonl \
-  --image-mask-dir masks/images \
-  --video-review-log /dev/null \
-  --output-path ../../flowsis/data/new/segmentation-dataset
-```
-
-Paths stored by annotation are relative to the dataset directory. Run the
-training builder from that directory so both image and mask paths resolve.
+Use the repository's still-image builder from the repository root; see
+[Build a temporary model dataset](#build-a-temporary-model-dataset) below.
+Video exports retain their separate workflow described above.
 
 Run annotation tests without downloading model weights:
 
@@ -1162,3 +1190,185 @@ cd ~
 
 rm -rf flowsis-data
 ```
+
+## Build a temporary model dataset
+
+The current still-image dataset builder lives here in `build_dataset.py` and
+reads `image_manifest.csv`, `image_object_manifest.csv`, and `image_review.jsonl`
+from `data/` by default. Use `--root PATH` to select another dataset directory.
+Install the updated environment above, which includes Hugging Face `datasets`:
+
+```shell
+python build_dataset.py
+```
+
+The output is a Hugging Face `DatasetDict` at `exports/segmentation-dataset`, with
+train, validation, and test splits targeting 70%/15%/15%. The generated files are
+ignored by Git and live outside the DVC source dataset. To choose another destination or proportions:
+
+```shell
+python build_dataset.py --output-path exports/experiment-dataset --validation-size 0.15 --test-size 0.15 --seed 42
+```
+
+The builder refuses to replace an existing output directory unless `--force`
+is supplied:
+
+```shell
+python build_dataset.py --force
+```
+
+This replaces the dataset at `--output-path` (default
+`exports/segmentation-dataset`). The replacement is built and saved in a temporary
+directory first, preserving the existing dataset if validation or saving fails.
+Source image, mask, and raw-image directories cannot be used as output paths.
+
+Each image keeps
+all its mask instances, physical identities, class labels, and original mask
+indices. It uses the schema consumed by `flowsis.data.loaders` and the existing
+multi-instance training collators, so no loader conversion is required. Images
+and NPZ masks use paths relative to the dataset directory. Move this repository
+as a unit so the dataset, images, and masks keep their relative layout. Model
+commands resolve these paths when opening the dataset. Python callers should
+use `flowsis.data.loaders.load_local_dataset(path)`; `datasets.load_from_disk`
+returns the stored relative paths without resolving them. `asset_paths.json`
+versions this path convention. This is an export with external assets, rather
+than a self-contained copy of all images and masks.
+
+Images must have a latest review decision of `accepted`. With `--split-by tool`,
+images without a Sample ID remain eligible and are grouped by their Tool IDs.
+With `--split-by sample`, images without a Sample ID are excluded, even if they
+have valid masks; the report counts them under `skipped.missing_sample_id`.
+Positive images require
+all instances to have complete, reviewed, visible, class-valid and base-valid masks.
+Images with ignore pixels or any instance unsuitable for base training are
+excluded as a whole to avoid teaching the model that an unlabelled tool is
+background. Pending and skipped images are excluded. Accepted images with broken
+mask references, identities, dimensions, or bounding boxes stop the build.
+Video datasets remain a separate workflow.
+
+Explicitly accepted background images are also supported. The annotation
+workflow must save an empty mask bundle at the canonical path below
+`masks/images/`, matching the image dimensions and with no ignore pixels. Missing
+annotations alone never imply background. No background images are synthesized.
+Object `area` is the foreground pixel count in its visible mask, rather than
+bounding-box area; model augmentations recompute it from the transformed mask.
+
+By default, `--split-by tool` groups by **physical Tool ID and Sample ID**, not
+capture session.
+Multi-tool images connect all their Tool IDs, keeping those tools in the same
+split as their single-tool captures. All views of a sample stay together.
+Capture Session ID remains available as metadata. Because whole connected groups
+stay together, achieved split sizes can differ from the requested proportions.
+Before allocating holdouts, the splitter reserves complete groups that cover
+every exported class in training, prioritizing rare classes. A class confined
+to one group forces that group into training. Training coverage and group
+integrity take precedence over requested fractions; this can leave requested
+holdouts empty. Empty splits are omitted from the saved dataset and listed in
+`empty_splits` in `build_report.json`. This guarantees that validation and test
+contain no classes absent from training. A positive training fraction is required.
+
+To split by **Sample ID only**, allowing the same physical tools to appear in
+different splits, use:
+
+```shell
+python build_dataset.py --split-by sample --force
+```
+
+All views sharing a Sample ID stay together in either mode. Sample-based
+splitting shuffles sample groups with the requested seed before assigning them
+by target image counts. It can improve class coverage when a class has only one
+physical tool captured in several samples. Training class coverage is enforced
+in both splitting modes. The report records `split_by`, grouping fields,
+`split_policy`, sample counts, and `classes_absent` for each requested split.
+Classes with one sample can be trained but have no independent evaluation;
+two samples can support train/validation without forcing a test example.
+The holdouts assess known classes. Unknown-class rejection needs a separately
+defined evaluation protocol; a fixed-class detector cannot predict new labels.
+
+The export always preserves object-level `tool_class` and `tool_name`, regardless
+of which fields define `category`. Select ordered label fields at build time:
+
+```shell
+# Broad labels, such as "scissors"
+python build_dataset.py --split-by sample --label-fields tool_class --output-path exports/coarse-dataset
+
+# Default specific labels, such as "iris scissors"
+python build_dataset.py --split-by sample --label-fields tool_name tool_class --output-path exports/specific-dataset
+```
+
+`--label-fields` accepts an ordered, nonempty selection of distinct fields
+(`tool_name`, `tool_class`), rather than a fixed menu of labeling modes. Values
+are joined with spaces, blank values are skipped, and repeated suffixes are
+avoided ("iris scissors" plus "scissors" stays "iris scissors"). Objects whose
+selected fields are all blank stop the export. Labels are sorted for stable
+category IDs, and the chosen fields are recorded in `build_report.json`.
+Rebuild and retrain after changing label fields: class IDs, training coverage,
+and split assignments may change. Prompt generation is a separate downstream
+step and must use the resulting ordered labels.
+
+Before building, every saved bundle under `masks/` is checked for pixel overlap,
+including bundles outside the accepted subset. A single shared pixel stops the
+build and writes a `.mask-audit.json` report beside the requested output. No masks
+are silently trimmed. A successful output includes `build_report.json`, listing
+mask audit counts, excluded images, class coverage, and actual split sizes.
+
+Train from the model repository using the new dataset:
+
+```shell
+cd ../flowsis
+flowsis-train-base --dataset-path ../flowsis-data/exports/segmentation-dataset --text-embeddings-dir path/to/embeddings
+# Or train the detector:
+flowsis-train-detector --dataset-path ../flowsis-data/exports/segmentation-dataset
+```
+
+For base training, generate text embeddings for the new dataset's class labels
+using the model repository's prompt/embedding workflow, and replace
+`path/to/embeddings` with that directory. Embeddings for the previous dataset
+may not match the collected tool labels.
+
+The updated model training and augmentation preview commands default to 0–45°
+of extra rotation, since the collected views already cover the full circle.
+Synthetic overlap stays enabled with a 25% chance of one additional source image
+before visibility/severity filtering. An added image may contain several tools.
+These defaults correspond to `--rotation-min-degrees 0 --rotation-max-degrees 45
+--overlap-min-overlays 0 --overlap-max-overlays 1 --overlap-p 0.25`.
+Validation and test views do not receive synthetic overlap or random rotation.
+
+The export stores image-level `tool_ids` and per-object `tool_id`, with no
+singular image-level tool field. Each object retains the manifest's `instance_id`
+(scoped to its source image) and its bundle's `mask_index`. The mask loader adds
+`source_image_id` at runtime so instances remain traceable after synthetic
+compositing. Image/object `modified` flags are initialized by the loaders and
+updated by augmentation; they are not persisted. `video_path` and `frame_index`
+remain for the shared image/video loader, and per-object `mask_path` remains for
+explicit mask references. Base-model training samples Sample IDs with equal
+total weight across their views; images without a Sample ID stand alone.
+Detector-only training retains its existing image-shuffling policy.
+
+`Base Valid` is an annotation eligibility flag, not an additional target tensor.
+It controls whether an annotation can supervise the base detector/segmentation
+model using its class, bounding box, and visible mask. The current annotation
+workflow sets it identically to `Class Valid`. Ignore regions are explicitly
+reviewer-marked uncertain pixels; ordinary background and occluded pixels owned
+by another tool are valid negatives for the target tool. Synthetic overlap
+computes visible masks rather than automatically creating ignore regions.
+
+## Deferred work: partial supervision
+
+This policy is intentionally unimplemented for now. The builder currently
+excludes an entire positive image if any instance fails the base-training
+validity checks, or if its mask bundle has ignore pixels.
+Ordinary occlusion is represented by disjoint visible masks. The current accepted
+dataset has no uncertainty-related exclusions.
+
+- [ ] Preserve per-instance mask/class/base validity and image-level ignore masks
+  in the dataset instead of discarding otherwise usable images. Distinguish
+  absent/fully hidden metadata from uncertain visible objects.
+- [ ] Transform ignore masks consistently with images and instance masks during
+  cropping, resizing, rotation, and synthetic compositing, then collate them.
+- [ ] Apply validity and ignore information to matching, classification,
+  objectness/background supervision, and mask losses in `flowsis`. Uncertain
+  visible tools must not become false background targets. Keep the matching
+  evaluation policy consistent with training.
+- [ ] Test mixed-validity images, uncertain boundaries, absent/fully hidden tools,
+  accepted background images, and augmented samples before enabling the policy.

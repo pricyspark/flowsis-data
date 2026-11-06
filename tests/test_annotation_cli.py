@@ -43,6 +43,7 @@ def test_image_cli_writes_local_outputs_and_resumes(
                 "Tool ID": "7",
                 "Tool Name": "iris",
                 "Tool Class": "scissors",
+                "Manufacturer": "Example Instruments",
                 "Confidence": "0.8",
             }
         ],
@@ -72,6 +73,7 @@ def test_image_cli_writes_local_outputs_and_resumes(
     row = read_csv("image_object_manifest.csv")[0]
     bundle = load_mask_bundle("masks/images/7/tool.npz")
     assert row["Confidence"] == "0.8"
+    assert row["Manufacturer"] == "Example Instruments"
     assert row["Instance ID"] == "declared-0"
     if empty:
         assert bundle.identities == ()

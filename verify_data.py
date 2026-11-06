@@ -1,5 +1,6 @@
 import argparse
 import csv
+import hashlib
 import html
 import json
 import math
@@ -9,6 +10,7 @@ import tempfile
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
+from typing import TypeGuard
 
 from annotations import (
     numeric_sort_key,
@@ -18,6 +20,7 @@ from annotations import (
     validate_instance_metadata,
 )
 from masks import load_mask_bundle, mask2xywh, mask_overlap
+from verification_log import SampleReview, fingerprint, load_review_log, save_review_log
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps, UnidentifiedImageError
 
@@ -27,6 +30,7 @@ MANIFEST_PATH = ROOT / "image_manifest.csv"
 IMAGES_DIR = ROOT / "images"
 REPORT_JSON_PATH = ROOT.parent / "verification_report.json"
 REPORT_HTML_PATH = ROOT.parent / "verification_report.html"
+REVIEW_LOG_PATH = ROOT / "visual_review_log.json"
 IMAGE_EXTENSIONS = {".avif", ".jpeg", ".jpg", ".png", ".webp"}
 EXPECTED_ANGLES = set(range(0, 360, 45))
 REQUIRED_COLUMNS = {
@@ -538,7 +542,14 @@ def agent_prompt(
                 else "single_tool_rotation"
             ),
             "images": [
-                {"filepath": row["Filepath"], "recorded_angle": row["Angle"]}
+                {
+                    "image_id": row["Image ID"],
+                    "filepath": row["Filepath"],
+                    "recorded_angle": row["Angle"],
+                    "tool_id": row["Tool ID"],
+                    "tool_class": row["Tool Class"],
+                    "tool_name": row["Tool Name"],
+                }
                 for row in sample_rows
             ],
         }
@@ -547,12 +558,28 @@ def agent_prompt(
     taxonomy_instruction = (
         "Review the complete taxonomy below for inconsistent naming, synonyms that should be "
         "merged, or labels that combine meanings and should be split. Return only actionable "
-        "suggestions; do not return keep entries.\n"
+        "suggestions; do not return keep entries. Preserve the exact existing labels in "
+        "current_class and current_name. Format suggested_class and suggested_name in "
+        "lowercase with a single underscore between words (for example, bone_punch and "
+        "straight_mayo_dissecting). Do not concatenate separate words or use spaces or "
+        "dashes as word separators. Tool Class is the general tool category; Tool Name "
+        "is its subtype or modifier and should not repeat the class. Manufacturer is "
+        "optional metadata and must not be included in suggested classes or names; "
+        "brand recognition is not an objective. Keep established instrument design names "
+        "even when they are proper names. Treat missing word "
+        "separators in existing labels as a naming issue and suggest a rename when the "
+        "word boundaries are clear.\n"
         f"Taxonomy: {json.dumps(taxonomy, ensure_ascii=False)}"
         if taxonomy is not None
         else "Return an empty taxonomy_suggestions array for this batch."
     )
-    return f"""You are reviewing an image dataset of tools. Each attached contact sheet is one
+    return f"""You are reviewing an image dataset of surgical instruments and related tools.
+Interpret classes and subtype names in their surgical context, rather than assuming household
+or hardware-store variants. In particular, Tool ID 11 with subtype lineman refers to surgical
+lineman (linemen) pliers. Do not flag that name solely because it is also used for electrical
+pliers; assess whether the visible design is plausible for the surgical instrument.
+Manufacturer and brand recognition are not objectives. Underscores separate words in labels.
+Each attached contact sheet is one
 sample and its tiles are labeled with filepath and recorded angle. For each sample, check that:
 1. Every tile shows the same physical tool or set of tools for the sample.
 2. For single_tool_rotation samples only, the tool rotates in approximately 45-degree steps
@@ -576,7 +603,8 @@ Do not treat lighting, shadows, framing, focus, or small camera movement as a di
 Angle judgments from appearance are approximate: report uncertainty and use
 possible_wrong_angle only when the sequence looks genuinely suspicious. Never suggest edits as
 facts. Review every listed sample exactly once and use only filepaths from its metadata when
-identifying an image. If no problem is visible, use status pass and an empty issues array.
+identifying an image. Refer to filepaths rather than sample numbers in summaries and reasons,
+since sample numbers may be reassigned. If no problem is visible, use status pass and an empty issues array.
 
 Sample metadata: {json.dumps(sample_details, ensure_ascii=False)}
 
@@ -599,22 +627,193 @@ def codex_is_ready() -> tuple[bool, str]:
     return True, message
 
 
+def valid_confidence(value: object) -> bool:
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and 0 <= value <= 1
+    )
+
+
+def valid_sample_review(value: object) -> TypeGuard[SampleReview]:
+    if not isinstance(value, dict):
+        return False
+    confidence = value.get("confidence")
+    issues = value.get("issues")
+    return (
+        isinstance(value.get("sample_id"), str)
+        and value.get("status") in ("pass", "review")
+        and isinstance(value.get("summary"), str)
+        and valid_confidence(confidence)
+        and isinstance(issues, list)
+        and all(
+            isinstance(item, dict)
+            and item.get("type")
+            in (
+                "possible_wrong_sample",
+                "possible_wrong_angle",
+                "tool_identity_mismatch",
+                "image_quality",
+                "other",
+            )
+            and isinstance(item.get("filepath"), str)
+            and isinstance(item.get("reason"), str)
+            and valid_confidence(item.get("confidence"))
+            for item in issues
+        )
+    )
+
+
+def valid_sample_reviews(value: object) -> TypeGuard[list[SampleReview]]:
+    return isinstance(value, list) and all(valid_sample_review(item) for item in value)
+
+
+def valid_taxonomy_suggestions(value: object) -> TypeGuard[list[dict[str, object]]]:
+    return isinstance(value, list) and all(
+        isinstance(item, dict)
+        and all(
+            isinstance(item.get(field), str)
+            for field in (
+                "current_class", "current_name", "suggested_class", "suggested_name", "reason"
+            )
+        )
+        and item.get("action") in ("keep", "rename", "merge", "split", "review")
+        and valid_confidence(item.get("confidence"))
+        for item in value
+    )
+
+
+def sample_review_inputs(
+    rows: list[dict[str, str]], policy: str, model: str | None
+) -> dict[str, object]:
+    images: list[dict[str, object]] = []
+    for row in sorted(rows, key=lambda row: (row["Image ID"], row["Filepath"])):
+        path = resolved_manifest_image(row["Filepath"])
+        if path is None:
+            raise ValueError(f"Invalid image path: {row['Filepath']}")
+        with path.open("rb") as file:
+            digest = hashlib.file_digest(file, "sha256").hexdigest()
+        images.append(
+            {
+                **{
+                    field: row[field]
+                    for field in (
+                        "Image ID", "Filepath", "Tool ID", "Tool Class", "Tool Name", "Angle"
+                    )
+                },
+                "capture_type": (
+                    "randomized_multi_tool"
+                    if is_multi_tool_image(row)
+                    else "single_tool_rotation"
+                ),
+                "sha256": digest,
+            }
+        )
+    return {"policy": policy, "model": model, "images": images}
+
+
 def run_agent_review(
     samples: dict[str, list[dict[str, str]]],
     rows: list[dict[str, str]],
     batch_size: int,
     model: str | None,
+    *,
+    log_path: Path = REVIEW_LOG_PATH,
+    force: bool = False,
+    yes: bool = False,
 ) -> tuple[list[dict[str, object]], list[dict[str, object]], list[str]]:
     sample_reviews: list[dict[str, object]] = []
     taxonomy_suggestions: list[dict[str, object]] = []
     errors: list[str] = []
+
+    try:
+        log = load_review_log(log_path)
+    except (OSError, ValueError) as error:
+        return [], [], [f"Could not read {log_path}: {error}"]
+
+    # Hash the actual policy text so changes to the review instructions invalidate reuse.
+    policy = fingerprint({"prompt": agent_prompt([], None), "schema": AGENT_SCHEMA})
+    pending: dict[str, list[dict[str, str]]] = {}
+    inputs_by_sample: dict[str, dict[str, object]] = {}
+    remapped = False
+    for sample_id, sample_rows in sorted(
+        samples.items(), key=lambda item: numeric_sort_key(item[0])
+    ):
+        ordered = sorted(
+            sample_rows, key=lambda row: (row["Image ID"], row["Filepath"])
+        )
+        try:
+            inputs = sample_review_inputs(ordered, policy, model)
+        except (OSError, ValueError) as error:
+            errors.append(f"Could not fingerprint sample {sample_id}: {error}")
+            continue
+        inputs_by_sample[sample_id] = inputs
+        entry = log["samples"].get(fingerprint(inputs)) if not force else None
+        if entry is not None:
+            review = entry["result"]
+            allowed_paths = {row["Filepath"] for row in ordered}
+            if not valid_sample_review(review) or any(
+                item["filepath"] and item["filepath"] not in allowed_paths
+                for item in review["issues"]
+            ):
+                errors.append(f"Ignoring invalid cached review for sample {sample_id}.")
+            else:
+                if review["sample_id"] != sample_id:
+                    review["sample_id"] = sample_id
+                    remapped = True
+                sample_reviews.append(
+                    {
+                        **review,
+                        "sample_id": sample_id,
+                        "cached": True,
+                        "reviewed_at": entry["reviewed_at"],
+                    }
+                )
+                continue
+        pending[sample_id] = ordered
+
+    taxonomy = taxonomy_summary(rows)
+    taxonomy_inputs = {
+        "prompt": agent_prompt([], taxonomy),
+        "schema": AGENT_SCHEMA,
+        "model": model,
+    }
+    taxonomy_key = fingerprint(taxonomy_inputs)
+    taxonomy_entry = log["taxonomy"].get(taxonomy_key) if not force else None
+    taxonomy_pending = True
+    if taxonomy_entry is not None:
+        suggestions = taxonomy_entry["result"].get("taxonomy_suggestions")
+        if valid_taxonomy_suggestions(suggestions):
+            taxonomy_suggestions = suggestions
+            taxonomy_pending = False
+
+    print(
+        f"Reusing {len(sample_reviews)} visual review(s); {len(pending)} sample(s) need review. "
+        f"Taxonomy review: {'needed' if taxonomy_pending else 'reused'}."
+    )
+    if remapped:
+        try:
+            save_review_log(log_path, log)
+        except OSError as error:
+            return sample_reviews, taxonomy_suggestions, [*errors, f"Could not save remapped review log: {error}"]
+    if not pending and not taxonomy_pending:
+        return sample_reviews, taxonomy_suggestions, errors
+    ready, status = codex_is_ready()
+    if not ready:
+        return sample_reviews, taxonomy_suggestions, [*errors, status]
+    if not yes:
+        proceed = input("Continue with the visual review? [y/N]: ").strip().lower()
+        if proceed not in {"y", "yes"}:
+            return sample_reviews, taxonomy_suggestions, [
+                *errors, "Visual review was skipped by the user."
+            ]
 
     with tempfile.TemporaryDirectory(prefix="flowsis-review-") as temp_name:
         temp_dir = Path(temp_name)
         schema_path = temp_dir / "agent_schema.json"
         schema_path.write_text(json.dumps(AGENT_SCHEMA), encoding="utf-8")
         prepared: list[tuple[str, list[dict[str, str]], Path]] = []
-        for index, (sample_id, sample_rows) in enumerate(sorted(samples.items(), key=lambda item: numeric_sort_key(item[0]))):
+        for index, (sample_id, sample_rows) in enumerate(pending.items()):
             sheet_path = temp_dir / f"sample-{index:04d}.jpg"
             try:
                 make_contact_sheet(sample_id, sample_rows, sheet_path)
@@ -623,14 +822,19 @@ def run_agent_review(
                 continue
             prepared.append((sample_id, sample_rows, sheet_path))
 
-        for start in range(0, len(prepared), batch_size):
-            batch = prepared[start : start + batch_size]
-            result_path = temp_dir / f"result-{start // batch_size:04d}.json"
-            taxonomy = taxonomy_summary(rows) if start == 0 else None
+        batches = [
+            prepared[start : start + batch_size]
+            for start in range(0, len(prepared), batch_size)
+        ]
+        if not batches and taxonomy_pending:
+            batches = [[]]
+        for index, batch in enumerate(batches):
+            result_path = temp_dir / f"result-{index:04d}.json"
+            batch_taxonomy = taxonomy if taxonomy_pending else None
             command = [
                 "codex",
                 "exec",
-                agent_prompt(batch, taxonomy),
+                agent_prompt(batch, batch_taxonomy),
                 "--ephemeral",
                 "--sandbox",
                 "read-only",
@@ -644,26 +848,70 @@ def run_agent_review(
             for _, _, sheet_path in batch:
                 command.extend(["--image", str(sheet_path)])
             sample_names = ", ".join(sample_id for sample_id, _, _ in batch)
-            print(f"Reviewing sample(s) {sample_names}...")
+            print(f"Reviewing sample(s) {sample_names or '(taxonomy only)'}...")
             result = subprocess.run(command, cwd=ROOT, check=False)
             if result.returncode != 0 or not result_path.is_file():
                 errors.append(f"Codex review failed for sample(s) {sample_names}.")
                 continue
             try:
-                batch_result = json.loads(result_path.read_text(encoding="utf-8"))
-                batch_reviews = batch_result["sample_reviews"]
+                batch_result: object = json.loads(result_path.read_text(encoding="utf-8"))
+                if not isinstance(batch_result, dict):
+                    raise ValueError("Expected an agent result object.")
+                batch_reviews = batch_result.get("sample_reviews")
+                if not valid_sample_reviews(batch_reviews):
+                    raise ValueError("Invalid sample reviews.")
                 expected_ids = Counter(sample_id for sample_id, _, _ in batch)
                 returned_ids = Counter(review["sample_id"] for review in batch_reviews)
                 if returned_ids != expected_ids:
-                    errors.append(
-                        f"Codex did not return exactly one review for each of "
-                        f"sample(s) {sample_names}."
-                    )
-                sample_reviews.extend(batch_reviews)
-                taxonomy_suggestions.extend(batch_result["taxonomy_suggestions"])
-            except (json.JSONDecodeError, KeyError, TypeError) as error:
+                    raise ValueError(f"Codex did not return exactly one valid review for each sample: {sample_names}.")
+                allowed_paths = {
+                    sample_id: {row["Filepath"] for row in sample_rows}
+                    for sample_id, sample_rows, _ in batch
+                }
+                for review in batch_reviews:
+                    if any(
+                        item["filepath"]
+                        and item["filepath"] not in allowed_paths[review["sample_id"]]
+                        for item in review["issues"]
+                    ):
+                        raise ValueError("Review refers to an image outside its sample.")
+                suggestions = batch_result["taxonomy_suggestions"]
+                if not valid_taxonomy_suggestions(suggestions):
+                    raise ValueError("Invalid taxonomy suggestions.")
+                reviewed_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+                for sample_id, sample_rows, _ in batch:
+                    if (
+                        sample_review_inputs(sample_rows, policy, model)
+                        != inputs_by_sample[sample_id]
+                    ):
+                        raise ValueError(f"Images changed during review for sample {sample_id}; results were not cached.")
+                for review in batch_reviews:
+                    inputs = inputs_by_sample[review["sample_id"]]
+                    # IDs are navigation labels; membership and content determine validity.
+                    log["samples"][fingerprint(inputs)] = {
+                        "inputs": inputs,
+                        "reviewed_at": reviewed_at,
+                        "result": dict(review),
+                    }
+                    sample_reviews.append({**review, "cached": False, "reviewed_at": reviewed_at})
+                if batch_taxonomy is not None:
+                    log["taxonomy"][taxonomy_key] = {
+                        "inputs": taxonomy_inputs,
+                        "reviewed_at": reviewed_at,
+                        "result": {"taxonomy_suggestions": suggestions},
+                    }
+                    taxonomy_suggestions = suggestions
+                    taxonomy_pending = False
+                # Save each completed batch so an interrupted run can resume cheaply.
+                try:
+                    save_review_log(log_path, log)
+                except OSError as error:
+                    errors.append(f"Could not save {log_path}; stopping visual review: {error}")
+                    break
+            except (OSError, ValueError, KeyError, TypeError) as error:
                 errors.append(f"Codex returned an invalid result for sample(s) {sample_names}: {error}")
 
+    sample_reviews.sort(key=lambda review: numeric_sort_key(str(review["sample_id"])))
     return sample_reviews, taxonomy_suggestions, errors
 
 
@@ -702,7 +950,9 @@ def render_report(report: dict[str, object]) -> str:
             if isinstance(item, dict)
         )
         review_rows.append(
-            [review.get("sample_id", ""), review.get("status", ""), review.get("summary", ""), details]
+            [review.get("sample_id", ""), review.get("status", ""),
+             "reused" if review.get("cached") else "new",
+             review.get("reviewed_at", ""), review.get("summary", ""), details]
         )
     suggestion_rows = [
         [
@@ -733,7 +983,7 @@ Static results: {counts['error']} error(s), {counts['warning']} warning(s). Agen
 <h2>CSV and filesystem checks</h2>
 {table(['Severity', 'Location', 'Finding'], issue_rows)}
 <h2>Visual sample review</h2>
-{table(['Sample', 'Status', 'Summary', 'Details'], review_rows)}
+{table(['Sample', 'Status', 'Source', 'Reviewed at', 'Summary', 'Details'], review_rows)}
 <h2>Class and name suggestions</h2>
 {table(['Current', 'Action', 'Suggested', 'Reason'], suggestion_rows)}
 <h2>Agent errors or skipped steps</h2><ul>{error_html}</ul>
@@ -758,6 +1008,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--yes", action="store_true", help="start the Codex review without prompting")
     parser.add_argument("--batch-size", type=int, default=4, help="contact sheets per Codex run (default: 4)")
     parser.add_argument("--model", help="optional Codex model override")
+    parser.add_argument("--review-log", type=Path, default=REVIEW_LOG_PATH, help="persistent visual review log (default: visual_review_log.json)")
+    parser.add_argument("--force-review", action="store_true", help="review all samples and taxonomy again, ignoring saved reviews")
     return parser.parse_args()
 
 
@@ -797,22 +1049,10 @@ def main() -> None:
     )
 
     if not args.static_only and samples:
-        ready, status = codex_is_ready()
-        if not ready:
-            print(status)
-            agent_errors.append(status)
-        else:
-            print(f"Codex is ready. {len(samples)} sample(s) can be visually reviewed.")
-            proceed = args.yes or input("Continue with the visual review? [y/N]: ").strip().lower() in {
-                "y",
-                "yes",
-            }
-            if proceed:
-                sample_reviews, taxonomy_suggestions, agent_errors = run_agent_review(
-                    samples, rows, args.batch_size, args.model
-                )
-            else:
-                agent_errors.append("Visual review was skipped by the user.")
+        sample_reviews, taxonomy_suggestions, agent_errors = run_agent_review(
+            samples, objects, args.batch_size, args.model,
+            log_path=args.review_log, force=args.force_review, yes=args.yes,
+        )
     elif args.static_only:
         agent_errors.append("Visual review was skipped because --static-only was used.")
     else:
@@ -823,6 +1063,7 @@ def main() -> None:
         "manifest": MANIFEST_PATH.name,
         "row_count": len(rows),
         "sample_count": len(samples),
+        "review_log": str(args.review_log),
         "static_issues": static_issues,
         "sample_reviews": sample_reviews,
         "taxonomy_suggestions": taxonomy_suggestions,

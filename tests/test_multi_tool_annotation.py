@@ -283,7 +283,9 @@ def test_declare_sample_preserves_metadata_and_reopen_clears_annotations(
     monkeypatch, tmp_path
 ):
     monkeypatch.chdir(tmp_path)
-    setup_manifest(tmp_path, [instance("a", "12")])
+    setup_manifest(
+        tmp_path, [{**instance("a", "12"), "Manufacturer": "Example Instruments"}]
+    )
     seed_known_tools(["13", "14"])
     images = read_csv("image_manifest.csv")
     images[0]["Sample ID"] = "4"
@@ -321,6 +323,7 @@ def test_declare_sample_preserves_metadata_and_reopen_clears_annotations(
     annotate.main()
     assert not annotate.ReviewLog(Path("image_review.jsonl")).completed("image-1")
     assert len(read_csv("image_object_manifest.csv")) == 5
+    assert read_csv("image_object_manifest.csv")[0]["Manufacturer"] == "Example Instruments"
 
 
 def test_resolved_rows_follow_mask_order_and_reject_missing_identity():
@@ -393,7 +396,13 @@ def test_declare_new_image_and_reject_duplicate_tool(monkeypatch, tmp_path):
 @pytest.mark.parametrize("folder", ["setup-001", "images/multi/setup-001"])
 def test_declare_folder_with_known_tool_ids(monkeypatch, tmp_path, folder):
     monkeypatch.chdir(tmp_path)
-    setup_manifest(tmp_path, [instance("a", "12"), instance("b", "13", "forceps")])
+    setup_manifest(
+        tmp_path,
+        [
+            {**instance("a", "12"), "Manufacturer": "Example Instruments"},
+            instance("b", "13", "forceps"),
+        ],
+    )
     root = tmp_path / "images/multi/setup-001"
     (root / "nested").mkdir(parents=True)
     for path in [root / "one.jpg", root / "nested/two.PNG"]:
@@ -424,6 +433,7 @@ def test_declare_folder_with_known_tool_ids(monkeypatch, tmp_path, folder):
     for image in images[1:]:
         assert image["Tool IDs"] == "12;13"
         declared = [row for row in objects if row["Image ID"] == image["Image ID"]]
+        assert [row["Manufacturer"] for row in declared] == ["Example Instruments", ""]
         assert [
             (row["Tool ID"], row["Tool Class"], row["Tool Name"], row["Confidence"])
             for row in declared

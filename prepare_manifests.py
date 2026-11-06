@@ -1,5 +1,6 @@
 """Prepare image and object manifests from single-tool or declared multi-tool captures."""
 
+import argparse
 import csv
 import unicodedata
 from datetime import datetime
@@ -11,6 +12,7 @@ from annotations import (
     assign_capture_sessions,
     read_csv,
     stable_media_id,
+    validate_instance_metadata,
     write_image_manifests,
 )
 
@@ -51,11 +53,11 @@ def sort_key(value: str) -> tuple[int, int | str]:
 
 
 def normalize_label(value: str) -> str:
-    without_punctuation = "".join(
-        "" if unicodedata.category(character).startswith("P") else character
+    separated = "".join(
+        " " if unicodedata.category(character).startswith("P") else character
         for character in value
     )
-    return "".join(without_punctuation.lower().split())
+    return "_".join(separated.lower().split())
 
 
 def prompt_required(label: str) -> str:
@@ -176,6 +178,87 @@ def assign_complete_batches(
     return next_sample_id, group_count, incomplete_rows
 
 
+def assign_multi_tool_samples(
+    rows: list[dict[str, str]],
+    objects_by_image: dict[str, list[dict[str, str]]],
+    multi_relative: Path,
+    undeclared_paths: set[str],
+) -> int:
+    """Assign one sample per fully declared setup folder, preserving existing IDs."""
+
+    def setup_folder(filepath: str) -> Path | None:
+        path = Path(filepath)
+        if not path.is_relative_to(multi_relative):
+            return None
+        relative = path.relative_to(multi_relative)
+        if len(relative.parts) < 2 or ".." in relative.parts:
+            return None
+        return multi_relative / relative.parts[0]
+
+    setups: dict[Path, list[dict[str, str]]] = {}
+    sample_images: dict[str, set[str]] = {}
+    for row in rows:
+        sample = row["Sample ID"]
+        if sample.strip():
+            sample_images.setdefault(sample, set()).add(row["Image ID"])
+        setup = setup_folder(row["Filepath"])
+        if setup is not None:
+            setups.setdefault(setup, []).append(row)
+        elif Path(row["Filepath"]).is_relative_to(multi_relative):
+            print(
+                f"Warning: no setup subfolder for {row['Filepath']}; Sample ID preserved."
+            )
+
+    blocked = {setup_folder(filepath) for filepath in undeclared_paths}
+    next_sample_id = (
+        max(
+            (int(sample) for sample in sample_images if sample.strip().isdigit()),
+            default=-1,
+        )
+        + 1
+    )
+    assigned = 0
+    for setup, images in sorted(setups.items()):
+        try:
+            if setup in blocked:
+                raise ValueError("declare every image in the setup folder first")
+            tool_sets = set()
+            for image in images:
+                instances = objects_by_image.get(image["Image ID"], [])
+                validate_instance_metadata(instances)
+                if len(instances) < 2:
+                    raise ValueError("each image must declare at least two tools")
+                tool_sets.add(frozenset(obj["Tool ID"] for obj in instances))
+            if len(tool_sets) != 1:
+                raise ValueError("declared Tool IDs differ between images")
+            samples = {
+                image["Sample ID"] for image in images if image["Sample ID"].strip()
+            }
+            if len(samples) > 1:
+                raise ValueError("folder contains multiple existing Sample IDs")
+            sample = next(iter(samples)) if samples else str(next_sample_id)
+            image_ids = {image["Image ID"] for image in images}
+            if sample_images.get(sample, set()) - image_ids:
+                raise ValueError(
+                    f"Sample ID {sample} is also used outside this setup folder"
+                )
+        except ValueError as error:
+            print(f"Warning: skipping sample assignment for {setup}: {error}.")
+            continue
+
+        if not samples:
+            next_sample_id += 1
+        unassigned = [image for image in images if not image["Sample ID"].strip()]
+        for image in unassigned:
+            image["Sample ID"] = sample
+        if unassigned:
+            assigned += len(unassigned)
+            print(
+                f"Assigned Sample ID {sample} to {len(unassigned)} image(s) in {setup}."
+            )
+    return assigned
+
+
 def find_original(image: Path, images_dir: Path, raw_images_dir: Path) -> Path | None:
     relative_path = image.relative_to(images_dir)
     source_dir = raw_images_dir / relative_path.parent
@@ -270,6 +353,8 @@ def main(
     raw_images_dir: Path = RAW_IMAGES_DIR,
     manifest_path: Path = MANIFEST_PATH,
     object_manifest_path: Path | None = None,
+    *,
+    renumber_samples: bool = False,
 ) -> None:
     if not images_dir.is_dir():
         print(f"Could not find {images_dir.name}/. Run img_convert.py first.")
@@ -350,8 +435,8 @@ def main(
         print(
             "Run python annotate.py declare --folder SETUP --tool-ids ID [ID ...] "
             "using tools already identified in image_object_manifest.csv. "
-            "Then assign Sample ID in image_manifest.csv, leave randomized multi-tool "
-            "Angle blank, and rerun prepare_manifests.py."
+            "Then rerun prepare_manifests.py to assign one Sample ID per fully "
+            "declared setup folder. Leave randomized multi-tool Angle blank."
         )
 
     normalized_labels = 0
@@ -467,6 +552,14 @@ def main(
                 (row["Confidence"] for row in existing_objects if row["Confidence"]),
                 "",
             )
+            manufacturer = next(
+                (
+                    row["Manufacturer"]
+                    for row in existing_objects
+                    if row.get("Manufacturer", "").strip()
+                ),
+                "",
+            )
             if not tool_class:
                 tool_class = prompt_required("Tool class")
             if not tool_name:
@@ -475,12 +568,15 @@ def main(
                 confidence = prompt_confidence()
             print(
                 f"Using existing details: class={tool_class}, name={tool_name}, "
-                f"confidence={confidence}."
+                f"manufacturer={manufacturer or 'unknown'}, confidence={confidence}."
             )
         else:
             print(f"\nTool ID {tool_id} has {len(images)} image(s).")
             tool_class = prompt_required("Tool class")
             tool_name = prompt_required("Tool name")
+            manufacturer = input(
+                "Manufacturer (optional; Enter to leave blank): "
+            ).strip()
             confidence = prompt_confidence()
 
         new_rows_by_path: dict[str, dict[str, str]] = {}
@@ -516,6 +612,7 @@ def main(
                     "Tool ID": tool_id,
                     "Tool Class": tool_class,
                     "Tool Name": tool_name,
+                    "Manufacturer": manufacturer,
                     "Confidence": confidence,
                 }
             )
@@ -547,9 +644,16 @@ def main(
                 "left blank; later complete batches are unaffected."
             )
 
+    assign_multi_tool_samples(rows, objects_by_image, multi_relative, undeclared_multi)
+
     for row, session in zip(rows, assign_capture_sessions(rows), strict=True):
         if not row["Capture Session ID"]:
             row["Capture Session ID"] = session
+    if renumber_samples:
+        mapping = renumber_sample_ids(rows, objects)
+        print(
+            f"Renumbered {sum(old != new for old, new in mapping.items())} sample ID(s) by tool ID."
+        )
     write_image_manifests(manifest_path, rows, object_manifest_path, objects)
     print(
         "Refreshed manifest navigation columns and sorted by completion and tool IDs."
@@ -563,5 +667,38 @@ def main(
         print(f"Added {added_rows} row(s) to {manifest_path.name}.")
 
 
+def renumber_sample_ids(
+    rows: list[dict[str, str]], objects: list[dict[str, str]]
+) -> dict[str, str]:
+    """Assign contiguous sample IDs by physical tools without changing membership."""
+    tools_by_image: dict[str, set[str]] = {}
+    for obj in objects:
+        tools_by_image.setdefault(obj["Image ID"], set()).add(obj["Tool ID"])
+    tools_by_sample: dict[str, set[str]] = {}
+    for row in rows:
+        if row["Sample ID"].strip():
+            tools_by_sample.setdefault(row["Sample ID"], set()).update(
+                tools_by_image.get(row["Image ID"], set())
+            )
+    ordered = sorted(
+        tools_by_sample,
+        key=lambda sample: (
+            tuple(sorted(sort_key(tool) for tool in tools_by_sample[sample])),
+            sort_key(sample),
+        ),
+    )
+    mapping = {sample: str(index) for index, sample in enumerate(ordered)}
+    for row in rows:
+        row["Sample ID"] = mapping.get(row["Sample ID"], row["Sample ID"])
+    # write_image_manifests refreshes the object copies from their image rows.
+    return mapping
+
+
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--renumber-samples",
+        action="store_true",
+        help="renumber assigned samples consecutively by tool ID, preserving groups",
+    )
+    main(renumber_samples=parser.parse_args().renumber_samples)

@@ -115,6 +115,7 @@ def prepare_videos(args: argparse.Namespace) -> None:
                 }
             )
             videos.append(video)
+        video["Manufacturer"] = metadata["Manufacturer"]
         old_frames = [row for row in frames if row["Video ID"] == video_id]
         previous_filepaths = {row["Filepath"] for row in old_frames}
         if args.reextract:

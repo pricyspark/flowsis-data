@@ -60,6 +60,7 @@ def prepared(tmp_path, monkeypatch, times=(0, 1, 3, 4)):
                 "Tool ID": "12",
                 "Tool Class": "scissors",
                 "Tool Name": "iris",
+                "Manufacturer": "Example Instruments",
                 "Confidence": "0.9",
             }
         ],
@@ -67,7 +68,9 @@ def prepared(tmp_path, monkeypatch, times=(0, 1, 3, 4)):
     )
     args = parse(monkeypatch, "prepare-videos")
     prepare_videos(args)
-    return read_csv("video_manifest.csv")[0], read_csv("video_frame_manifest.csv")
+    video = read_csv("video_manifest.csv")[0]
+    assert video["Manufacturer"] == "Example Instruments"
+    return video, read_csv("video_frame_manifest.csv")
 
 
 def mask():
@@ -321,6 +324,7 @@ def test_export_uses_saved_frames_and_preserves_an_immutable_snapshot(
     images = read_csv("video_training/image_manifest.csv")
     objects = read_csv("video_training/image_object_manifest.csv")
     assert len(images) == len(objects) == 3
+    assert all(row["Manufacturer"] == "Example Instruments" for row in objects)
     assert all(
         row["Capture Session ID"] == video["Capture Session ID"] for row in images
     )

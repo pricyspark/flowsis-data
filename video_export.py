@@ -82,8 +82,10 @@ def export_video_training(args: argparse.Namespace) -> None:
             obj = dict.fromkeys(IMAGE_OBJECT_FIELDS, "")
             obj.update(
                 {
-                    field: video[field]
-                    for field in ("Tool ID", "Tool Class", "Tool Name", "Confidence")
+                    field: video.get(field, "")
+                    for field in (
+                        "Tool ID", "Tool Class", "Tool Name", "Manufacturer", "Confidence"
+                    )
                 }
             )
             obj.update(

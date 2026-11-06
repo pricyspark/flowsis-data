@@ -7,8 +7,54 @@ import prepare_manifests
 from annotations import IMAGE_OBJECT_FIELDS, read_csv, write_csv
 
 
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        ("Straight Mayo Dissecting", "straight_mayo_dissecting"),
+        ("straight_mayo_dissecting", "straight_mayo_dissecting"),
+        ("  Bone--Punch__\t", "bone_punch"),
+        ("Iris", "iris"),
+        ("straightmayodissecting", "straightmayodissecting"),
+        (" _- ", ""),
+    ],
+)
+def test_normalize_label_preserves_word_boundaries(value, expected):
+    assert prepare_manifests.normalize_label(value) == expected
+
+
+def test_renumber_samples_orders_tools_and_preserves_groups_and_unassigned_rows(tmp_path):
+    rows = [
+        {"Image ID": "a", "Filepath": "images/11/a.jpg", "Sample ID": "1", "Angle": "45"},
+        {"Image ID": "b", "Filepath": "images/2/b.jpg", "Sample ID": "20", "Angle": "0"},
+        {"Image ID": "c", "Filepath": "images/11/c.jpg", "Sample ID": "1", "Angle": "0"},
+        {"Image ID": "d", "Filepath": "images/2/d.jpg", "Sample ID": "", "Angle": ""},
+        {"Image ID": "e", "Filepath": "images/multi/e.jpg", "Sample ID": "7", "Angle": ""},
+    ]
+    objects = [
+        {"Image ID": key, "Instance ID": key, "Tool ID": tool}
+        for key, tool in [("a", "11"), ("b", "2"), ("c", "11"), ("d", "2"), ("e", "2")]
+    ]
+    objects.append({"Image ID": "e", "Instance ID": "f", "Tool ID": "11"})
+    original = [dict(row) for row in rows]
+    mapping = prepare_manifests.renumber_sample_ids(rows, objects)
+    assert mapping == {"20": "0", "7": "1", "1": "2"}
+    assert [row["Sample ID"] for row in rows] == ["2", "0", "2", "", "1"]
+    assert all(
+        {key: value for key, value in row.items() if key != "Sample ID"}
+        == {key: value for key, value in before.items() if key != "Sample ID"}
+        for row, before in zip(rows, original, strict=True)
+    )
+    manifest = tmp_path / "image_manifest.csv"
+    object_manifest = tmp_path / "image_object_manifest.csv"
+    prepare_manifests.write_image_manifests(manifest, rows, object_manifest, objects)
+    by_image = {row["Image ID"]: row["Sample ID"] for row in rows}
+    assert all(row["Sample ID"] == by_image[row["Image ID"]] for row in read_csv(object_manifest))
+    assert all(old == new for old, new in prepare_manifests.renumber_sample_ids(rows, objects).items())
+
+
+@pytest.mark.parametrize("manufacturer", ["", "Example Instruments"])
 def test_prepare_manifests_creates_instances_reuses_metadata_and_preserves_annotations(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, manufacturer
 ):
     images = tmp_path / "images"
     raw = tmp_path / "raw-images"
@@ -30,7 +76,7 @@ def test_prepare_manifests_creates_instances_reuses_metadata_and_preserves_annot
     metadata = dict.fromkeys(prepare_manifests.METADATA_COLUMNS, "known")
     metadata["Time Taken"] = "2026-09-01T12:00:00-04:00"
     monkeypatch.setattr(prepare_manifests, "extract_metadata", lambda path: metadata)
-    answers = iter(["Scissors", "Iris", "0.8"])
+    answers = iter(["Scissors", "Iris", f" {manufacturer} ", "0.8"])
     monkeypatch.setattr("builtins.input", lambda prompt: next(answers))
     for index in range(8):
         Image.new("RGB", (8, 8)).save(images / "7" / f"{index:02}.jpg")
@@ -45,6 +91,7 @@ def test_prepare_manifests_creates_instances_reuses_metadata_and_preserves_annot
     }
     assert all(row["Capture Session ID"] for row in rows)
     assert all(obj["Tool ID"] == "7" and obj["Confidence"] == "0.8" for obj in objects)
+    assert all(obj["Manufacturer"] == manufacturer for obj in objects)
     assert all(not obj["Reviewed"] and not obj["Mask Path"] for obj in objects)
     objects[0].update(
         {
@@ -62,6 +109,7 @@ def test_prepare_manifests_creates_instances_reuses_metadata_and_preserves_annot
     prepare_manifests.main(images, raw, manifest)
     updated = read_csv(object_manifest)
     assert len(read_csv(manifest)) == len(updated) == 16
+    assert all(obj["Manufacturer"] == manufacturer for obj in updated)
     assert updated[0] == preserved
     assert all(
         obj["Tool Name"] == "iris" and obj["Confidence"] == "0.8" for obj in updated
@@ -208,7 +256,7 @@ def test_undeclared_multi_folder_does_not_interrupt_single_tool_intake(
     write_csv(object_manifest, [], IMAGE_OBJECT_FIELDS)
     metadata = dict.fromkeys(prepare_manifests.METADATA_COLUMNS, "")
     monkeypatch.setattr(prepare_manifests, "extract_metadata", lambda _: metadata)
-    answers = iter(["scissors", "iris", "0.8"])
+    answers = iter(["scissors", "iris", "", "0.8"])
     monkeypatch.setattr("builtins.input", lambda _: next(answers))
     prepare_manifests.main(images, raw, manifest)
     output = capsys.readouterr().out

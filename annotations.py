@@ -28,6 +28,7 @@ IMAGE_OBJECT_FIELDS = (
     "Tool ID",
     "Tool Class",
     "Tool Name",
+    "Manufacturer",
     "Confidence",
     "Sample ID",
     "Filepath",
@@ -49,7 +50,7 @@ IMAGE_OBJECT_FIELDS = (
     "Annotation Confidence",
 )
 VIDEO_MANIFEST_FIELDS = (
-    "Tool ID", "Tool Class", "Tool Name", "Confidence", "Video ID", "Filepath",
+    "Tool ID", "Tool Class", "Tool Name", "Manufacturer", "Confidence", "Video ID", "Filepath",
     "FPS", "Frame Count", "Width", "Height", CAPTURE_SESSION_FIELD, "Condition",
     "Source SHA256", "Extraction ID", "Extraction Complete",
 )
@@ -376,9 +377,17 @@ def tool_metadata(path: Path, tool_id: str) -> dict[str, str]:
             f"Tool {tool_id} has invalid identification confidence."
         ) from error
     tool_class, name = next(iter(identities))
+    manufacturers = {
+        row.get("Manufacturer", "").strip()
+        for row in matches
+        if row.get("Manufacturer", "").strip()
+    }
+    if len(manufacturers) > 1:
+        raise ValueError(f"Tool {tool_id} has conflicting manufacturer metadata.")
     return {
         "Tool ID": tool_id,
         "Tool Class": tool_class,
         "Tool Name": name,
+        "Manufacturer": next(iter(manufacturers), ""),
         "Confidence": str(confidence),
     }
