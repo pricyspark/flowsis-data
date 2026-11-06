@@ -191,6 +191,21 @@ See [Google's audience and publishing-status documentation](https://support.goog
 | Missing files or cache objects during `dvc pull` | Ask the contributor who published the pointer to run `dvc push` for that version. |
 | GitHub blocks a push containing OAuth values | Move them from `.dvc/config` to `.dvc/config.local` and remove them from every affected outgoing commit, not only the current file. |
 
+If Google Drive returns HTTP 400 `Bad Request` while listing `drive/v2/files`,
+use the repository wrapper:
+
+```shell
+python dvc_gdrive_sync.py status --cloud
+python dvc_gdrive_sync.py push
+```
+
+For this remote, PyDrive2 1.21.1 combines hundreds of parent folders into one
+listing query that Drive rejects. The wrapper limits each query to 32 parents
+and delegates the remaining command to DVC. It changes neither installed
+packages nor credentials, and can also run `pull` or `fetch`. This workaround
+was verified against the failing remote; it does not address unrelated HTTP
+400 errors during uploads.
+
 To restore a prior dataset, preserve local work, check out its Git commit, and
 run `dvc pull`. Git selects the version pointer; DVC restores the matching data.
 You can return to the latest version with `git switch main` followed by
@@ -246,6 +261,8 @@ Convert and crop the raw images. The converter isolates the blue marker in each 
 ```shell
 python img_convert.py
 ```
+
+Reviewed camera-orientation corrections are stored in `data/image_orientation_corrections.json`. Keys are JPG paths relative to `images/` (for example, `24/IMG_2762.jpg`); values are clockwise rotations of 0, 90, 180, or 270 degrees applied after cropping. The converter applies these corrections whenever it creates a JPG, including forced reconversion, while preserving the raw originals. When correcting an existing annotated JPG, rotate its masks and ignore regions and recompute bounding boxes with the same transformation.
 
 Existing JPGs are skipped by default. To reprocess all raw images and replace their existing JPGs, run:
 
