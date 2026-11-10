@@ -21,12 +21,13 @@ def test_navigation_uses_numeric_tool_ids_and_keeps_manual_sample_ids(tmp_path):
     assert list(rows[0])[:5] == ["Tool IDs", "Sample ID", "Angle", "Filepath", "Lights"]
     assert [row["Image ID"] for row in rows] == ["a", "b", "c"]
     assert rows[0]["Tool IDs"] == "2;12"
-    assert [row["Image ID"] for row in instances] == ["a", "a", "b", "c"]
-    assert instances[1]["Mask Path"] == "masks/first.npz"
-    assert instances[1]["Sample ID"] == "10"
-    assert instances[1]["Filepath"] == "images/first.jpg"
+    assert [row["Tool ID"] for row in instances] == ["2", "4", "12", "12"]
+    assert [row["Image ID"] for row in instances] == ["a", "b", "a", "c"]
+    assert instances[2]["Mask Path"] == "masks/first.npz"
+    assert instances[2]["Sample ID"] == "10"
+    assert instances[2]["Filepath"] == "images/first.jpg"
     rows[1]["Sample ID"] = "50"
-    instances[2]["Tool ID"] = "99"
+    instances[1]["Tool ID"] = "99"
     write_image_manifests(manifest, rows, object_manifest, instances)
     assert read_csv(manifest)[-1]["Tool IDs"] == "99"
     assert read_csv(object_manifest)[-1]["Sample ID"] == "50"
@@ -75,6 +76,9 @@ def test_unfinished_images_go_last_with_stable_tool_order(tmp_path):
     write_image_manifests(manifest, images, object_manifest, objects)
     assert [row["Image ID"] for row in read_csv(manifest)] == [
         "c", "d", "b", "a", "f", "g", "e",
+    ]
+    assert [row["Tool ID"] for row in read_csv(object_manifest)] == [
+        "2", "2", "2", "2", "2", "12", "12",
     ]
 
 

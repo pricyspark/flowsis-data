@@ -1,4 +1,4 @@
-"""Prepare image and object manifests from single-tool or declared multi-tool captures."""
+"""Prepare image manifests and object rows sorted by physical Tool ID."""
 
 import argparse
 import csv
@@ -656,7 +656,8 @@ def main(
         )
     write_image_manifests(manifest_path, rows, object_manifest_path, objects)
     print(
-        "Refreshed manifest navigation columns and sorted by completion and tool IDs."
+        "Refreshed manifest navigation columns. Image rows are sorted by completion "
+        "and tool IDs; object rows are sorted by tool ID."
     )
 
     if metadata_updates:
