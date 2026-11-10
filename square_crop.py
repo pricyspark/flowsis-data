@@ -5,6 +5,8 @@ BLUE_THRESHOLD = 0.25
 DETECTION_MAX_DIMENSION = 1000
 CROP_SIZE = 2160
 MAX_TEMPLATE_ERROR = 0.35
+# The existing 100-pixel kernel was calibrated on 4284x4284 raw photos.
+MARKER_KERNEL_RATIO = 100 / 4284
 CORNERS = ("tl", "tr", "bl", "br")
 
 
@@ -142,6 +144,7 @@ def find_marker_corners(
     mask = (blue_score(small) > threshold).astype(np.uint8)
 
     small_height, small_width = mask.shape
+    kernel_size = max(7, round(max(small_height, small_width) * MARKER_KERNEL_RATIO))
     middle_y = small_height // 2
     middle_x = small_width // 2
     quadrants = {
@@ -156,7 +159,6 @@ def find_marker_corners(
         top, bottom, left, right = quadrants[corner]
         quadrant_mask = mask[top:bottom, left:right]
         quadrant_mask = marker_components(quadrant_mask, corner)
-        kernel_size = max(7, round(100 * scale))
         search_mask, search_offset = marker_search_area(
             quadrant_mask,
             corner,

@@ -273,7 +273,7 @@ def write_image_manifests(
     object_manifest: Path,
     objects: Sequence[Mapping[str, object]],
 ) -> None:
-    """Refresh navigation columns without changing sample or angle assignments."""
+    """Refresh navigation columns and group object rows by numeric Tool ID."""
     image_by_id = {row[IMAGE_ID_FIELD]: dict(row) for row in images}
     if len(image_by_id) != len(images):
         raise ValueError("Image IDs must be unique.")
@@ -303,16 +303,17 @@ def write_image_manifests(
             tuple(numeric_sort_key(tool_id) for tool_id in row["Tool IDs"].split(";")),
         ),
     )
-    ordered_objects = [
-        obj for image in ordered_images
-        for obj in sorted(
-            by_image.get(image[IMAGE_ID_FIELD], []),
-            key=lambda obj: (
-                numeric_sort_key(str(obj.get("Tool ID", ""))),
-                str(obj["Instance ID"]),
-            ),
-        )
-    ]
+    image_order = {
+        image[IMAGE_ID_FIELD]: index for index, image in enumerate(ordered_images)
+    }
+    ordered_objects = sorted(
+        (obj for instances in by_image.values() for obj in instances),
+        key=lambda obj: (
+            numeric_sort_key(str(obj.get("Tool ID", ""))),
+            image_order[str(obj[IMAGE_ID_FIELD])],
+            str(obj["Instance ID"]),
+        ),
+    )
     fields = list(IMAGE_LEADING_FIELDS)
     for image in images:
         fields.extend(field for field in image if field not in fields)
