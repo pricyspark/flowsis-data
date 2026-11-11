@@ -91,7 +91,7 @@ scanning. Never commit personal authentication tokens or credential files.
 Download the dataset and check its local status:
 
 ```shell
-dvc pull
+python dvc_gdrive_sync.py pull
 dvc status
 ```
 
@@ -109,25 +109,35 @@ cannot show unsnapshotted data changes; use `dvc status` too.
 
 ### Daily synchronization
 
-Before collecting data or annotating, finish publishing any previous local
-work, then download incoming code and dataset changes:
+Use `sync_data.py` as the standard workflow for dataset contributors. Run it
+before collecting data or annotating to get the latest dataset, and again when
+your captures or edits are ready to share.
 
 ```shell
-git status
-dvc status
-git pull --ff-only
-dvc pull
+python sync_data.py
 ```
 
-If either status reports local changes, preserve or publish them before pulling.
-If Git reports divergent branches, reconcile the commits first. When both
-contributors changed `data.dvc`, preserve both sets of actual data, combine them
-in `data/`, and run `dvc add data` again. Choosing one pointer alone does not
-merge image files or annotations. Coordinate annotation work on different images.
+The same command handles routine updates and divergent dataset commits. It saves
+your local dataset before downloading incoming changes, combines compatible
+additions and manifest edits, and publishes any resulting dataset changes.
+It asks for a message when it needs to create a commit. You can also supply one
+with `python sync_data.py -m "Jane Doe added tool 23 videos"`. A routine update
+with no local changes can bring your checkout up to date without a new commit.
 
-After adding captures or editing annotations, follow the
-[publishing steps](#publish-dataset-changes). Upload the DVC data before pushing
-its Git pointer so collaborators can download the referenced files.
+| What you want to do | Workflow |
+| --- | --- |
+| Get the latest dataset before working or publish your dataset edits | Run `python sync_data.py` on your normal tracking branch. This workflow needs write access to Git and the DVC remote. |
+| Combine local and incoming dataset changes | Run the same command. It merges compatible changes and reports conflicts that need a decision. See [Publish dataset changes](#publish-dataset-changes). |
+| Set up a fresh clone | Follow [DVC authentication and first download](#dvc-authentication-and-first-download). |
+| Update a checkout with read-only access | On a checkout with no unpublished Git or dataset changes, run `git pull --ff-only` and then `python dvc_gdrive_sync.py pull`. |
+| Work on code or documentation | Use your normal Git workflow for code commits and branches. Use `sync_data.py` for dataset changes. |
+| Restore a specific dataset version or troubleshoot storage | Follow [DVC troubleshooting and older dataset versions](#dvc-troubleshooting-and-older-dataset-versions). |
+
+Treat `sync_data.py` as a command that can publish. It can push existing local
+commits on the tracking branch, including code commits. Use it when those
+commits and any local dataset edits are ready to share. Commit code changes
+separately and clear any staged changes or unfinished Git merge or rebase
+before syncing. Pause collection and annotation while the command runs.
 
 ### Maintainer setup for a replacement Google Drive remote
 
@@ -163,8 +173,8 @@ The existing remote is already configured.
 
    ```shell
    dvc status
-   dvc push
-   dvc status --cloud
+   python dvc_gdrive_sync.py push
+   python dvc_gdrive_sync.py status --cloud
    ```
 
    If the dataset itself changed, run `dvc add data` before pushing. Commit the
@@ -188,7 +198,7 @@ See [Google's audience and publishing-status documentation](https://support.goog
 | Organization policy blocks authorization | Ask your Google Workspace administrator to allow the app; adding a test user does not override organization restrictions. |
 | Login stops working after about seven days | The app may still be in Testing. Reauthorize; consult the DVC authentication guide if cached credentials prevent a fresh login. |
 | Login succeeds but data access fails | Verify Drive folder access for the account used, and Editor access for uploads. OAuth test-user access and folder permissions are separate. |
-| Missing files or cache objects during `dvc pull` | Ask the contributor who published the pointer to run `dvc push` for that version. |
+| Missing files or cache objects during `dvc pull` | Ask the contributor who published the pointer to run `python dvc_gdrive_sync.py push` for that version. |
 | GitHub blocks a push containing OAuth values | Move them from `.dvc/config` to `.dvc/config.local` and remove them from every affected outgoing commit, not only the current file. |
 
 If Google Drive returns HTTP 400 `Bad Request` while listing `drive/v2/files`,
@@ -252,8 +262,7 @@ The converter preserves subdirectories, so
 Pull incoming code and dataset changes before making local edits:
 
 ```shell
-git pull --ff-only
-dvc pull
+python sync_data.py
 ```
 
 Convert and crop the raw images. The converter isolates the blue marker in each image quadrant, matches its inner corner with an L-shaped convolution kernel, applies a perspective correction, and saves the finished 2160×2160 JPG in `images`. If a marker is missing, incomplete, or does not match the kernel reliably, it does not create the JPG and lists the failed image and reason after processing finishes.
@@ -432,39 +441,61 @@ visual run establishes the fingerprinted baseline. `--static-only` leaves this l
 
 ### Publish dataset changes
 
-Once the manifest is correct, snapshot and upload the dataset. Coordinate edits
-with collaborators; resolve incoming changes before replacing local data.
+Once your captures and manifest edits are ready, run:
 
 ```shell
-git status
-dvc status
+python sync_data.py
 ```
 
-Update the dataset pointer and upload its referenced data before committing:
+Enter your name and the tools/samples added or corrected when prompted. The
+script snapshots your local work before retrieving incoming data. It combines
+independent file additions and uses a three-way comparison of manifest records
+and fields. Image records match on `Image ID`; object records match on `Image ID`
+and `Instance ID`; videos match on `Video ID`. Review logs retain distinct events.
+It detects independently assigned Sample IDs that would combine different groups.
+
+After combining data, the script checks image/object identities, file references,
+and sample-ID collisions. It does not require complete eight-angle groups or
+run the full annotation-quality review. Use `python verify_data.py --static-only`
+separately for those checks. The script uses DVC to generate `data.dvc` and
+creates a local Git commit when needed. Before pushing Git, it uploads through
+`dvc_gdrive_sync.py` and verifies remote availability for the dataset snapshots
+referenced by the commits it is about to publish.
+If another person publishes first, it combines the new incoming changes and
+retries up to three times. It never force-pushes or edits hashes by hand.
+
+If synchronization stops, read the reported file/record and both values. Conflicting
+edits, edit/delete disagreements, different captures at the same path, Sample ID
+collisions, and code conflicts require a decision. Correct or rename the affected
+files in `data/` and rerun; ask the maintainer if the decision is unclear. A missing
+published snapshot requires its original contributor to run
+`python dvc_gdrive_sync.py push` on the machine with that snapshot.
+
+Merge attempts run in separate checkouts under `.data-sync/`; your working dataset
+is not replaced until publication succeeds. The directory is ignored by Git and
+contains recovery pointers and, after success, the previous dataset in
+`data-before-sync/`. Allow disk space for a working copy of the combined dataset.
+If the final local replacement is interrupted, the next run stops and identifies
+the recovery directory; ask the maintainer to finish applying the published
+snapshot before continuing. This prevents an incomplete replacement from being
+interpreted as intentional deletions. Keep recovery files until you have confirmed the result. Do not run DVC cache
+garbage collection during recovery. Failed attempts may also retain a combined
+working copy. Local OAuth configuration is removed from temporary checkouts when
+an attempt exits normally or reports an error.
+
+For maintainers publishing manually, always upload successfully before publishing
+the Git pointer:
 
 ```shell
 dvc add data
-dvc push
+python dvc_gdrive_sync.py push
 git add data.dvc
-git diff --cached --stat
-```
-
-The updated dataset pointer is now staged. Stage any intended code or documentation
-changes separately; the dataset contents and local credentials stay outside Git.
-We commit staged changes so they are saved to the Git history. Each commit needs a message to describe the change. Format your commit message using your name, the tools, and the samples added:
-
-```shell
-git commit -m "Jane Doe" -m "tools: x, y, z" -m "samples: a, b, c, d, e, f"
-```
-
-After `dvc push` succeeds, push the commit to GitHub so collaborators can retrieve
-the new pointer and download its data with `dvc pull`.
-
-```shell
+git commit -m "Name: describe dataset changes"
 git push
 ```
 
-You can now check the repo on the GitHub website to confirm your changes.
+Manual publishing requires reconciling incoming changes first. Do not choose one
+side of a `data.dvc` conflict to discard the other person's dataset.
 
 ## Mask annotation
 
