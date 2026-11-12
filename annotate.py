@@ -253,6 +253,7 @@ def review_candidates(
     visibility = "clear"
     visibility_by_index = {index: "clear" for index in range(len(candidates))}
     ignored_indices: set[int] = set()
+    print("Commands: a=accept, p=prompt, s=skip, q=quit. See README.md for details.")
     while True:
         show_candidates(image, candidates, key, focus=True)
         print(f"Single-tool review: {len(candidates)} mask candidate(s).")
@@ -264,14 +265,6 @@ def review_candidates(
             print(
                 "Multiple masks predicted. Inspect the numbered preview and choose one with 'a INDEX'."
             )
-        print(
-            "a [INDEX]=accept one mask, e=accept empty, r=reject, s=skip, "
-            "p TEXT=re-prompt, i [0,2]=mark ignore regions, "
-            "v STATE [0,2]=set visibility, "
-            "clean [INDEX] [OP SIZE]=optional cleanup, unclean [INDEX]=undo cleanup, "
-            + ("o [0,2]=retain occluded tracks, " if allow_occluded else "")
-            + "q=quit"
-        )
         response = input("review> ").strip()
         plt.close("all")
         command, _, argument = response.partition(" ")
@@ -1030,7 +1023,7 @@ def _shared(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--aliases-json", type=Path)
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Generate and review SAM3 annotations."
     )
@@ -1149,6 +1142,7 @@ def parse_args() -> argparse.Namespace:
         "frame_dir",
         "image_object_manifest",
         "output_dir",
+        "preview_dir",
     )
     for command in commands.choices.values():
         command.add_argument(
@@ -1160,7 +1154,7 @@ def parse_args() -> argparse.Namespace:
                 "(default: data)."
             ),
         )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     for name in data_paths:
         if hasattr(args, name):
             setattr(args, name, args.data_dir / getattr(args, name))

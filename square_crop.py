@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from itertools import product
+
 import cv2
 import numpy as np
 
@@ -8,6 +11,16 @@ MAX_TEMPLATE_ERROR = 0.35
 # The existing 100-pixel kernel was calibrated on 4284x4284 raw photos.
 MARKER_KERNEL_RATIO = 100 / 4284
 CORNERS = ("tl", "tr", "bl", "br")
+WEAK_BLUE_RATIO = 0.6
+
+
+@dataclass(frozen=True)
+class MarkerMatch:
+    """One observed marker, in source-image coordinates; bounds are L, T, R, B."""
+
+    point: np.ndarray
+    bounds: np.ndarray
+    error: float
 
 
 class MarkerDetectionError(ValueError):
@@ -37,6 +50,15 @@ def find_tl_inner_corner(
     max_error: float = MAX_TEMPLATE_ERROR,
 ) -> np.ndarray:
     """Match a top-left L and return its concave corner as ``[x, y]``."""
+    point, _ = match_tl_inner_corner(mask, kernel_size, max_error)
+    return point
+
+
+def match_tl_inner_corner(
+    mask: np.ndarray,
+    kernel_size: int,
+    max_error: float = MAX_TEMPLATE_ERROR,
+) -> tuple[np.ndarray, float]:
     if kernel_size < 3:
         raise ValueError("kernel size must be at least 3")
     if kernel_size > min(mask.shape):
@@ -59,10 +81,17 @@ def find_tl_inner_corner(
         )
 
     left, top = location
-    return np.array([left + arm_width, top + arm_width])
+    return np.array([left + arm_width, top + arm_width]), error
 
 
 def find_inner_corner(mask: np.ndarray, kernel_size: int, corner: str) -> np.ndarray:
+    point, _ = match_inner_corner(mask, kernel_size, corner)
+    return point
+
+
+def match_inner_corner(
+    mask: np.ndarray, kernel_size: int, corner: str
+) -> tuple[np.ndarray, float]:
     height, width = mask.shape
     if corner == "tl":
         adjusted_mask = mask
@@ -75,48 +104,70 @@ def find_inner_corner(mask: np.ndarray, kernel_size: int, corner: str) -> np.nda
     else:
         raise ValueError(f"unknown corner: {corner!r}")
 
-    point = find_tl_inner_corner(adjusted_mask, kernel_size)
+    point, error = match_tl_inner_corner(adjusted_mask, kernel_size)
     if corner in {"tr", "br"}:
         point[0] = width - 1 - point[0]
     if corner in {"bl", "br"}:
         point[1] = height - 1 - point[1]
-    return point
+    return point, error
 
 
-def marker_components(mask: np.ndarray, corner: str) -> np.ndarray:
-    count, labels, stats, _ = cv2.connectedComponentsWithStats(
-        mask.astype(np.uint8),
-        connectivity=8,
-    )
-    minimum_area = max(20, round(mask.size * 0.0005))
-    candidates = [
-        label
-        for label in range(1, count)
-        if stats[label, cv2.CC_STAT_AREA] >= minimum_area
-        and stats[label, cv2.CC_STAT_WIDTH] >= 4
-        and stats[label, cv2.CC_STAT_HEIGHT] >= 4
-    ]
-    if not candidates:
-        raise MarkerDetectionError(f"no blue marker found in the {corner} quadrant")
-    return np.isin(labels, candidates)
-
-
-def marker_search_area(
-    mask: np.ndarray,
+def marker_candidates(
+    score: np.ndarray,
     corner: str,
     kernel_size: int,
-) -> tuple[np.ndarray, np.ndarray]:
-    """Crop a marker mask to its blue pixels plus room for the L kernel."""
-    points = cv2.findNonZero(mask.astype(np.uint8))
-    left, top, width, height = cv2.boundingRect(points)
-    if width < kernel_size or height < kernel_size:
-        raise MarkerDetectionError(f"incomplete blue marker in the {corner} quadrant")
-
-    bottom = min(mask.shape[0], top + height + kernel_size)
-    right = min(mask.shape[1], left + width + kernel_size)
-    top = max(0, top - kernel_size)
-    left = max(0, left - kernel_size)
-    return mask[top:bottom, left:right], np.array([left, top])
+    threshold: float,
+    minimum_area: int,
+) -> list[MarkerMatch]:
+    """Grow seeded blue components, then match each component independently."""
+    minimum_seeds = max(3, round(kernel_size**2 * 0.02))
+    matches = []
+    reason = "incomplete blue marker"
+    has_seeds = False
+    # Keep strict candidates too: weak pixels can connect dark tape to nearby
+    # blue noise. Growth should recover pale tape, not invalidate a clean L.
+    for cutoff in (threshold * WEAK_BLUE_RATIO, threshold):
+        count, labels, stats, _ = cv2.connectedComponentsWithStats(
+            (score > cutoff).astype(np.uint8), connectivity=8
+        )
+        seed_counts = np.bincount(labels[score > threshold], minlength=count)
+        seeded = set(np.flatnonzero(seed_counts >= minimum_seeds)) - {0}
+        has_seeds |= bool(seeded)
+        for label in range(1, count):
+            left, top, width, height, area = stats[label]
+            if label not in seeded or area < minimum_area:
+                continue
+            if min(width, height) < kernel_size:
+                continue
+            # Padding is measured in kernel units, not fixed image locations.
+            x0, y0 = max(0, left - kernel_size), max(0, top - kernel_size)
+            x1 = min(score.shape[1], left + width + kernel_size)
+            y1 = min(score.shape[0], top + height + kernel_size)
+            component = labels[y0:y1, x0:x1] == label
+            try:
+                point, error = match_inner_corner(component, kernel_size, corner)
+            except MarkerDetectionError as failure:
+                reason = str(failure)
+                continue
+            matches.append(
+                MarkerMatch(
+                    point.astype(np.float64) + (x0, y0),
+                    np.array([left, top, left + width, top + height], dtype=np.float64),
+                    error,
+                )
+            )
+    if not has_seeds:
+        raise MarkerDetectionError(f"no blue marker found in the {corner} quadrant")
+    if not matches:
+        raise MarkerDetectionError(f"{corner} quadrant: {reason}")
+    unique = []
+    for match in sorted(matches, key=lambda candidate: candidate.error):
+        if all(
+            np.linalg.norm(match.point - other.point) > kernel_size / 2
+            for other in unique
+        ):
+            unique.append(match)
+    return unique
 
 
 def find_marker_corners(
@@ -125,10 +176,34 @@ def find_marker_corners(
     max_dimension: int = DETECTION_MAX_DIMENSION,
 ) -> np.ndarray:
     """Return marker inner corners in TL, TR, BL, BR order."""
+    return np.array(
+        [match.point for match in find_markers(image, threshold, max_dimension)]
+    )
+
+
+def find_markers(
+    image: np.ndarray,
+    threshold: float = BLUE_THRESHOLD,
+    max_dimension: int = DETECTION_MAX_DIMENSION,
+    *,
+    search_bounds: np.ndarray | None = None,
+    expected_corners: np.ndarray | None = None,
+) -> list[MarkerMatch]:
+    """Find four observed markers; optional search bounds use source coordinates."""
     if image is None or image.ndim != 3 or image.shape[2] != 3:
         raise ValueError("image must be a three-channel BGR array")
     if max_dimension < 100:
         raise ValueError("max_dimension must be at least 100")
+    if not 0 < threshold < 1:
+        raise ValueError("threshold must be between 0 and 1")
+    if search_bounds is not None and (
+        search_bounds.shape != (4, 4) or not np.isfinite(search_bounds).all()
+    ):
+        raise ValueError("search_bounds must be a finite (4, 4) array")
+    if expected_corners is not None and (
+        expected_corners.shape != (4, 2) or not np.isfinite(expected_corners).all()
+    ):
+        raise ValueError("expected_corners must be a finite (4, 2) array")
 
     height, width = image.shape[:2]
     scale = min(1.0, max_dimension / max(height, width))
@@ -141,9 +216,8 @@ def find_marker_corners(
     else:
         small = image
 
-    mask = (blue_score(small) > threshold).astype(np.uint8)
-
-    small_height, small_width = mask.shape
+    score = blue_score(small)
+    small_height, small_width = score.shape
     kernel_size = max(7, round(max(small_height, small_width) * MARKER_KERNEL_RATIO))
     middle_y = small_height // 2
     middle_x = small_width // 2
@@ -154,27 +228,65 @@ def find_marker_corners(
         "br": (middle_y, small_height, middle_x, small_width),
     }
 
-    points = []
-    for corner in CORNERS:
+    minimum_area = max(20, round(score.size * 0.000125))
+    candidates = []
+    for index, corner in enumerate(CORNERS):
         top, bottom, left, right = quadrants[corner]
-        quadrant_mask = mask[top:bottom, left:right]
-        quadrant_mask = marker_components(quadrant_mask, corner)
-        search_mask, search_offset = marker_search_area(
-            quadrant_mask,
-            corner,
-            kernel_size,
+        if search_bounds is not None:
+            x0, y0, x1, y1 = search_bounds[index] * scale
+            left, top = max(left, int(np.floor(x0))), max(top, int(np.floor(y0)))
+            right = min(right, int(np.ceil(x1)))
+            bottom = min(bottom, int(np.ceil(y1)))
+        if left >= right or top >= bottom:
+            raise MarkerDetectionError(f"empty search region for the {corner} quadrant")
+        local = marker_candidates(
+            score[top:bottom, left:right], corner, kernel_size, threshold, minimum_area
         )
-        point = find_inner_corner(search_mask, kernel_size, corner).astype(np.float64)
-        point += search_offset + (left, top)
-        points.append(point)
+        matches = [
+            MarkerMatch(
+                (match.point + (left, top)) / scale,
+                (match.bounds + (left, top, left, top)) / scale,
+                match.error,
+            )
+            for match in local
+        ]
+        if expected_corners is not None:
+            matches.sort(
+                key=lambda match: match.error
+                + 0.05 * np.linalg.norm(match.point - expected_corners[index])
+                / max(kernel_size / scale, np.max(match.bounds[2:] - match.bounds[:2]))
+            )
+        else:
+            matches.sort(key=lambda match: match.error)
+        candidates.append(matches[:3])
 
-    small_points = np.array(points)
-    outline = small_points[[0, 1, 3, 2]].astype(np.float32)
-    area = abs(cv2.contourArea(outline))
-    if not cv2.isContourConvex(outline) or area < small_height * small_width * 0.25:
+    ranked = []
+    for combination in product(*candidates):
+        points = np.array([match.point for match in combination])
+        outline = points[[0, 1, 3, 2]].astype(np.float32)
+        if (
+            not cv2.isContourConvex(outline)
+            or abs(cv2.contourArea(outline)) < height * width * 0.25
+        ):
+            continue
+        sizes = np.array(
+            [np.max(match.bounds[2:] - match.bounds[:2]) for match in combination]
+        )
+        cost = sum(match.error for match in combination) + 0.2 * np.std(np.log(sizes))
+        if expected_corners is not None:
+            cost += 0.05 * np.sum(
+                np.linalg.norm(points - expected_corners, axis=1) / sizes
+            )
+        ranked.append((float(cost), combination))
+    if not ranked:
         raise MarkerDetectionError("detected markers do not form a valid crop area")
-
-    return small_points / scale
+    ranked.sort(key=lambda item: item[0])
+    if len(ranked) > 1 and ranked[1][0] - ranked[0][0] < 0.02:
+        first = np.array([match.point for match in ranked[0][1]])
+        second = np.array([match.point for match in ranked[1][1]])
+        if np.max(np.linalg.norm(first - second, axis=1)) > 2 * kernel_size / scale:
+            raise MarkerDetectionError("ambiguous blue marker candidates")
+    return list(ranked[0][1])
 
 
 def warp_quad_to_square(
@@ -188,9 +300,9 @@ def warp_quad_to_square(
     source = np.asarray(corners, dtype=np.float32)
     if source.shape != (4, 2):
         raise ValueError("corners must have shape (4, 2)")
-    
+
     margin = round(size * inset_fraction)
-    
+
     destination = np.array(
         [
             [-margin, -margin],

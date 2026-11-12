@@ -164,6 +164,10 @@ def review_image_instances(
             },
         )
 
+    print(
+        "Commands: g=assign, click=correct, a=accept, s=skip, q=quit. "
+        "See README.md for details."
+    )
     while True:
         raw_selected = [assigned_candidate(row, apply_order=False) for row in instances]
         overlap = mask_overlap(np.stack([part.mask for part in raw_selected]))
@@ -311,19 +315,6 @@ def review_image_instances(
                     f"'g {instances[0]['Tool ID']} {available[0]}', then 'a'. "
                     "Group multiple pieces with comma-separated candidate numbers."
                 )
-        print(
-            "g TOOL_ID 0,2=assign/group; u TOOL_ID=clear; "
-            "v TOOL_ID clear|partial|severe|occluded|absent; "
-            "click TOOL_ID [new|INDEX|reset]=revise/new SAM3 points; polygon TOOL_ID=SAM3 polygon prompt; "
-            "draw TOOL_ID=trace/edit a mask; subtract TOOL_ID BASE_INDEX OTHER_TOOL_IDS=derive remainder; "
-            "clean TOOL_ID [OP SIZE]=optional cleanup; unclean TOOL_ID=undo cleanup; "
-            "refine TOOL_ID [TEXT]|all=crop refinement; restore TOOL_ID|all=original mask; "
-            "order TOOL_ID ...=front-to-back overlap resolution; order reset=undo; order impossible=reject arrangement; "
-            "inspect=reopen ordered overlap close-ups; "
-            "remove 0,2=discard candidates; x 0,2=exclude; i 0,2=ignore; p TEXT=add predictions; "
-            'n TOOL_ID "CLASS" "NAME" CONFIDENCE=declare extra tool; '
-            "a=accept; e=all absent; s=skip; r=reject; q=quit"
-        )
         response = input("review> ").strip()
         plt.close("all")
         command, _, argument = response.partition(" ")

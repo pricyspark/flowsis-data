@@ -10,7 +10,13 @@ import av
 import cv2
 import numpy as np
 
-from square_crop import CROP_SIZE, MarkerDetectionError, crop_marked_square
+from marker_tracking import MarkerTracker
+from square_crop import (
+    CROP_SIZE,
+    MarkerDetectionError,
+    find_markers,
+    warp_quad_to_square,
+)
 
 ROOT = Path(__file__).resolve().parent / "data"
 SOURCE_DIR = ROOT / "raw-videos"
@@ -38,7 +44,7 @@ def rotate_frame(image: np.ndarray, turns: int) -> np.ndarray:
 def save_failure_frame(
     image: np.ndarray,
     path: Path,
-    metadata: dict[str, str | int | float],
+    metadata: dict[str, str | int | float | list[list[float]]],
 ) -> None:
     """Save the exact oriented detector input, plus context for reproducing failure."""
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -60,19 +66,31 @@ def review_orientation(image: np.ndarray, source: Path) -> int | None:
     with plt.rc_context({key: [] for key in plt.rcParams if key.startswith("keymap.")}):
         figure, axes = plt.subplots(figsize=(10, 8))
         artist = axes.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+        (outline,) = axes.plot([], [], color="lime", linewidth=1)
         axes.set_axis_off()
 
         def redraw() -> None:
-            pixels = cv2.cvtColor(rotate_frame(image, turns), cv2.COLOR_BGR2RGB)
+            oriented = rotate_frame(image, turns)
+            pixels = cv2.cvtColor(oriented, cv2.COLOR_BGR2RGB)
             height, width = pixels.shape[:2]
             artist.set_data(pixels)
             artist.set_extent((-0.5, width - 0.5, height - 0.5, -0.5))
             axes.set_xlim(-0.5, width - 0.5)
             axes.set_ylim(height - 0.5, -0.5)
+            try:
+                matches = find_markers(oriented)
+                points = np.array([match.point for match in matches])[[0, 1, 3, 2, 0]]
+                outline.set_data(points[:, 0], points[:, 1])
+                status = "Check the green outline follows the marker inner corners."
+            except MarkerDetectionError as error:
+                outline.set_data([], [])
+                status = f"Marker detection failed: {error}"
             axes.set_title(
                 f"{source.name} — {turns * 90}° clockwise\n"
                 "r / right: rotate clockwise | l / left: counterclockwise\n"
-                "a / enter: accept | q / escape / close: quit batch"
+                "a / enter: accept | q / escape / close: quit batch\n"
+                f"{status}",
+                fontsize=10,
             )
             figure.canvas.draw_idle()
 
@@ -117,6 +135,7 @@ def save_cropped_video(source: Path, destination: Path) -> int | None:
             time_base = Fraction(first.time_base)
             start_time = first.pts * time_base
             previous_time: Fraction | None = None
+            tracker = MarkerTracker()
             rate = Fraction(stream.average_rate or stream.guessed_rate or 30)
             destination.parent.mkdir(parents=True, exist_ok=True)
             with NamedTemporaryFile(
@@ -152,7 +171,10 @@ def save_cropped_video(source: Path, destination: Path) -> int | None:
                     previous_time = timestamp
                     pixels = rotate_frame(decoded.to_ndarray(format="bgr24"), turns)
                     try:
-                        cropped = crop_marked_square(pixels)
+                        corners = tracker.find_corners(
+                            pixels, float(timestamp - start_time)
+                        )
+                        cropped = warp_quad_to_square(pixels, corners, size=CROP_SIZE)
                     except MarkerDetectionError as error:
                         failure_path = (
                             destination.parent
@@ -173,6 +195,11 @@ def save_cropped_video(source: Path, destination: Path) -> int | None:
                                     "source_time_base": str(decoded.time_base),
                                     "rotation_degrees_clockwise": turns * 90,
                                     "error": str(error),
+                                    "search_bounds": (
+                                        tracker.search_bounds.tolist()
+                                        if tracker.search_bounds is not None
+                                        else []
+                                    ),
                                 },
                             )
                             diagnostic = f"failed frame saved to {failure_path}"

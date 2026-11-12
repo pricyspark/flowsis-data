@@ -48,11 +48,52 @@ class VideoLog:
     def __init__(self, path: Path):
         self.path = path
         self.decisions: dict[str, str] = {}
+        self.accepted_versions: dict[str, tuple[str, str, str, str, str]] = {}
         if path.is_file():
-            for line in path.read_text().splitlines():
-                if line.strip():
-                    record = json.loads(line)
-                    self.decisions[str(record["key"])] = str(record["decision"])
+            with path.open(encoding="utf-8") as stream:
+                for line in stream:
+                    if line.strip():
+                        record = json.loads(line)
+                        self._update(str(record["key"]), str(record["decision"]), record)
+
+    def _update(self, key: str, decision: str, details: dict[str, object]) -> None:
+        self.decisions[key] = decision
+        if decision != "accepted":
+            self.accepted_versions.pop(key, None)
+        elif details.get("action") not in {"set_anchor", "remove_anchor", "skip"}:
+            self.accepted_versions[key] = (
+                str(details.get("mask_sha256", "")),
+                str(details.get("mask_path", "")),
+                str(details.get("visibility", "")),
+                str(details.get("extraction_id", "")),
+                str(details.get("frame_sha256", "")),
+            )
+
+    def acceptance_matches(
+        self, root: Path, video: dict[str, str], row: dict[str, str]
+    ) -> bool:
+        version = self.accepted_versions.get(row["Frame ID"])
+        path = row.get("Mask Path")
+        if not version or not version[0] or not path:
+            return False
+        source = resolve_path(root, path)
+        return source.is_file() and version == (
+            file_hash(source),
+            path,
+            row.get("Visibility", ""),
+            video["Extraction ID"],
+            row["Frame SHA256"],
+        )
+
+    def validate_acceptance(
+        self, root: Path, video: dict[str, str], row: dict[str, str]
+    ) -> None:
+        version = self.accepted_versions.get(row["Frame ID"])
+        if version and version[0] and not self.acceptance_matches(root, video, row):
+            raise ValueError(
+                f"Accepted frame {row['Frame ID']} changed since acceptance; "
+                "preview and reaccept its current mask."
+            )
 
     def append(self, key: str, decision: str, **details: object) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -60,7 +101,7 @@ class VideoLog:
             stream.write(
                 json.dumps({"key": key, "decision": decision, **details}) + "\n"
             )
-        self.decisions[key] = decision
+        self._update(key, decision, details)
 
 
 def prepare_videos(args: argparse.Namespace) -> None:

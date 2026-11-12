@@ -1081,7 +1081,33 @@ NPZ layout and CSV columns remain unchanged.
 
 ### Single-tool video prototype
 
-Put MP4 originals in `data/videos/<Tool ID>/`, for example `data/videos/12/opening.mp4`.
+Place originals in `data/raw-videos/<Tool ID>/`, then run `python video_convert.py`.
+The first-frame preview lets you rotate with `r`/`l`, accept with `a`/Enter,
+or quit with `q`/Escape. Check that its green outline follows the four marker
+inner corners before accepting. Converted MP4s go to `data/videos/<Tool ID>/`;
+existing outputs are skipped unless `--force` is supplied.
+
+The detector evaluates separate blue components within each quadrant. Confident
+blue pixels seed growth into connected weaker-blue pixels to tolerate pale tape;
+strict-color candidates are also retained for noisy or low-light captures. The
+video converter then derives moving search neighborhoods from validated marker
+bounds, marker size, recent motion, and decoded timestamps. Every frame still
+requires four observed markers. Prediction only guides the search; it does not
+replace missing observations. The crop uses each frame's detected coordinates,
+with the existing inward margin; Gaussian output smoothing is not integrated.
+
+A failed marker check rejects the whole converted video and saves the oriented,
+uncropped frame plus JSON context under
+`data/videos/<Tool ID>/conversion-failures/<video stem>/`. The warning prints
+the PNG path; the JSON includes the attempted search bounds when tracking had
+already initialized. Originals remain untouched. `--source-dir` and
+`--output-dir` can override the default directories. Failed forced conversion
+removes the old MP4, consistent with image conversion.
+
+See [marker detection experiments](marker_detection_experiments.md) for the
+tested approaches, known limitations, and suggested follow-up tests.
+
+Converted MP4s use paths such as `data/videos/12/opening.mp4`.
 Each video must contain at most the one known physical instrument, already
 identified in `image_object_manifest.csv`. The tool can be absent or fully
 occluded in individual frames. Conflicting image class/name metadata is reported
@@ -1126,10 +1152,23 @@ anchors, and review decisions before extracting again. Use `--video-id VIDEO_ID`
 to restrict preparation, annotation, verification, or export to one video.
 Interrupted extraction resumes on the next preparation run.
 
+Reviewers print a short command hint when opening an image or video, rather than
+repeating the full command list at every prompt. Refer to the command tables in
+this README for syntax and less common operations.
+
 The reviewer shows one frame with a green current mask, plus numbered text
-candidates when requested. Start with `p` to use the known tool's name/class,
+candidates when requested. The frame view and saved previews zoom to a padded
+crop around the mask/candidates by default; frames without a visible mask use
+the full view. Use `view full` for context and `view crop` to restore zoom.
+Display zoom preserves full-frame pixel coordinates and does not set a repair
+region. Start with `p` to use the known tool's name/class,
 then `g 0` to select a candidate (`g 0,2` combines fragments). Alternatively,
-use mouse prompts directly. A missing prediction remains unresolved; it is never
+use mouse prompts directly. Selecting text candidates runs a second SAM3 pass
+on a padded crop of the selected mask, using the same overlap checks and crop
+expansion as image annotation. Ambiguous or clipped refinements retain the
+original proposal. Use `--no-refine-crop` to disable this second pass. Region-only
+text repairs refine inside the selected repair rectangle and preserve pixels
+outside it. A missing prediction remains unresolved; it is never
 silently labeled absent or occluded. Text prompts change segmentation suggestions,
 not the physical identity or training label.
 
@@ -1142,13 +1181,33 @@ not the physical identity or training label.
 | `region` or `region L T R B` | Select a repair rectangle by dragging or providing pixel coordinates. Right/bottom edges are exclusive. Text, click, and box prompts operate on this crop; only pixels inside it are replaced. |
 | `whole` | Return to whole-tool correction. Whole-tool prompts can change pixels anywhere in the frame. |
 | `prop both 80 160` | From the current corrected frame, propagate backward and forward within the inclusive range 80–160. `forward` and `backward` are also supported. |
-| `preview 80 160` | Inspect every frame's current mask in pages of up to 12 overlays. Close each page to continue. |
-| `accept 80 160` | Accept nonempty masks in that inclusive range after previewing those exact mask versions. Changed masks require another preview. |
+| `prop forward 10` | Propagate 10 frames beyond the current frame, stopping at the video boundary. `backward 10` goes back 10 frames; `both 10` goes up to 10 frames in each direction. `propr` is also accepted as an alias for `prop`. |
+| `preview 80 160` | Save PNG contact sheets with up to 12 labeled mask overlays per page. Generate the whole range without opening windows or waiting between pages; the terminal prints the output directory. |
+| `accept 80 160` | Accept pending nonempty masks and reaccept changed/unverified accepted masks in that inclusive range after previewing their current versions. Unchanged accepted frames are preserved; rejected frames must be reopened. Prints newly accepted, reaccepted, and preserved frame ranges. |
+| `accept` | Accept all pending nonempty masks and reaccept changed/unverified accepted masks in the current video without requiring previews. Preserve existing visibility (default: clear). Unchanged accepted/rejected frames, empty masks, and frames without masks are skipped. |
 | `v partial`, then `a` | Set `clear`, `partial`, or `severe` and accept the current visible mask. `a` defaults to clear when no state was set. |
 | `absent` / `occluded` | Explicitly accept this frame with no visible mask, distinguishing absence from a fully hidden tool. |
 | `reopen 80 160` | Reopen reviewed frames in this inclusive range before replacing their masks. Existing corrected anchors remain available as inputs. |
+| `unanchor 120` / `unanchor` | Delete a saved correction anchor at the specified/current frame, preserving its current mask and review status. Propagate from a different, good frame to replace the bad mask; starting propagation on the unanchored frame makes its current mask an anchor again. |
+| `anchor 120` / `anchor` | Use the existing nonempty mask at the specified/current frame as a saved anchor, preserving the mask and review status. |
 | `jump 120` | Inspect another frame directly. |
+| `view crop` / `view full` | Zoom around masks/candidates (default), or display the full frame. Also applies to saved previews. |
+| `autopreview on` / `autopreview off` | Enable/disable unattended contact-sheet generation after each propagation. Can also be enabled at startup with `--auto-preview`. |
+| `next-video` | Leave this video and open the next selected video, preserving all saved work. Ends the command when there are no more selected videos. |
+| `stay` / `stay on` / `stay off` | Stay on the current video after completion, or restore automatic advancement. Enter `stay` before the final acceptance if you want to keep inspecting. |
 | `next` / `s`, `r`, `q` | Leave this frame unfinished and continue, reject it, or quit the entire video command. |
+
+By default, `python annotate.py videos` skips finished videos and advances after
+the final acceptance/rejection. A finished video has every frame accepted with
+matching acceptance checksums or explicitly rejected. Pending, changed, or
+unverified accepted frames prevent it from being considered finished. The
+terminal prints each video's source path and ID when opening it.
+
+To revisit a finished video, use `python annotate.py videos --video-id VIDEO_ID`.
+Explicit selection also keeps that video open after completion. Alternatively,
+`--stay-on-video` keeps completed videos open while browsing the normal queue;
+use `next-video` to leave each one. Within a session, `stay off` resumes automatic
+advancement, `next-video` leaves manually, and `q` exits the whole reviewer.
 
 For example, if early masks are good but tracking drifts around frame 120:
 
@@ -1158,18 +1217,150 @@ For example, if early masks are good but tracking drifts around frame 120:
 4. Run `preview 80 160`, correct any remaining failures, then accept the good
    frames or ranges. Resolve missing masks explicitly.
 
+After accepting frames 0–10, continue from the accepted boundary mask with:
+
+```text
+jump 10
+prop forward 10
+preview 11 20
+accept 11 20
+```
+
+`preview` saves all sheets before returning to the prompt. Open the PNGs in the
+printed directory to inspect them before acceptance. Each sheet labels frame
+indices, timestamps, review status, and whether a mask exists. A JSON manifest
+records frame/mask checksums and crop bounds so each set of sheets identifies
+the exact mask versions it depicts. Changed masks require fresh previews for
+range acceptance; generating sheets does not accept anything.
+
+New acceptance records include the saved NPZ checksum, mask path, visibility,
+extraction ID, and source-frame checksum recorded in the manifest. Range
+acceptance compares those values before skipping an already accepted frame.
+Changed masks need a preview of their current version and are then automatically
+reopened and reaccepted by `accept START END`. Older records without checksums
+are unverified and also need one reacceptance to establish a baseline; past
+changes cannot be reconstructed from those records. Anchor-only changes do not
+invalidate a mask's acceptance. Verification and training export reject known
+changes to masks with checksum-backed acceptance records. The frame title marks
+changed/unverified accepted masks when displayed.
+
+To combine propagation and preview generation into one unattended operation:
+
+```shell
+python annotate.py videos --chunk-size 8 --context-frames 1 --auto-preview
+```
+
+Then run, for example, `jump 300` and `prop forward 300`. Tracking saves its masks,
+then generates all sheets for the range without asking the user to close windows.
+Alternatively, enter `autopreview on` in an existing reviewer session. Sheets are
+stored under `data/previews/videos/<Video ID>/<range>-<snapshot ID>/`; each call
+creates a separate snapshot. Use `--preview-dir` to change the destination and
+`--preview-size 1024` for larger inspection tiles (default: 768; allowed: 64–2048).
+Snapshots can be deleted when no longer needed; they are not training assets.
+
+For a headless batch, create and inspect at least one nonempty anchor per video.
+It can be at any frame: `anchor FRAME` marks an existing good mask. The helper
+chooses the highest-numbered saved anchor that is not rejected and propagates
+forward from its saved mask. Use `next-video` to prepare another video, then quit the
+interactive reviewer before starting the helper, since both write the manifests:
+
+```shell
+python -u batch_propagate_videos.py --chunk-size 16 --context-frames 1 --auto-preview
+```
+
+This lightweight helper shares the options from `annotate.py videos`, including
+`--data-dir`, `--video-id`, `--device`, and preview settings. It opens no GUI and
+never accepts masks. Frames at or before the last anchor are left unchanged.
+After that anchor, pending predictions are regenerated (including existing
+masks), while accepted/rejected frames remain protected. Nonempty reviewed masks
+can serve as checkpoints across protected stretches. A frame-0 mask is not
+required. Videos without a saved anchor, or without pending frames after their
+last anchor, are skipped. The chosen anchor and new/regenerated frame ranges
+are printed and included in the batch report. To start a later run from newly
+reviewed progress, mark its last good frame with `anchor FRAME` first.
+
+Tracking loss stops that video gracefully; other exceptions are reported and the
+batch continues to the next video. Predictions saved before the problem remain
+pending. A degraded but nonempty prediction can continue through the whole video;
+all generated masks still need inspection. If a protected empty/rejected frame
+prevents continuing into a pending stretch, add a good anchor after it. Optional
+`--auto-preview` saves contact sheets for partial results too. Per-video outcomes,
+starting anchors, new/regenerated frame ranges, errors, and preview directories are written incrementally to
+`data/batch_propagation_report.json` (replaced by the next run). Chunking remains
+bounded; a system/driver crash can still stop the process, but already saved masks
+remain available for the next run.
+
+Propagation starts from the currently displayed frame. One number is a positive
+frame count beyond that frame; two numbers are an explicit inclusive start/end
+range. Range arguments do not move to another frame. An accepted starting frame
+can guide tracking without being reopened or changed. Other accepted/rejected frames in the target range
+still require `reopen` before replacement. Fully reviewed videos can also be
+opened interactively to inspect or reopen their masks.
+
+The frame title shows whether it has a saved anchor. If a bad manual correction
+keeps reappearing during propagation, remove that reference with `unanchor FRAME`,
+then propagate from a good frame through it. Removing an anchor does not reopen
+an accepted mask; use `reopen FRAME FRAME` too if that mask needs replacement.
+
+The tracker can condition on anchors before and after a target frame when both
+are in its processing window; propagation direction controls traversal, not which
+side may supply correction masks. For example, to repair frame 356 using good
+masks on both sides:
+
+```text
+anchor 355
+anchor 357
+unanchor 356
+jump 357
+prop backward 1
+preview 356 356
+```
+
+Use at least `--context-frames 1` for this example (default: 2) so frame 355 is
+included in the window even though only frame 356 is being replaced. Accepted
+reference frames remain accepted. If the target is already accepted, reopen it
+before propagation. `prop both` alone runs away from the current frame in both
+directions; it does not register neighboring masks as anchors or combine two
+independent predictions.
+
+After propagation, the terminal reports inclusive ranges for new pending masks,
+regenerated pending masks, and reused correction anchors. Existing pending
+predictions within the requested range are regenerated; correction anchors guide
+tracking and are reused. An accepted starting mask is explicitly reported as
+preserved and unchanged. Gaps are shown as separate ranges.
+
 Propagation uses the corrected **whole-tool** mask, including region-only repairs.
 A repair rectangle itself does not follow the moving tool. The model can read
 neighboring frames for context, but only the requested range is replaced.
 Accepted/rejected frames are protected until explicitly reopened. Corrected
 anchor masks are saved separately and reused together within each model window,
-including after restarting the reviewer. Click markers are retained during the
+including after restarting the reviewer. Tracking uses a padded crop containing
+the window's anchors. If a prediction approaches an interior crop edge or becomes
+empty, tracking retries on a larger crop from the last reliable mask, expanding
+up to the full frame as needed. The reliable mask is reframed into the new crop;
+potentially clipped predictions are not used as recovery anchors. Each new chunk
+chooses a fresh crop from its anchors. Saved masks and anchors always retain
+full-frame dimensions and coordinates. Crop-edge checks cannot detect an unseen,
+disconnected region that appears outside the crop without changing the tracked
+mask; review and add corrections for these cases. Click markers are retained during the
 current session; after a restart, the saved correction mask remains available
 but the markers are not restored in the editor. Each direction is processed in bounded
 chunks with overlapping context and a carried boundary mask. Defaults are
-`--chunk-size 64 --context-frames 8`; lower them to reduce memory use. Tracking
+`--chunk-size 16 --context-frames 2`; lower them to reduce memory use. Tracking
 can still drift across chunk boundaries or lose the tool; new predictions remain
 pending human review. Add another anchor where tracking fails.
+
+Predictions are saved one frame at a time as inference produces them, before
+acceptance. Restarting the reviewer retains saved pending masks. Tracking sessions
+release their frame/state caches after each window, and switching between text
+segmentation and tracking unloads the inactive model (switching back reloads its
+weights from the local model cache). Saved previews unload both models, decode
+one full-resolution frame at a time, and assemble only bounded thumbnails into
+one sheet at a time. They do not create Matplotlib figures. Interactive frame
+views crop and shrink images before passing a single byte raster to Matplotlib;
+closed figures are collected before opening another view. These measures reduce
+peak RAM/VRAM usage but do not impose a hard memory limit. For constrained systems,
+try `python annotate.py videos --chunk-size 8 --context-frames 1`.
 
 Final masks are independent version-2 bundles at
 `masks/videos/<Video ID>/000000.npz`. A visible tool has one mask and identity

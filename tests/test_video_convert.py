@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 
 import video_convert
-from square_crop import MarkerDetectionError, crop_marked_square
+from square_crop import MarkerDetectionError
 
 
 def marked_frame():
@@ -47,9 +47,6 @@ def write_video(path, images, times=None):
 def conversion(monkeypatch):
     monkeypatch.setattr(video_convert, "review_orientation", lambda image, source: 1)
     monkeypatch.setattr(video_convert, "CROP_SIZE", 64)
-    monkeypatch.setattr(
-        video_convert, "crop_marked_square", lambda image: crop_marked_square(image, 64)
-    )
 
 
 def test_conversion_preserves_every_frame_and_variable_timing(tmp_path, conversion):
@@ -194,10 +191,10 @@ def test_interruption_cleans_up_temporary_output(tmp_path, monkeypatch, conversi
     source, destination = tmp_path / "raw.mp4", tmp_path / "out.mp4"
     write_video(source, [marked_frame()])
 
-    def interrupt(image):
+    def interrupt(image, corners, size):
         raise KeyboardInterrupt
 
-    monkeypatch.setattr(video_convert, "crop_marked_square", interrupt)
+    monkeypatch.setattr(video_convert, "warp_quad_to_square", interrupt)
     with pytest.raises(KeyboardInterrupt):
         video_convert.save_cropped_video(source, destination)
     assert not destination.exists()

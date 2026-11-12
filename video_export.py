@@ -54,6 +54,7 @@ def export_video_training(args: argparse.Namespace) -> None:
                 or log.decisions.get(row["Frame ID"]) != "accepted"
             ):
                 continue
+            log.validate_acceptance(root, video, row)
             # Fully hidden tools and class-invalid severe masks are excluded from this base training export.
             if row["Visibility"] in {"occluded", "severe"}:
                 continue
