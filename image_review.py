@@ -16,8 +16,10 @@ from annotations import (
     validate_instance_metadata,
 )
 from image_ui import ToolPreview
+from image_review_state import ReviewHistory, ReviewState, decode_state, encode_state
 from mask_cleanup import clean_mask, parse_cleanup
 from masks import mask_overlap
+from image_local_edit import apply_local_edit, ensure_editable, find_tool
 
 
 @dataclass(frozen=True)
@@ -75,42 +77,52 @@ def review_image_instances(
         Callable[[Image.Image, Sequence[Candidate], str, Sequence[ToolPreview]], None]
         | None
     ) = None,
+    history: ReviewHistory | None = None,
+    read_command: Callable[[str], str] | None = None,
+    report: Callable[[str], None] | None = None,
+    box_spatial: (
+        Callable[[tuple[float, float, float, float]], Candidate] | None
+    ) = None,
     inspect_order: (
         Callable[[Image.Image, Sequence[ToolPreview], str], None] | None
     ) = None,
 ) -> ImageReview:
     import matplotlib.pyplot as plt
 
-    candidates = list(candidates)
-    instances = [dict(row) for row in instances]
-    assignments: dict[str, list[int]] = {}
-    states: dict[str, str] = {}
-    excluded: set[int] = set()
-    ignored: set[int] = set()
-    refinements: dict[str, Candidate] = {}
-    cleaned: dict[str, Candidate] = {}
-    active_prompts: dict[str, ClickPrompt] = {}
-    click_prompts: dict[int, ClickPrompt] = {}
-    generated: set[int] = set()
-    removed: set[int] = set()
-    ordered: dict[str, Candidate] = {}
-    depth_order: list[str] = []
+    history = history or ReviewHistory()
+    state = history.current or ReviewState(
+        list(candidates), [dict(row) for row in instances], shape=(image.height, image.width)
+    )
+    if state.shape != (image.height, image.width):
+        raise ValueError("Saved review dimensions do not match the image.")
+    validate_instance_metadata(state.instances)
+    history.commit(state)
     inspect_pending = False
+    command_text = ""
     blank = np.zeros((image.height, image.width), dtype=np.bool_)
 
     def assigned_candidate(
-        row: dict[str, str], *, original: bool = False, apply_order: bool = True
+        row: dict[str, str],
+        *,
+        original: bool = False,
+        apply_order: bool = True,
+        review_state: ReviewState | None = None,
     ) -> Candidate:
+        current = review_state or state
         identity = row["Instance ID"]
-        if not original and apply_order and identity in ordered:
-            return ordered[identity]
-        if not original and identity in cleaned:
-            return replace(cleaned[identity], visibility=states.get(identity, "clear"))
-        if not original and identity in refinements:
+        if not original and apply_order and identity in current.ordered:
+            return current.ordered[identity]
+        if not original and identity in current.cleaned:
             return replace(
-                refinements[identity], visibility=states.get(identity, "clear")
+                current.cleaned[identity], visibility=current.states.get(identity, "clear")
             )
-        fragments = [candidates[index] for index in assignments.get(identity, [])]
+        if not original and identity in current.refinements:
+            return replace(
+                current.refinements[identity], visibility=current.states.get(identity, "clear")
+            )
+        fragments = [
+            current.candidates[index] for index in current.assignments.get(identity, [])
+        ]
         mask = (
             np.logical_or.reduce([part.mask for part in fragments])
             if fragments
@@ -121,94 +133,126 @@ def review_image_instances(
             max((part.score for part in fragments), default=0),
             row["Tool Class"],
             identity,
-            states.get(identity, "clear"),
+            current.states.get(identity, "clear"),
         )
 
     def indices(text: str) -> list[int]:
         values = sorted({int(value) for value in text.split(",")})
-        if not values or any(value < 0 or value >= len(candidates) for value in values):
+        if not values or any(value < 0 or value >= len(state.candidates) for value in values):
             raise ValueError("Provide valid comma-separated candidate indices.")
-        missing = sorted(set(values) & removed)
+        missing = sorted(set(values) & state.removed)
         if missing:
             raise ValueError(
                 f"Candidates {missing} have been removed; select active candidates."
             )
         return values
 
+    def reconcile_ownership(previous: ReviewState) -> None:
+        """Keep existing pixel decisions where the claimant masks did not change."""
+        changed = blank.copy()
+        for row in state.instances:
+            identity = row["Instance ID"]
+            old_mask = assigned_candidate(
+                row, apply_order=False, review_state=previous
+            ).mask
+            new_mask = assigned_candidate(row, apply_order=False).mask
+            changed |= old_mask ^ new_mask
+        for identity in list(state.ownership):
+            state.ownership[identity] &= ~changed
+            if not state.ownership[identity].any():
+                del state.ownership[identity]
+        state.ordered.clear()
+        if state.ownership:
+            owned = np.logical_or.reduce(list(state.ownership.values()))
+            for row in state.instances:
+                identity = row["Instance ID"]
+                source = assigned_candidate(row, apply_order=False)
+                mask = source.mask & (~owned | state.ownership.get(identity, blank))
+                state.ordered[identity] = replace(source, mask=mask)
+
     def record(action: str) -> None:
         log(
             key,
             "in_progress",
             action=action,
+            command=command_text,
+            locked_tool_ids=[
+                row["Tool ID"]
+                for row in state.instances
+                if row["Instance ID"] in state.locked
+            ],
+            ownership_pixels={
+                identity: int(np.count_nonzero(mask))
+                for identity, mask in state.ownership.items()
+            },
             assignments={
                 identity: [
                     {
                         "index": index,
-                        "candidate_id": candidates[index].identity,
-                        "prompt": candidates[index].prompt,
-                        "score": candidates[index].score,
+                        "candidate_id": state.candidates[index].identity,
+                        "prompt": state.candidates[index].prompt,
+                        "score": state.candidates[index].score,
                     }
                     for index in values
                 ]
-                for identity, values in assignments.items()
+                for identity, values in state.assignments.items()
             },
-            visibility=dict(states),
-            excluded=sorted(excluded),
-            ignored=sorted(ignored),
-            removed=sorted(removed),
-            cleaned=sorted(cleaned),
-            depth_order_tool_ids=list(depth_order),
+            visibility=dict(state.states),
+            excluded=sorted(state.excluded),
+            ignored=sorted(state.ignored),
+            removed=sorted(state.removed),
+            cleaned=sorted(state.cleaned),
+            depth_order_tool_ids=list(state.depth_order),
             refinements={
                 identity: {"prompt": candidate.prompt, "score": candidate.score}
-                for identity, candidate in refinements.items()
+                for identity, candidate in state.refinements.items()
             },
         )
 
-    print(
-        "Commands: g=assign, click=correct, a=accept, s=skip, q=quit. "
-        "See README.md for details."
-    )
     while True:
-        raw_selected = [assigned_candidate(row, apply_order=False) for row in instances]
+        raw_selected = [assigned_candidate(row, apply_order=False) for row in state.instances]
         overlap = mask_overlap(np.stack([part.mask for part in raw_selected]))
         overlap_pixels = int(np.count_nonzero(overlap))
         overlapping_tools = [
             row["Tool ID"]
-            for row, part in zip(instances, raw_selected, strict=True)
+            for row, part in zip(state.instances, raw_selected, strict=True)
             if np.any(part.mask & overlap)
         ]
         labels = []
-        tools = {row["Instance ID"]: row["Tool ID"] for row in instances}
-        for index, candidate in enumerate(candidates):
-            if index in removed:
+        tools = {row["Instance ID"]: row["Tool ID"] for row in state.instances}
+        for index, candidate in enumerate(state.candidates):
+            if index in state.removed:
                 labels.append(replace(candidate, prompt="[removed]"))
                 continue
             owner = next(
                 (
                     identity
-                    for identity, values in assignments.items()
+                    for identity, values in state.assignments.items()
                     if index in values
                 ),
                 "unassigned",
             )
             if owner in tools:
                 owner = f"tool {tools[owner]}"
-            if index in ignored:
+            if index in state.ignored:
                 owner = "ignore"
-            elif index in excluded:
+            elif index in state.excluded:
                 owner = "excluded"
             labels.append(replace(candidate, prompt=f"{candidate.prompt} [{owner}]"))
         previews = []
-        for row, source in zip(instances, raw_selected, strict=True):
+        for row, source in zip(state.instances, raw_selected, strict=True):
             identity = row["Instance ID"]
             original = None
             edit_note = ""
-            if identity in ordered:
+            if identity in state.ordered:
                 original = source.mask
                 edit_note = "Ordered mask — order reset to undo"
-            elif identity in refinements or identity in cleaned:
+            elif identity in state.before_edits:
+                original = state.before_edits[identity].mask
+                edit_note = "Local edit — undo to restore"
+            elif identity in state.refinements or identity in state.cleaned:
                 original = assigned_candidate(row, original=True).mask
-                if identity in cleaned:
+                if identity in state.cleaned:
                     edit_note = f"Cleaned mask — unclean {row['Tool ID']} to undo"
             previews.append(
                 ToolPreview(
@@ -217,19 +261,21 @@ def review_image_instances(
                     assigned_candidate(row).mask,
                     original,
                     edit_note=edit_note,
+                    locked=identity in state.locked,
+                    candidates=tuple(state.assignments.get(identity, [])),
                     candidate_index=(
-                        assignments[identity][0] if assignments.get(identity) else None
+                        state.assignments[identity][0] if state.assignments.get(identity) else None
                     ),
                     disputed=source.mask & overlap if overlap_pixels else None,
                 )
             )
         if show_tools is None:
-            if ordered:
+            if state.ordered:
                 show(
                     image,
                     [
                         replace(assigned_candidate(row), prompt=f"tool {row['Tool ID']}")
-                        for row in instances
+                        for row in state.instances
                     ],
                     f"{key} — resolved tool masks (source candidate numbers unchanged)",
                 )
@@ -241,29 +287,32 @@ def review_image_instances(
             inspect_order(image, previews, key)
             record("inspect_order")
         inspect_pending = False
-        if depth_order:
+        if state.depth_order:
             print(
-                f"Front-to-back order: {' > '.join(depth_order)}. "
+                f"Front-to-back order: {' > '.join(state.depth_order)}. "
                 "Inspect the close-ups, then 'a' to accept; 'inspect' reopens them; 'order reset' undoes ordering."
             )
         elif overlap_pixels:
+            unresolved = mask_overlap(
+                np.stack([assigned_candidate(row).mask for row in state.instances])
+            )
             print(
-                f"Overlap: {overlap_pixels} pixels claimed by tools {', '.join(overlapping_tools)}. "
+                f"Overlap: {int(np.count_nonzero(unresolved))} unresolved of {overlap_pixels} disputed pixels claimed by tools {', '.join(overlapping_tools)}. "
                 "Correct boundaries or use 'order TOOL_ID ...' from front to back. "
                 "Use 'order impossible' to reject an arrangement without a consistent order."
             )
         print(
-            f"Mask candidates: {len(candidates) - len(removed)} active (numbers match the preview)"
+            f"Mask candidates: {len(state.candidates) - len(state.removed)} active (numbers match the preview)"
         )
         for index, candidate in enumerate(labels):
-            if index in removed:
+            if index in state.removed:
                 continue
             print(f"  {index}: {candidate.prompt} | score {candidate.score:.2f}")
-        if len(removed) == len(candidates):
-            prompt = instances[0]["Tool Class"]
+        if len(state.removed) == len(state.candidates):
+            prompt = state.instances[0]["Tool Class"]
             reason = (
                 "All candidates were removed."
-                if removed
+                if state.removed
                 else "No masks were predicted."
             )
             print(
@@ -271,112 +320,157 @@ def review_image_instances(
                 "Do not accept an empty annotation for a visible tool."
             )
         print("Declared tools (use Tool ID in commands):")
-        for row in instances:
+        for row in state.instances:
             identity = row["Instance ID"]
             print(
                 f"  tool {row['Tool ID']} | {canonical_tool_label(row['Tool Name'], row['Tool Class'], {})} | "
                 f"confidence {row['Confidence']} | "
-                f"{states.get(identity, 'unresolved')} | masks {assignments.get(identity, [])}"
+                f"{state.states.get(identity, 'unresolved')} | masks {state.assignments.get(identity, [])}"
                 + (
                     " | refined (restore TOOL_ID to undo)"
-                    if identity in refinements
+                    if identity in state.refinements
                     else ""
                 )
                 + (
                     " | cleaned (unclean TOOL_ID to undo)"
-                    if identity in cleaned
+                    if identity in state.cleaned
                     else ""
                 )
             )
-        for row in instances:
+        for row in state.instances:
             saved = [
                 f"{index} ({len(prompt.points)} clicks)"
-                for index, prompt in sorted(click_prompts.items())
+                for index, prompt in sorted(state.click_prompts.items())
                 if prompt.instance_id == row["Instance ID"]
             ]
             if saved:
-                current = active_prompts.get(row["Instance ID"])
+                current = state.active_prompts.get(row["Instance ID"])
                 active_label = current.candidate_index if current is not None else None
                 print(
                     f"  tool {row['Tool ID']} click prompts: {', '.join(saved)}; active: {active_label}"
                 )
-        if len(instances) == 1 and candidates:
-            identity = instances[0]["Instance ID"]
+        if len(state.instances) == 1 and state.candidates:
+            identity = state.instances[0]["Instance ID"]
             available = [
                 index
-                for index, candidate in enumerate(candidates)
+                for index, candidate in enumerate(state.candidates)
                 if candidate.mask.any()
-                and index not in excluded
-                and index not in ignored
+                and index not in state.excluded
+                and index not in state.ignored
             ]
-            if available and identity not in assignments and identity not in states:
+            if available and identity not in state.assignments and identity not in state.states:
                 print(
                     f"If candidate {available[0]} covers this tool, enter "
-                    f"'g {instances[0]['Tool ID']} {available[0]}', then 'a'. "
+                    f"'g {state.instances[0]['Tool ID']} {available[0]}', then 'a'. "
                     "Group multiple pieces with comma-separated candidate numbers."
                 )
-        response = input("review> ").strip()
-        plt.close("all")
+        print(
+            "g TOOL_ID 0,2=assign/group; u TOOL_ID=clear; "
+            "v TOOL_ID clear|partial|severe|occluded|absent; "
+            "click TOOL_ID [new|INDEX|reset]=revise/new SAM3 points; polygon TOOL_ID=SAM3 polygon prompt; "
+            "draw TOOL_ID=trace/edit a mask; subtract TOOL_ID BASE_INDEX OTHER_TOOL_IDS=derive remainder; "
+            "clean TOOL_ID [OP SIZE]=optional cleanup; unclean TOOL_ID=undo cleanup; "
+            "refine TOOL_ID [TEXT]|all=crop refinement; restore TOOL_ID|all=original mask; "
+            "order TOOL_ID ...=front-to-back overlap resolution; order reset=undo; order impossible=reject arrangement; "
+            "inspect=reopen ordered overlap close-ups; "
+            "remove 0,2=discard candidates; x 0,2=exclude; i 0,2=ignore; p TEXT=add predictions; "
+            'n TOOL_ID "CLASS" "NAME" CONFIDENCE=declare extra tool; '
+            "correct/add TOOL_ID x,y,label ...; box TOOL_ID L T R B; "
+            "paint TOOL_ID add|erase x,y ...; brush TOOL_ID add|erase R x,y ...; "
+            "own TOOL_ID X Y=resolve crossing; split FROM TO x,y ...; "
+            "lock/unlock TOOL_ID; discard [confirm]; undo / redo; reset=restart current image (undoable); "
+            "a=accept; e=all absent; s=skip; r=reject; q=quit"
+        )
+        response = (read_command or input)("review> ").strip()
+        if read_command is None:
+            plt.close("all")
         command, _, argument = response.partition(" ")
+        command_text = response
+        before = encode_state(state)
         try:
-            if depth_order and command in {
-                "n",
-                "p",
-                "draw",
-                "subtract",
-                "click",
-                "polygon",
-                "clean",
-                "unclean",
-                "refine",
-                "restore",
-                "g",
-                "u",
-                "v",
-                "remove",
-                "x",
-                "i",
-                "e",
-            }:
-                log(
-                    key,
-                    "in_progress",
-                    action="overlap_order_invalidated",
-                    depth_order_tool_ids=list(depth_order),
-                    command=command,
+            if command in {"undo", "redo"}:
+                if argument:
+                    raise ValueError("Use undo or redo without arguments.")
+                state = history.move(-1 if command == "undo" else 1)
+                log(key, "in_progress", action=command)
+                continue
+            if command == "reset":
+                if argument:
+                    raise ValueError("Use reset to restore the original image predictions.")
+                state = decode_state(history.baseline)
+                log(key, "in_progress", action="reset_image")
+                continue
+            if command in {"lock", "unlock"}:
+                row = find_tool(state, argument.strip())
+                identity = row["Instance ID"]
+                if command == "lock":
+                    if not assigned_candidate(row).mask.any():
+                        raise ValueError("Assign a visible mask before locking it.")
+                    state.locked.add(identity)
+                else:
+                    state.locked.discard(identity)
+                record(command)
+                continue
+            if command in {"correct", "add", "box", "paint", "brush", "split", "own"}:
+                apply_local_edit(
+                    command, argument, state,
+                    lambda row, raw: assigned_candidate(row, apply_order=not raw),
+                    spatial, box_spatial,
                 )
-                ordered.clear()
-                depth_order.clear()
-                print(
-                    "Ordering cleared before editing. Resolve any overlaps again before accepting."
+                inspect_pending = command == "own"
+                record(command)
+                continue
+            if command == "discard":
+                used = {index for values in state.assignments.values() for index in values}
+                unused = (
+                    set(range(len(state.candidates)))
+                    - used - state.ignored - state.removed - state.excluded
                 )
+                if argument.strip() == "confirm":
+                    state.excluded.update(unused)
+                    record("discard_unused")
+                elif not argument:
+                    message = f"Unused proposals: {sorted(unused)}. Preview them, then use discard confirm (undoable)."
+                    print(message)
+                    if report is not None:
+                        report(message)
+                else:
+                    raise ValueError("Use discard to preview or discard confirm to apply.")
+                continue
             if command in {"q", "s", "r"}:
                 record(command)
                 return ImageReview(
                     {"q": "quit", "s": "skipped", "r": "rejected"}[command],
-                    instances,
+                    state.instances,
                     [],
                     [],
                 )
             if command == "inspect":
-                if argument or not depth_order:
+                if argument or not (state.ownership or state.depth_order):
                     raise ValueError("Use inspect after setting a front-to-back order.")
                 if inspect_order is None:
                     raise ValueError("Overlap inspection is unavailable in this reviewer.")
                 inspect_pending = True
             elif command == "order":
                 if argument.strip() == "reset":
-                    ordered.clear()
-                    depth_order.clear()
+                    for row in state.instances:
+                        if not np.array_equal(
+                            assigned_candidate(row).mask,
+                            assigned_candidate(row, apply_order=False).mask,
+                        ):
+                            ensure_editable(state, row)
+                    state.ordered.clear()
+                    state.depth_order.clear()
+                    state.ownership.clear()
                     record("reset_overlap_order")
                     continue
                 if argument.strip() == "impossible":
                     record("incompatible_depth_order")
-                    return ImageReview("rejected", instances, [], [])
+                    return ImageReview("rejected", state.instances, [], [])
                 tool_ids = argument.replace(",", " ").split()
                 by_tool = {
                     row["Tool ID"]: part
-                    for row, part in zip(instances, raw_selected, strict=True)
+                    for row, part in zip(state.instances, raw_selected, strict=True)
                 }
                 if not tool_ids or len(set(tool_ids)) != len(tool_ids):
                     raise ValueError(
@@ -410,19 +504,29 @@ def review_image_instances(
                             f"Ordering would erase tool {tool_id}. Correct duplicate masks, change the order, "
                             f"or explicitly mark 'v {tool_id} occluded' if fully hidden. Previous order retained."
                         )
+                    if source.identity in state.locked and not np.array_equal(
+                        mask, assigned_candidate(find_tool(state, tool_id)).mask
+                    ):
+                        raise ValueError(
+                            f"Ordering would change locked tool {tool_id}; unlock it first."
+                        )
                     resolved[source.identity] = replace(source, mask=mask)
                     removed_pixels[tool_id] = int(
                         np.count_nonzero(source.mask & occupied)
                     )
                     occupied |= source.mask
-                ordered = resolved
-                depth_order = tool_ids
+                state.ordered = resolved
+                state.ownership = {
+                    identity: part.mask & overlap
+                    for identity, part in resolved.items()
+                }
+                state.depth_order = tool_ids
                 inspect_pending = True
                 log(
                     key,
                     "in_progress",
                     action="overlap_order",
-                    depth_order_tool_ids=list(depth_order),
+                    depth_order_tool_ids=list(state.depth_order),
                     depth_order_instance_ids=[
                         by_tool[tool_id].identity for tool_id in tool_ids
                     ],
@@ -430,7 +534,7 @@ def review_image_instances(
                     removed_pixels=removed_pixels,
                 )
                 print(
-                    "Ordering applied to disputed pixels only. Inspect the preview before 'a'; edits clear the order."
+                    "Ordering applied to disputed pixels only. Inspect the preview before 'a'; unchanged crossing decisions survive edits."
                 )
             elif command == "n":
                 fields = shlex.split(argument)
@@ -449,16 +553,16 @@ def review_image_instances(
                     "Tool Name": name,
                     "Confidence": confidence,
                 }
-                validate_instance_metadata([*instances, row])
-                instances.append(row)
+                validate_instance_metadata([*state.instances, row])
+                state.instances.append(row)
                 log(key, "in_progress", action="declare", instance=row)
             elif command == "p" and argument:
                 additions = predict(argument)
-                start = len(candidates)
+                start = len(state.candidates)
                 print(
                     f"Prompt {argument!r} returned {len(additions)} mask candidate(s)."
                 )
-                candidates.extend(
+                state.candidates.extend(
                     replace(candidate, identity=f"candidate-{start + index}")
                     for index, candidate in enumerate(additions)
                 )
@@ -467,7 +571,7 @@ def review_image_instances(
                     "in_progress",
                     action="reprompt",
                     prompt=argument,
-                    candidate_indices=list(range(start, len(candidates))),
+                    candidate_indices=list(range(start, len(state.candidates))),
                 )
             elif command in {"draw", "subtract", "click", "polygon"}:
                 parts = argument.split()
@@ -490,11 +594,12 @@ def review_image_instances(
                         "Use draw TOOL_ID or subtract TOOL_ID BASE_INDEX OTHER_TOOL_ID[,OTHER_TOOL_ID...]; click TOOL_ID [new|INDEX|reset] or polygon TOOL_ID for SAM3 prompts."
                     )
                 target_tool = parts[0]
-                by_tool = {row["Tool ID"]: row for row in instances}
+                by_tool = {row["Tool ID"]: row for row in state.instances}
                 if target_tool not in by_tool:
                     raise ValueError(
                         "Unknown Tool ID. Use an ID from the declared tools list."
                     )
+                ensure_editable(state, by_tool[target_tool])
                 target_instance = by_tool[target_tool]["Instance ID"]
                 details: dict[str, object]
                 click_prompt: ClickPrompt | None = None
@@ -508,7 +613,7 @@ def review_image_instances(
                         click_prompt = ClickPrompt(target_instance, separate=True)
                     elif option.isdigit():
                         selected_index = indices(option)[0]
-                        click_prompt = click_prompts.get(selected_index)
+                        click_prompt = state.click_prompts.get(selected_index)
                         if (
                             click_prompt is None
                             or click_prompt.instance_id != target_instance
@@ -517,13 +622,13 @@ def review_image_instances(
                                 f"Candidate {selected_index} has no click prompt for tool {target_tool}."
                             )
                     else:
-                        click_prompt = active_prompts.get(target_instance)
+                        click_prompt = state.active_prompts.get(target_instance)
                         if click_prompt is None:
                             matching = [
-                                click_prompts[index]
-                                for index in assignments.get(target_instance, [])
-                                if index in click_prompts
-                                and click_prompts[index].instance_id == target_instance
+                                state.click_prompts[index]
+                                for index in state.assignments.get(target_instance, [])
+                                if index in state.click_prompts
+                                and state.click_prompts[index].instance_id == target_instance
                             ]
                             click_prompt = (
                                 matching[-1]
@@ -535,14 +640,14 @@ def review_image_instances(
                     edit_index = click_prompt.candidate_index
                     if edit_index is not None and any(
                         edit_index in assigned
-                        for owner, assigned in assignments.items()
+                        for owner, assigned in state.assignments.items()
                         if owner != target_instance
                     ):
                         raise ValueError(
                             f"Candidate {edit_index} is assigned to another tool; clear that assignment before editing it."
                         )
                     context = (
-                        candidates[edit_index].mask
+                        state.candidates[edit_index].mask
                         if edit_index is not None
                         else assigned_candidate(by_tool[target_tool]).mask
                     )
@@ -561,11 +666,15 @@ def review_image_instances(
                     )
                     if points is None:
                         continue
+                    click_prompt = replace(click_prompt, points=list(points))
                     click_prompt.points = list(points)
-                    active_prompts[target_instance] = click_prompt
+                    state.active_prompts[target_instance] = click_prompt
                     if edit_index is not None:
-                        click_prompts[edit_index] = click_prompt
-                    prediction = spatial(points, click_prompt.seed)
+                        state.click_prompts[edit_index] = click_prompt
+                    seed = click_prompt.seed
+                    if seed is None and option not in {"new", "reset"} and context.any():
+                        seed = context
+                    prediction = spatial(points, seed)
                     if (
                         prediction.mask.shape != (image.height, image.width)
                         or prediction.mask.dtype != np.bool_
@@ -606,7 +715,7 @@ def review_image_instances(
                         drawn,
                         1.0,
                         f"manually drawn tool {target_tool}",
-                        f"candidate-{len(candidates)}",
+                        f"candidate-{len(state.candidates)}",
                     )
                     details = {"method": "polygon"}
                     if command == "polygon":
@@ -616,7 +725,7 @@ def review_image_instances(
                             )
                         assert spatial is not None
                         click_prompt = ClickPrompt(target_instance, seed=drawn.copy())
-                        active_prompts[target_instance] = click_prompt
+                        state.active_prompts[target_instance] = click_prompt
                         prediction = spatial([], drawn)
                         if (
                             prediction.mask.shape != (image.height, image.width)
@@ -626,7 +735,7 @@ def review_image_instances(
                                 "SAM3 must return a boolean full-image mask."
                             )
                         derived = replace(
-                            prediction, identity=f"candidate-{len(candidates)}"
+                            prediction, identity=f"candidate-{len(state.candidates)}"
                         )
                         details = {"prompt_kind": "polygon_mask"}
                 else:
@@ -639,7 +748,7 @@ def review_image_instances(
                     removed_tools = list(dict.fromkeys(parts[2].split(",")))
                     if target_tool in removed_tools:
                         raise ValueError("Cannot subtract the target tool from itself.")
-                    remainder = candidates[source_index].mask.copy()
+                    remainder = state.candidates[source_index].mask.copy()
                     for tool_id in removed_tools:
                         if tool_id not in by_tool:
                             raise ValueError(f"Unknown Tool ID {tool_id} to subtract.")
@@ -649,25 +758,31 @@ def review_image_instances(
                                 f"Assign or draw a correct visible mask for tool {tool_id} before subtracting it."
                             )
                         remainder &= ~remove
-                    if np.array_equal(remainder, candidates[source_index].mask):
+                    if np.array_equal(remainder, state.candidates[source_index].mask):
                         raise ValueError(
                             "The selected masks do not overlap the combined candidate; nothing was subtracted."
                         )
                     derived = replace(
-                        candidates[source_index],
+                        state.candidates[source_index],
                         mask=remainder,
-                        identity=f"candidate-{len(candidates)}",
+                        identity=f"candidate-{len(state.candidates)}",
                         prompt=f"candidate {source_index} minus tools {','.join(removed_tools)}",
                     )
                     details = {
                         "source_index": source_index,
-                        "source_candidate_id": candidates[source_index].identity,
+                        "source_candidate_id": state.candidates[source_index].identity,
                         "subtracted_tool_ids": removed_tools,
                     }
+                for other in state.instances:
+                    if other["Instance ID"] in state.locked:
+                        derived = replace(
+                            derived, mask=derived.mask & ~assigned_candidate(other).mask
+                        )
                 if not derived.mask.any():
                     raise ValueError(
                         "The resulting mask is empty; the tool was not assigned."
                     )
+                state.before_edits[target_instance] = assigned_candidate(by_tool[target_tool])
                 edit_index = (
                     click_prompt.candidate_index
                     if command == "click" and click_prompt is not None
@@ -679,35 +794,35 @@ def review_image_instances(
                     and (edit_index is not None or click_prompt.separate)
                 )
                 if edit_index is None:
-                    new_index = len(candidates)
+                    new_index = len(state.candidates)
                     derived = replace(derived, identity=f"candidate-{new_index}")
-                    candidates.append(derived)
+                    state.candidates.append(derived)
                 else:
                     new_index = edit_index
-                    candidates[new_index] = replace(
-                        derived, identity=candidates[new_index].identity
+                    state.candidates[new_index] = replace(
+                        derived, identity=state.candidates[new_index].identity
                     )
                 if keep_parts:
-                    assignments[target_instance] = sorted(
-                        set(assignments.get(target_instance, [])) | {new_index}
+                    state.assignments[target_instance] = sorted(
+                        set(state.assignments.get(target_instance, [])) | {new_index}
                     )
                 else:
-                    excluded.update(
-                        set(assignments.get(target_instance, [])) & generated
+                    state.excluded.update(
+                        set(state.assignments.get(target_instance, [])) & state.generated
                     )
-                    assignments[target_instance] = [new_index]
-                excluded.discard(new_index)
-                ignored.discard(new_index)
-                generated.add(new_index)
+                    state.assignments[target_instance] = [new_index]
+                state.excluded.discard(new_index)
+                state.ignored.discard(new_index)
+                state.generated.add(new_index)
                 if click_prompt is not None:
                     click_prompt.candidate_index = new_index
-                    click_prompts[new_index] = click_prompt
+                    state.click_prompts[new_index] = click_prompt
                 else:
-                    active_prompts.pop(target_instance, None)
-                cleaned.pop(target_instance, None)
-                refinements.pop(target_instance, None)
-                if states.get(target_instance) not in {"clear", "partial", "severe"}:
-                    states[target_instance] = "clear"
+                    state.active_prompts.pop(target_instance, None)
+                state.cleaned.pop(target_instance, None)
+                state.refinements.pop(target_instance, None)
+                if state.states.get(target_instance) not in {"clear", "partial", "severe"}:
+                    state.states[target_instance] = "clear"
                 log(
                     key,
                     "in_progress",
@@ -728,15 +843,16 @@ def review_image_instances(
             elif command in {"clean", "unclean"}:
                 target, _, options = argument.partition(" ")
                 cleanup_row = next(
-                    (row for row in instances if row["Tool ID"] == target), None
+                    (row for row in state.instances if row["Tool ID"] == target), None
                 )
                 if cleanup_row is None:
                     raise ValueError("Use clean TOOL_ID [OP SIZE] or unclean TOOL_ID.")
+                ensure_editable(state, cleanup_row)
                 identity = cleanup_row["Instance ID"]
                 if command == "unclean":
                     if options.strip():
                         raise ValueError("Use unclean TOOL_ID.")
-                    cleaned.pop(identity, None)
+                    state.cleaned.pop(identity, None)
                     record("undo_cleanup")
                     continue
                 operation, size = parse_cleanup(options)
@@ -744,11 +860,11 @@ def review_image_instances(
                 if not source.mask.any():
                     raise ValueError("Assign a visible mask before cleanup.")
                 protected = blank.copy()
-                for other in instances:
+                for other in state.instances:
                     if other["Instance ID"] != identity:
                         protected |= assigned_candidate(other).mask
-                for index in ignored:
-                    protected |= candidates[index].mask
+                for index in state.ignored:
+                    protected |= state.candidates[index].mask
                 result = clean_mask(source.mask, operation, size, protected=protected)
                 if not result.any():
                     raise ValueError(
@@ -756,7 +872,7 @@ def review_image_instances(
                     )
                 added = int(np.count_nonzero(result & ~source.mask))
                 removed_pixels = int(np.count_nonzero(source.mask & ~result))
-                cleaned[identity] = replace(source, mask=result)
+                state.cleaned[identity] = replace(source, mask=result)
                 log(
                     key,
                     "in_progress",
@@ -775,9 +891,9 @@ def review_image_instances(
             elif command in {"refine", "restore"}:
                 target, _, prompt_override = argument.partition(" ")
                 targets = (
-                    instances
+                    state.instances
                     if target == "all"
-                    else [row for row in instances if row["Tool ID"] == target]
+                    else [row for row in state.instances if row["Tool ID"] == target]
                 )
                 if not targets:
                     raise ValueError(f"Use {command} TOOL_ID or {command} all.")
@@ -790,20 +906,24 @@ def review_image_instances(
                 if (
                     command == "refine"
                     and target != "all"
-                    and not assignments.get(targets[0]["Instance ID"])
+                    and not state.assignments.get(targets[0]["Instance ID"])
                 ):
                     raise ValueError(
                         f"Assign tool {target} a mask with 'g {target} INDEX' before refinement."
                     )
                 for row in targets:
+                    if row["Instance ID"] in state.locked:
+                        if target == "all":
+                            continue
+                        ensure_editable(state, row)
                     identity = row["Instance ID"]
                     if command == "restore":
-                        cleaned.pop(identity, None)
-                        refinements.pop(identity, None)
+                        state.cleaned.pop(identity, None)
+                        state.refinements.pop(identity, None)
                         print(
                             f"Tool {row['Tool ID']}: restored original assigned mask."
                         )
-                    elif assignments.get(identity):
+                    elif state.assignments.get(identity):
                         assert refine is not None
                         prompt = prompt_override or canonical_tool_label(
                             row["Tool Name"], row["Tool Class"], {}
@@ -817,8 +937,8 @@ def review_image_instances(
                                 raise ValueError(
                                     "Refinement must return a nonempty full-image mask."
                                 )
-                            cleaned.pop(identity, None)
-                            refinements[identity] = replace(
+                            state.cleaned.pop(identity, None)
+                            state.refinements[identity] = replace(
                                 replacement, identity=identity
                             )
                         print(f"Tool {row['Tool ID']}: {message}")
@@ -840,12 +960,12 @@ def review_image_instances(
             elif command in {"g", "u", "v"}:
                 target, _, value = argument.partition(" ")
                 target_row = next(
-                    (row for row in instances if row["Tool ID"] == target), None
+                    (row for row in state.instances if row["Tool ID"] == target), None
                 )
                 if target_row is None:
                     # Accept old commands while keeping Tool IDs the primary interface.
                     target_row = next(
-                        (row for row in instances if row["Instance ID"] == target), None
+                        (row for row in state.instances if row["Instance ID"] == target), None
                     )
                 if target_row is None:
                     raise ValueError(
@@ -853,36 +973,39 @@ def review_image_instances(
                     )
                 row = target_row
                 identity = row["Instance ID"]
+                ensure_editable(state, row)
                 if command == "g":
                     if not value.strip():
                         raise ValueError(
                             f"Provide a candidate number: g {row['Tool ID']} 0 (or 0,2 to group pieces)."
                         )
                     values = indices(value)
-                    if any(not candidates[index].mask.any() for index in values):
+                    if any(not state.candidates[index].mask.any() for index in values):
                         raise ValueError("Cannot assign an empty mask as visible.")
                     if any(
                         set(values) & set(assigned)
-                        for owner, assigned in assignments.items()
+                        for owner, assigned in state.assignments.items()
                         if owner != identity
                     ):
                         raise ValueError(
                             "Clear the other tool's assignment before reusing a candidate."
                         )
-                    assignments[identity] = values
-                    active_prompts.pop(identity, None)
-                    cleaned.pop(identity, None)
-                    refinements.pop(identity, None)
-                    excluded.difference_update(values)
-                    ignored.difference_update(values)
-                    if states.get(identity) not in {"clear", "partial", "severe"}:
-                        states[identity] = "clear"
+                    state.before_edits.pop(identity, None)
+                    state.assignments[identity] = values
+                    state.active_prompts.pop(identity, None)
+                    state.cleaned.pop(identity, None)
+                    state.refinements.pop(identity, None)
+                    state.excluded.difference_update(values)
+                    state.ignored.difference_update(values)
+                    if state.states.get(identity) not in {"clear", "partial", "severe"}:
+                        state.states[identity] = "clear"
                 elif command == "u":
-                    active_prompts.pop(identity, None)
-                    cleaned.pop(identity, None)
-                    refinements.pop(identity, None)
-                    assignments.pop(identity, None)
-                    states.pop(identity, None)
+                    state.before_edits.pop(identity, None)
+                    state.active_prompts.pop(identity, None)
+                    state.cleaned.pop(identity, None)
+                    state.refinements.pop(identity, None)
+                    state.assignments.pop(identity, None)
+                    state.states.pop(identity, None)
                 else:
                     if value not in {
                         "clear",
@@ -892,12 +1015,13 @@ def review_image_instances(
                         "absent",
                     }:
                         raise ValueError("Invalid visibility state.")
-                    states[identity] = value
+                    state.states[identity] = value
                     if value in {"occluded", "absent"}:
-                        active_prompts.pop(identity, None)
-                        cleaned.pop(identity, None)
-                        refinements.pop(identity, None)
-                        assignments.pop(identity, None)
+                        state.before_edits.pop(identity, None)
+                        state.active_prompts.pop(identity, None)
+                        state.cleaned.pop(identity, None)
+                        state.refinements.pop(identity, None)
+                        state.assignments.pop(identity, None)
                 record(
                     {
                         "g": "assign_fragments",
@@ -907,28 +1031,31 @@ def review_image_instances(
                 )
             elif command == "remove":
                 values = indices(argument)
+                for row in state.instances:
+                    if set(values) & set(state.assignments.get(row["Instance ID"], [])):
+                        ensure_editable(state, row)
                 cleared_tools = []
-                for row in instances:
+                for row in state.instances:
                     identity = row["Instance ID"]
-                    if set(values) & set(assignments.get(identity, [])):
-                        assignments.pop(identity, None)
-                        states.pop(identity, None)
-                        cleaned.pop(identity, None)
-                        refinements.pop(identity, None)
-                        active_prompts.pop(identity, None)
+                    if set(values) & set(state.assignments.get(identity, [])):
+                        state.assignments.pop(identity, None)
+                        state.states.pop(identity, None)
+                        state.cleaned.pop(identity, None)
+                        state.refinements.pop(identity, None)
+                        state.active_prompts.pop(identity, None)
                         cleared_tools.append(row["Tool ID"])
                 for index in values:
-                    click_prompts.pop(index, None)
-                for owner, saved_prompt in list(active_prompts.items()):
+                    state.click_prompts.pop(index, None)
+                for owner, saved_prompt in list(state.active_prompts.items()):
                     if saved_prompt.candidate_index in values:
-                        active_prompts.pop(owner)
-                removed.update(values)
-                excluded.difference_update(values)
-                ignored.difference_update(values)
-                generated.difference_update(values)
+                        state.active_prompts.pop(owner)
+                state.removed.update(values)
+                state.excluded.difference_update(values)
+                state.ignored.difference_update(values)
+                state.generated.difference_update(values)
                 for index in values:
                     # Leave an empty slot so candidate numbers and colors never shift.
-                    candidates[index] = replace(candidates[index], mask=blank)
+                    state.candidates[index] = replace(state.candidates[index], mask=blank)
                 record("remove_candidates")
                 print(
                     f"Removed candidates {values}; remaining candidate numbers are unchanged."
@@ -940,33 +1067,40 @@ def review_image_instances(
             elif command in {"x", "i"}:
                 values = indices(argument)
                 if any(
-                    set(values) & set(assigned) for assigned in assignments.values()
+                    set(values) & set(assigned) for assigned in state.assignments.values()
                 ):
                     raise ValueError(
                         "Clear the tool assignment before excluding its candidates."
                     )
-                excluded.difference_update(values)
-                ignored.difference_update(values)
-                (ignored if command == "i" else excluded).update(values)
+                state.excluded.difference_update(values)
+                state.ignored.difference_update(values)
+                (state.ignored if command == "i" else state.excluded).update(values)
                 record("ignore" if command == "i" else "exclude")
             elif command in {"a", "e"}:
                 if command == "e":
-                    active_prompts.clear()
-                    click_prompts.clear()
-                    cleaned.clear()
-                    refinements.clear()
-                    assignments.clear()
-                    states = {row["Instance ID"]: "absent" for row in instances}
-                    excluded.update(set(range(len(candidates))) - ignored - removed)
-                validate_instance_metadata(instances)
-                for row in instances:
+                    if state.locked:
+                        raise ValueError("Unlock tools before marking the whole image absent.")
+                    state.ownership.clear()
+                    state.ordered.clear()
+                    state.depth_order.clear()
+                    state.active_prompts.clear()
+                    state.click_prompts.clear()
+                    state.cleaned.clear()
+                    state.refinements.clear()
+                    state.assignments.clear()
+                    state.states = {row["Instance ID"]: "absent" for row in state.instances}
+                    state.excluded.update(
+                        set(range(len(state.candidates))) - state.ignored - state.removed
+                    )
+                validate_instance_metadata(state.instances)
+                for row in state.instances:
                     identity = row["Instance ID"]
-                    state = states.get(identity)
-                    if state is None or (
-                        state in {"clear", "partial", "severe"}
-                        and not assignments.get(identity)
+                    visibility = state.states.get(identity)
+                    if visibility is None or (
+                        visibility in {"clear", "partial", "severe"}
+                        and not state.assignments.get(identity)
                     ):
-                        if len(removed) == len(candidates):
+                        if len(state.removed) == len(state.candidates):
                             raise ValueError(
                                 f"Resolve tool {row['Tool ID']} before acceptance. No mask candidates "
                                 f"are available; try 'p {row['Tool Class']}' or a more specific prompt. "
@@ -979,15 +1113,16 @@ def review_image_instances(
                             f"or explicitly mark it 'v {row['Tool ID']} absent' or "
                             f"'v {row['Tool ID']} occluded' if appropriate."
                         )
-                used = {index for values in assignments.values() for index in values}
+                used = {index for values in state.assignments.values() for index in values}
                 unresolved = (
-                    set(range(len(candidates))) - used - excluded - ignored - removed
+                    set(range(len(state.candidates)))
+                    - used - state.excluded - state.ignored - state.removed
                 )
                 if unresolved:
                     raise ValueError(
                         f"Assign, exclude, or ignore candidates {sorted(unresolved)}."
                     )
-                selected = [assigned_candidate(row) for row in instances]
+                selected = [assigned_candidate(row) for row in state.instances]
                 if mask_overlap(np.stack([part.mask for part in selected])).any():
                     raise ValueError(
                         "Instance masks overlap. Correct boundaries or use 'order TOOL_ID ...' "
@@ -997,12 +1132,43 @@ def review_image_instances(
                 record("resolved")
                 return ImageReview(
                     "accepted",
-                    instances,
+                    state.instances,
                     selected,
-                    [candidates[index] for index in sorted(ignored)],
-                    list(depth_order),
+                    [state.candidates[index] for index in sorted(state.ignored)],
+                    list(state.depth_order),
                 )
             else:
                 raise ValueError("Invalid review command.")
         except ValueError as error:
+            state = decode_state(before)
+            log(key, "in_progress", action="command_failed", command=response, message=str(error))
             print(error)
+            if report is not None:
+                report(str(error))
+        except BaseException:
+            state = decode_state(before)
+            raise
+        finally:
+            if command not in {"undo", "redo", "reset"}:
+                previous = decode_state(before)
+                reconcile_ownership(previous)
+                for row in state.instances:
+                    identity = row["Instance ID"]
+                    if identity not in state.locked & previous.locked:
+                        continue
+                    old_mask = assigned_candidate(row, review_state=previous).mask
+                    if not np.array_equal(assigned_candidate(row).mask, old_mask):
+                        state = previous
+                        message = (
+                            f"Edit would change locked tool {row['Tool ID']}; "
+                            "unlock it first. Previous masks retained."
+                        )
+                        log(
+                            key, "in_progress", action="command_failed",
+                            command=response, message=message,
+                        )
+                        print(message)
+                        if report is not None:
+                            report(message)
+                        break
+            history.commit(state)

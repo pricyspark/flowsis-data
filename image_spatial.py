@@ -24,11 +24,15 @@ class Sam3SpatialBackend:
         self.processor: Sam3TrackerProcessor | None = None
         self.image: Image.Image | None = None
         self.embeddings: list[torch.Tensor] | None = None
+        self.previous_mask: NDArray[np.bool_] | None = None
+        self.previous_logits: torch.Tensor | None = None
         self.active = False
 
     def offload(self) -> None:
         self.image = None
         self.embeddings = None
+        self.previous_mask = None
+        self.previous_logits = None
         if self.model is not None:
             self.model.to("cpu")
         self.active = False
@@ -39,6 +43,8 @@ class Sam3SpatialBackend:
         image: Image.Image,
         points: list[tuple[float, float, int]],
         seed: NDArray[np.bool_] | None = None,
+        *,
+        box: tuple[float, float, float, float] | None = None,
     ) -> Candidate:
         if seed is not None and (
             seed.shape != (image.height, image.width)
@@ -46,11 +52,17 @@ class Sam3SpatialBackend:
             or not seed.any()
         ):
             raise ValueError("Polygon prompt must be a nonempty full-image mask.")
-        if not points and seed is None:
+        if box is not None:
+            left, top, right, bottom = box
+            if not all(math.isfinite(value) for value in box) or not (
+                0 <= left < right <= image.width and 0 <= top < bottom <= image.height
+            ):
+                raise ValueError("Box must have ordered corners inside the image.")
+        if not points and seed is None and box is None:
             raise ValueError(
                 "Provide foreground/background points or a polygon prompt."
             )
-        if seed is None and not any(label == 1 for _, _, label in points):
+        if seed is None and box is None and not any(label == 1 for _, _, label in points):
             raise ValueError("Add at least one positive click on the target tool.")
         if any(
             not math.isfinite(x)
@@ -74,16 +86,25 @@ class Sam3SpatialBackend:
             self.active = True
         assert self.processor is not None
         cached = self.image is image and self.embeddings is not None
+        if not cached:
+            self.previous_mask = None
+            self.previous_logits = None
         inputs = self.processor(
             images=None if cached else image,
             original_sizes=[[image.height, image.width]] if cached else None,
             input_points=[[[[x, y] for x, y, _ in points]]] if points else None,
             input_labels=[[[label for _, _, label in points]]] if points else None,
+            input_boxes=[[list(box)]] if box is not None else None,
             return_tensors="pt",
         ).to(self.device)
         original_sizes = inputs.pop("original_sizes")
         mask_input = None
-        if seed is not None:
+        if (
+            seed is not None and cached and self.previous_mask is not None
+            and np.array_equal(seed, self.previous_mask)
+        ):
+            mask_input = self.previous_logits.to(self.device) if self.previous_logits is not None else None
+        elif seed is not None:
             # The decoder expects a low-resolution dense prompt in logit space.
             mask_input = torch.from_numpy(seed.astype(np.float32))[None, None]
             mask_input = torch.nn.functional.interpolate(
@@ -128,10 +149,17 @@ class Sam3SpatialBackend:
                 for x, y, label in points
             ):
                 continue
+            self.previous_mask = mask.copy()
+            selected_logits = output.pred_masks[:, :, index : index + 1]
+            self.previous_logits = selected_logits.detach().cpu().reshape(
+                1, 1, *selected_logits.shape[-2:]
+            )
             return Candidate(
                 mask,
                 float(scores[index].clamp(0, 1)),
-                "SAM3 polygon prompt" if seed is not None else "SAM3 point prompts",
+                "SAM3 box prompt" if box is not None else (
+                    "SAM3 mask correction" if seed is not None else "SAM3 point prompts"
+                ),
                 "spatial",
             )
         raise ValueError(

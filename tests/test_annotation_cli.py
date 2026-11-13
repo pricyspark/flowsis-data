@@ -13,24 +13,26 @@ from masks import load_mask_bundle
 
 @pytest.mark.parametrize("empty", [False, True])
 @pytest.mark.parametrize("data_dir", [".", "data"])
+@pytest.mark.parametrize("selection", [[], ["--tool-id", "7", "--sample-id", "12"]])
 def test_image_cli_writes_local_outputs_and_resumes(
-    tmp_path, monkeypatch, empty, data_dir
+    tmp_path, monkeypatch, empty, data_dir, selection
 ):
     dataset = tmp_path / data_dir
     dataset.mkdir(exist_ok=True)
     monkeypatch.chdir(dataset)
-    argv = ["annotate.py", "images", "--auto-accept"]
+    argv = ["annotate.py", "images", "--auto-accept", *selection]
     if data_dir == ".":
         argv.extend(["--data-dir", "."])
     monkeypatch.setattr(sys, "argv", argv)
     Path("images/7").mkdir(parents=True)
     Image.new("RGB", (12, 10)).save("images/7/tool.jpg")
     with Path("image_manifest.csv").open("w", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=["Filepath", "Image ID"])
+        writer = csv.DictWriter(file, fieldnames=["Filepath", "Image ID", "Sample ID"])
         writer.writeheader()
         writer.writerow(
             {
                 "Filepath": "images/7/tool.jpg",
+                "Sample ID": "12",
                 "Image ID": stable_media_id("image", "images/7/tool.jpg"),
             }
         )
@@ -256,32 +258,58 @@ def test_auto_accept_rejects_multiple_single_tool_predictions():
         )
 
 
-@pytest.mark.parametrize("flag", ["--merge-masks", "--single-tool"])
-def test_fragment_merging_remains_opt_in(monkeypatch, flag):
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--data-dir", ".", flag])
-    assert annotate.parse_args().single_tool
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--data-dir", "."])
-    assert not annotate.parse_args().single_tool
+@pytest.mark.parametrize("flags", [[], ["--single-tool"]])
+def test_fragment_merging_remains_opt_in(flags):
+    args = annotate.parse_args(["images", *flags, "--merge-masks"])
+    assert args.merge_masks
+    assert args.single_tool == ("--single-tool" in flags)
+    assert not annotate.parse_args(["images", *flags]).merge_masks
 
 
-@pytest.mark.parametrize("multi_only", [False, True])
-def test_default_cli_selects_review_per_image_in_mixed_batch(
-    tmp_path, monkeypatch, multi_only
+@pytest.mark.parametrize(
+    "flags, expected_keys",
+    [
+        ([], ["single", "multi"]),
+        (["--multi-tool"], ["multi"]),
+        (["--single-tool"], ["single"]),
+        (["--tool-id", "7"], ["single", "multi"]),
+        (["--tool-id", "8"], ["multi"]),
+        (["--tool-id", "70"], []),
+        (["--tool-ids", "7", "8"], ["single", "multi"]),
+        (["--tool-id", "8", "--tool-id", "7"], ["single", "multi"]),
+        (["--sample-id", "single-sample"], ["single"]),
+        (["--sample-id", "multi-sample"], ["multi"]),
+        (["--sample-id", "missing"], []),
+        (
+            ["--sample-id", "multi-sample", "--sample-id", "single-sample"],
+            ["single", "multi"],
+        ),
+        (["--tool-id", "7", "--sample-id", "multi-sample"], ["multi"]),
+        (["--tool-id", "8", "--sample-id", "single-sample"], []),
+        (["--tool-id", "7", "--single-tool"], ["single"]),
+        (["--tool-id", "8", "--single-tool"], []),
+        (["--sample-id", "single-sample", "--multi-tool"], []),
+        (["--sample-id", "multi-sample", "--multi-tool"], ["multi"]),
+    ],
+)
+def test_cli_selects_review_per_image_in_mixed_batch(
+    tmp_path, monkeypatch, flags, expected_keys
 ):
     from image_review import ImageReview
 
     monkeypatch.chdir(tmp_path)
-    argv = ["annotate.py", "images", "--data-dir", "."]
-    if multi_only:
-        argv.append("--multi-tool")
-    monkeypatch.setattr(sys, "argv", argv)
+    monkeypatch.setattr(
+        sys, "argv", ["annotate.py", "images", "--data-dir", ".", *flags]
+    )
     Path("images").mkdir()
     images = []
     objects = []
     for key, tools in [("single", ["7"]), ("multi", ["7", "8"])]:
         filepath = f"images/{key}.jpg"
         Image.new("RGB", (12, 10)).save(filepath)
-        images.append({"Image ID": key, "Filepath": filepath})
+        images.append(
+            {"Image ID": key, "Filepath": filepath, "Sample ID": f"{key}-sample"}
+        )
         objects.extend(
             {
                 "Image ID": key,
@@ -293,11 +321,12 @@ def test_default_cli_selects_review_per_image_in_mixed_batch(
             }
             for tool in tools
         )
-    write_csv("image_manifest.csv", images, ["Image ID", "Filepath"])
+    write_csv("image_manifest.csv", images, ["Image ID", "Filepath", "Sample ID"])
     write_csv("image_object_manifest.csv", objects, IMAGE_OBJECT_FIELDS)
 
     class Backend:
         def __init__(self, *args, **kwargs):
+            assert expected_keys, "No model should load when no images match"
             assert not kwargs["single_tool"]
 
         def predict(self, images, prompts):
@@ -323,26 +352,40 @@ def test_default_cli_selects_review_per_image_in_mixed_batch(
         return ImageReview("skipped", instances, [], [])
 
     monkeypatch.setattr(annotate, "Sam3ImageBackend", Backend)
+    def sample_review(images, sample_id, backend, **kwargs):
+        for item in images:
+            key = Path(item.filepath).stem
+            calls.append((key, "simple"))
+            assert len(item.candidates) == 2
+            item.decision = "skipped"
+        return False
+
+    monkeypatch.setattr(annotate, "review_sample", sample_review)
     monkeypatch.setattr(annotate, "review_candidates", single_review)
     monkeypatch.setattr(annotate, "review_image_instances", multi_review)
     annotate.main()
-    expected = (
-        [("multi", "explicit")]
-        if multi_only
-        else [("single", "simple"), ("multi", "explicit")]
-    )
+    expected = [("single", "simple"), ("multi", "explicit")]
+    expected = [item for item in expected if item[0] in expected_keys]
     assert calls == expected
-    if multi_only:
-        assert "single" not in annotate.ReviewLog(Path("image_review.jsonl")).decisions
+    decisions = annotate.ReviewLog(Path("image_review.jsonl")).decisions
+    assert set(decisions) == {key for key, _ in expected}
 
 
-def test_multi_tool_filter_with_no_matches_does_not_load_model(
-    tmp_path, monkeypatch, capsys
+def test_tool_filters_are_mutually_exclusive():
+    with pytest.raises(SystemExit) as error:
+        annotate.parse_args(["images", "--single-tool", "--multi-tool"])
+    assert error.value.code == 2
+
+
+@pytest.mark.parametrize("tool_filter, count", [("--multi-tool", 1), ("--single-tool", 2)])
+def test_tool_filter_with_no_matches_does_not_load_model(
+    tmp_path, monkeypatch, capsys, tool_filter, count
 ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(
-        sys, "argv",
-        ["annotate.py", "images", "--data-dir", ".", "--multi-tool"],
+        sys,
+        "argv",
+        ["annotate.py", "images", "--data-dir", ".", tool_filter],
     )
     write_csv(
         "image_manifest.csv",
@@ -354,12 +397,13 @@ def test_multi_tool_filter_with_no_matches_does_not_load_model(
         [
             {
                 "Image ID": "single",
-                "Instance ID": "instance-0",
-                "Tool ID": "7",
+                "Instance ID": f"instance-{index}",
+                "Tool ID": str(7 + index),
                 "Tool Class": "pliers",
                 "Tool Name": "lineman",
                 "Confidence": "1",
             }
+            for index in range(count)
         ],
         IMAGE_OBJECT_FIELDS,
     )
@@ -369,5 +413,5 @@ def test_multi_tool_filter_with_no_matches_does_not_load_model(
         lambda *args, **kwargs: pytest.fail("No model should load"),
     )
     annotate.main()
-    assert "No unfinished multi-tool images available" in capsys.readouterr().out
+    assert f"No unfinished {tool_filter[2:]} images available" in capsys.readouterr().out
     assert not Path("image_review.jsonl").exists()

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from collections import Counter
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import replace
 from pathlib import Path
 from typing import Any
@@ -38,9 +39,11 @@ from image_ui import (
     collect_clicks,
     draw_tool_mask,
     show_overlap_review,
-    show_tool_review,
 )
 from image_spatial import Sam3SpatialBackend
+from image_sample_review import SampleImage, review_sample
+from image_review_state import ReviewHistory, state_path
+from image_review_canvas import CommandInput, MultiToolCanvas, SampleReference
 
 
 class ReviewLog:
@@ -49,11 +52,14 @@ class ReviewLog:
     def __init__(self, path: Path) -> None:
         self.path = path
         self.decisions: dict[str, dict[str, Any]] = {}
+        self.resolved: dict[str, dict[str, Any]] = {}
         if path.is_file():
             for line in path.read_text(encoding="utf-8").splitlines():
                 if line.strip():
                     record = json.loads(line)
                     self.decisions[str(record["key"])] = record
+                    if record.get("action") == "resolved":
+                        self.resolved[str(record["key"])] = record
 
     def completed(self, key: str) -> bool:
         return self.decisions.get(key, {}).get("decision") in {
@@ -68,6 +74,8 @@ class ReviewLog:
             file.write(json.dumps(record, sort_keys=True, default=str) + "\n")
             file.flush()
         self.decisions[key] = record
+        if record.get("action") == "resolved":
+            self.resolved[key] = record
 
 
 def _as_numpy(value: Any) -> NDArray:
@@ -237,6 +245,7 @@ def review_candidates(
     auto_accept: bool,
     allow_occluded: bool = False,
     review_log: ReviewLog | None = None,
+    read_command: Callable[[str], str] | None = None,
 ) -> tuple[str, list[Candidate], list[Candidate], str | None, str]:
     """Return decision, selected/ignored candidates, new prompt, and visibility."""
     import matplotlib.pyplot as plt
@@ -253,7 +262,6 @@ def review_candidates(
     visibility = "clear"
     visibility_by_index = {index: "clear" for index in range(len(candidates))}
     ignored_indices: set[int] = set()
-    print("Commands: a=accept, p=prompt, s=skip, q=quit. See README.md for details.")
     while True:
         show_candidates(image, candidates, key, focus=True)
         print(f"Single-tool review: {len(candidates)} mask candidate(s).")
@@ -265,7 +273,15 @@ def review_candidates(
             print(
                 "Multiple masks predicted. Inspect the numbered preview and choose one with 'a INDEX'."
             )
-        response = input("review> ").strip()
+        print(
+            "a [INDEX]=accept one mask, e=accept empty, r=reject, s=skip, "
+            "p TEXT=re-prompt, i [0,2]=mark ignore regions, "
+            "v STATE [0,2]=set visibility, "
+            "clean [INDEX] [OP SIZE]=optional cleanup, unclean [INDEX]=undo cleanup, "
+            + ("o [0,2]=retain occluded tracks, " if allow_occluded else "")
+            + "q=quit"
+        )
+        response = (read_command or input)("review> ").strip()
         plt.close("all")
         command, _, argument = response.partition(" ")
         try:
@@ -452,6 +468,8 @@ class Sam3ImageBackend:
         image: Image.Image,
         points: list[tuple[float, float, int]],
         seed: NDArray[np.bool_] | None = None,
+        *,
+        box: tuple[float, float, float, float] | None = None,
     ) -> Candidate:
         if not self._spatial_active:
             # Keep only one large image encoder on the accelerator at a time.
@@ -459,7 +477,7 @@ class Sam3ImageBackend:
             self._spatial_active = True
         if self._spatial_backend is None:
             self._spatial_backend = Sam3SpatialBackend(self.model_name, self.device)
-        return self._spatial_backend.segment(image, points, seed)
+        return self._spatial_backend.segment(image, points, seed, box=box)
 
     def predict(
         self, images: Sequence[Image.Image], prompts: Sequence[str]
@@ -635,6 +653,131 @@ def resolved_image_rows(
     return rows
 
 
+def image_review_batches(
+    queue: Sequence[dict[str, str]],
+    sources: Mapping[str, Sequence[Mapping[str, str]]],
+    batch_size: int,
+) -> list[tuple[str | None, list[dict[str, str]]]]:
+    """Keep assigned single-tool samples intact; batch other images as before."""
+    samples: dict[str, list[dict[str, str]]] = {}
+    for row in queue:
+        sample_id = row.get("Sample ID", "").strip()
+        if sample_id and len(sources[row[IMAGE_ID_FIELD]]) == 1:
+            samples.setdefault(sample_id, []).append(row)
+    batches: list[tuple[str | None, list[dict[str, str]]]] = []
+    pending: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for row in queue:
+        sample_id = row.get("Sample ID", "").strip()
+        if sample_id in samples and len(sources[row[IMAGE_ID_FIELD]]) == 1:
+            if sample_id in seen:
+                continue
+            if pending:
+                batches.append((None, pending))
+                pending = []
+            batches.append((sample_id, samples[sample_id]))
+            seen.add(sample_id)
+        else:
+            pending.append(row)
+            if len(pending) == batch_size:
+                batches.append((None, pending))
+                pending = []
+    if pending:
+        batches.append((None, pending))
+    return batches
+
+
+def successful_sample_prompts(
+    rows: Sequence[Mapping[str, str]], review: ReviewLog
+) -> dict[str, list[str]]:
+    prompts: dict[str, list[str]] = {}
+    for row in rows:
+        sample_id = row.get("Sample ID", "")
+        key = row[IMAGE_ID_FIELD]
+        if not sample_id or review.decisions.get(key, {}).get("decision") != "accepted":
+            continue
+        resolved = review.resolved.get(key, {})
+        texts = [
+            item["prompt"]
+            for fragments in resolved.get("assignments", {}).values()
+            for item in fragments
+        ]
+        texts.extend(item["prompt"] for item in resolved.get("refinements", {}).values())
+        texts.append(review.decisions[key].get("prompt", ""))
+        for text in texts:
+            if text and not text.startswith(
+                (
+                    "SAM3", "candidate", "manually", "local", "split",
+                    "box prompt", "correct visible", "add visible",
+                )
+            ):
+                if text not in prompts.setdefault(sample_id, []):
+                    prompts[sample_id].append(text)
+    return prompts
+
+
+def sample_references(
+    root: Path,
+    rows: Sequence[Mapping[str, str]],
+    current: Mapping[str, str],
+    review: ReviewLog,
+) -> list[SampleReference]:
+    sample_id = current.get("Sample ID", "")
+    if not sample_id:
+        return []
+    others = [
+        row
+        for row in rows
+        if row.get("Sample ID") == sample_id
+        and row[IMAGE_ID_FIELD] != current[IMAGE_ID_FIELD]
+        and (root / row["Filepath"]).is_file()
+    ]
+    others.sort(
+        key=lambda row: review.decisions.get(row[IMAGE_ID_FIELD], {}).get("decision")
+        != "accepted"
+    )
+    references = []
+    for row in others[:5]:
+        with Image.open(root / row["Filepath"]) as source:
+            thumbnail = source.convert("RGB")
+        thumbnail.thumbnail((320, 320))
+        status = review.decisions.get(row[IMAGE_ID_FIELD], {}).get("decision", "unreviewed")
+        references.append(
+            SampleReference(
+                thumbnail, f"Sample {sample_id} | {status}\n{Path(row['Filepath']).name}"
+            )
+        )
+    return references
+
+
+def review_fingerprint(
+    image: Image.Image,
+    instances: Sequence[Mapping[str, str]],
+    args: argparse.Namespace,
+) -> str:
+    digest = hashlib.sha256(np.asarray(image).tobytes())
+    metadata = {
+        "shape": image.size,
+        "model": args.model,
+        "threshold": args.threshold,
+        "prompt_mode": args.image_prompt,
+        "discovery_prompts": args.discovery_prompt,
+        "canonical_prompts": args.canonical_prompt,
+        "instances": [
+            {
+                field: row.get(field, "")
+                for field in (
+                    IMAGE_ID_FIELD, "Instance ID", "Tool ID", "Tool Name",
+                    "Tool Class", "Confidence",
+                )
+            }
+            for row in instances
+        ],
+    }
+    digest.update(json.dumps(metadata, sort_keys=True).encode())
+    return digest.hexdigest()
+
+
 def annotate_images(args: argparse.Namespace) -> None:
     manifest = extend_image_manifest(args.manifest)
     rows = read_csv(manifest)
@@ -649,11 +792,20 @@ def annotate_images(args: argparse.Namespace) -> None:
         sources.setdefault(str(obj[IMAGE_ID_FIELD]), []).append(
             {field: str(value) for field, value in obj.items()}
         )
-    targets = [
-        row
-        for row in rows
-        if not args.multi_tool or len(sources.get(row[IMAGE_ID_FIELD], [])) > 1
-    ]
+    tool_ids = set(args.tool_id)
+    sample_ids = set(args.sample_id)
+    targets = []
+    for row in rows:
+        instances = sources.get(row[IMAGE_ID_FIELD], [])
+        if args.multi_tool and len(instances) <= 1:
+            continue
+        if args.single_tool and len(instances) != 1:
+            continue
+        if tool_ids and not any(obj["Tool ID"] in tool_ids for obj in instances):
+            continue
+        if sample_ids and row.get("Sample ID") not in sample_ids:
+            continue
+        targets.append(row)
     review = ReviewLog(args.review_log)
     for row in targets:
         if review.completed(row[IMAGE_ID_FIELD]):
@@ -664,9 +816,9 @@ def annotate_images(args: argparse.Namespace) -> None:
                 f"{row['Filepath']} has no declared instances. Run prepare_manifests.py or annotate.py declare."
             )
         validate_instance_metadata(instances)
-        if len(instances) > 1 and args.single_tool:
+        if len(instances) > 1 and args.merge_masks:
             raise ValueError(
-                f"{row['Filepath']}: --single-tool cannot merge multiple declared tools."
+                f"{row['Filepath']}: --merge-masks cannot merge multiple declared tools."
             )
         if len(instances) > 1 and args.auto_accept:
             raise ValueError(
@@ -694,7 +846,9 @@ def annotate_images(args: argparse.Namespace) -> None:
         != args.skipped_first
     )
     if not queue:
-        kind = "multi-tool " if args.multi_tool else ""
+        kind = (
+            "multi-tool " if args.multi_tool else "single-tool " if args.single_tool else ""
+        )
         print(f"No unfinished {kind}images available for review.")
         return
     device = torch.device(
@@ -705,11 +859,12 @@ def annotate_images(args: argparse.Namespace) -> None:
         device,
         args.threshold,
         refine_crop=args.refine_crop,
-        single_tool=args.single_tool,
+        single_tool=args.merge_masks,
     )
-    for offset in range(0, len(queue), args.batch_size):
-        pending = queue[offset : offset + args.batch_size]
+    command_input = CommandInput()
+    for sample_id, pending in image_review_batches(queue, sources, args.batch_size):
         images = [Image.open(root / row["Filepath"]).convert("RGB") for row in pending]
+        inherited_prompts = successful_sample_prompts(rows, review)
         prompt_lists = []
         for row in pending:
             prompt_lists.append(
@@ -717,6 +872,11 @@ def annotate_images(args: argparse.Namespace) -> None:
                     dict.fromkeys(
                         image_prompts(
                             sources[row[IMAGE_ID_FIELD]], args.image_prompt, aliases
+                        )
+                        + (
+                            inherited_prompts.get(row.get("Sample ID", ""), [])
+                            if len(sources[row[IMAGE_ID_FIELD]]) > 1
+                            else []
                         )
                         + [
                             normalize_tool_name(prompt, aliases)
@@ -733,12 +893,52 @@ def annotate_images(args: argparse.Namespace) -> None:
         original_refine = getattr(backend, "refine_crop", args.refine_crop)
         if multi_batch:
             backend.refine_crop = False
-        predicted = backend.predict(images, [prompts[0] for prompts in prompt_lists])
-        for index, prompts in enumerate(prompt_lists):
-            for prompt in prompts[1:]:
+        histories: dict[str, ReviewHistory] = {}
+        fresh_indices = []
+        for index, (row, image) in enumerate(zip(pending, images, strict=True)):
+            key = row[IMAGE_ID_FIELD]
+            if len(sources[key]) > 1:
+                histories[key] = ReviewHistory(
+                    state_path(args.review_log, key),
+                    review_fingerprint(image, sources[key], args),
+                )
+            if key not in histories or histories[key].current is None:
+                fresh_indices.append(index)
+            else:
+                print(
+                    f"Restoring saved multi-tool review for {row['Filepath']} "
+                    "(reset restores initial predictions)."
+                )
+        predicted: list[list[Candidate]] = [[] for _ in images]
+        for offset in range(0, len(fresh_indices), args.batch_size):
+            indices = fresh_indices[offset : offset + args.batch_size]
+            results = backend.predict(
+                [images[index] for index in indices],
+                [prompt_lists[index][0] for index in indices],
+            )
+            for index, result in zip(indices, results, strict=True):
+                predicted[index] = result
+        for index in fresh_indices:
+            for prompt in prompt_lists[index][1:]:
                 predicted[index].extend(backend.predict([images[index]], [prompt])[0])
-        for row, image, initial, prompts in zip(
-            pending, images, predicted, prompt_lists, strict=True
+        sample_images = [
+            SampleImage(image, row["Filepath"], candidates, prompts[0])
+            for row, image, candidates, prompts in zip(
+                pending, images, predicted, prompt_lists, strict=True
+            )
+        ]
+        quit_sample = False
+        if sample_id is not None and not args.auto_accept:
+            quit_sample = review_sample(
+                sample_images,
+                sample_id,
+                backend,
+                normalize_prompt=lambda text: normalize_tool_name(text, aliases),
+                batch_size=args.batch_size,
+                read_command=command_input.read,
+            )
+        for row, image, initial, prompts, sample_image in zip(
+            pending, images, predicted, prompt_lists, sample_images, strict=True
         ):
             key = row[IMAGE_ID_FIELD]
             instances = sources[key]
@@ -756,13 +956,25 @@ def annotate_images(args: argparse.Namespace) -> None:
                 print(
                     f"Tool {tool['Tool ID']} | {tool['Tool Class']} | {tool['Tool Name']}"
                 )
-            while not explicit:
+            grouped_review = sample_id is not None and not args.auto_accept
+            if grouped_review:
+                if sample_image.decision == "pending":
+                    continue
+                decision = sample_image.decision
+                selected = sample_image.selected
+                ignored = [
+                    sample_image.candidates[index]
+                    for index in sorted(sample_image.ignored)
+                ]
+                active_prompt = sample_image.prompt
+            while not explicit and not grouped_review:
                 decision, selected, ignored, replacement_prompt, _ = review_candidates(
                     image,
                     candidates,
                     key=key,
                     auto_accept=args.auto_accept,
                     review_log=review,
+                    read_command=command_input.read,
                 )
                 if decision != "reprompt":
                     break
@@ -785,28 +997,38 @@ def annotate_images(args: argparse.Namespace) -> None:
                             )
                 # Reprompting appends candidates without replacing assigned fragments.
                 backend.refine_crop = False
-                result = review_image_instances(
-                    image,
-                    candidates,
-                    instances,
-                    key=key,
-                    show=show_candidates,
-                    show_tools=show_tool_review,
-                    inspect_order=show_overlap_review,
-                    draw=draw_tool_mask,
-                    collect_points=collect_clicks,
-                    spatial=lambda points, seed: backend.spatial(image, points, seed),
-                    refine=lambda seed, prompt: refine_tool(
-                        image,
-                        seed,
-                        normalize_tool_name(prompt, aliases),
-                        lambda crop, text: backend.predict([crop], [text])[0],
-                    ),
-                    predict=lambda prompt: backend.predict(
-                        [image], [normalize_tool_name(prompt, aliases)]
-                    )[0],
-                    log=review.append,
+                canvas = MultiToolCanvas(
+                    command_input, sample_references(root, rows, row, review)
                 )
+                try:
+                    result = review_image_instances(
+                        image,
+                        candidates,
+                        instances,
+                        key=key,
+                        show=show_candidates,
+                        show_tools=canvas.show,
+                        read_command=canvas.read_command,
+                        report=canvas.report,
+                        history=histories[key],
+                        box_spatial=lambda box: backend.spatial(image, [], box=box),
+                        inspect_order=show_overlap_review,
+                        draw=draw_tool_mask,
+                        collect_points=collect_clicks,
+                        spatial=lambda points, seed: backend.spatial(image, points, seed),
+                        refine=lambda seed, prompt: refine_tool(
+                            image,
+                            seed,
+                            normalize_tool_name(prompt, aliases),
+                            lambda crop, text: backend.predict([crop], [text])[0],
+                        ),
+                        predict=lambda prompt: backend.predict(
+                            [image], [normalize_tool_name(prompt, aliases)]
+                        )[0],
+                        log=review.append,
+                    )
+                finally:
+                    canvas.close()
                 decision, selected, ignored = (
                     result.decision,
                     result.selected,
@@ -888,7 +1110,11 @@ def annotate_images(args: argparse.Namespace) -> None:
                 ],
                 depth_order_tool_ids=result.depth_order if explicit else [],
             )
+            if explicit and decision in {"accepted", "rejected"}:
+                state_path(args.review_log, key).unlink(missing_ok=True)
         backend.refine_crop = original_refine
+        if quit_sample:
+            return
 
 
 def declare_instances(args: argparse.Namespace) -> None:
@@ -1009,6 +1235,9 @@ def declare_instances(args: argparse.Namespace) -> None:
         manifest, images, args.object_manifest, [*objects, *additions]
     )
     extend_image_manifest(manifest)
+    if args.reopen:
+        for key in target_ids:
+            state_path(args.review_log, key).unlink(missing_ok=True)
     for instance in additions:
         review.append(
             instance[IMAGE_ID_FIELD], "pending", action="declare", instance=instance
@@ -1077,21 +1306,50 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     images.add_argument("--mask-dir", type=Path, default=Path("masks/images"))
     images.add_argument("--review-log", type=Path, default=Path("image_review.jsonl"))
     images.add_argument(
+        "--tool-id",
+        "--tool-ids",
+        nargs="+",
+        action="extend",
+        default=[],
+        help=(
+            "Review only images containing any of these declared Tool IDs; may be "
+            "repeated. Multi-tool images retain all instances for review."
+        ),
+    )
+    images.add_argument(
+        "--sample-id",
+        action="append",
+        default=[],
+        help=(
+            "Review only images in this Sample ID; may be repeated. Combined with "
+            "--tool-id, images must match both filters."
+        ),
+    )
+    images.add_argument(
         "--skipped-first",
         action="store_true",
         help="Review previously skipped images first (default: skipped images last).",
     )
-    images.add_argument(
+    tool_filter = images.add_mutually_exclusive_group()
+    tool_filter.add_argument(
+        "--single-tool",
+        action="store_true",
+        help="Review only images with one declared tool; skip multi-tool images.",
+    )
+    tool_filter.add_argument(
         "--multi-tool",
         action="store_true",
         help="Review only images with multiple declared tools; skip single-tool images.",
     )
-    images.add_argument("--batch-size", type=int, default=4)
+    images.add_argument(
+        "--batch-size",
+        type=int,
+        default=4,
+        help="Maximum SAM3 inference batch size; sample review shows all pending views.",
+    )
     images.add_argument("--threshold", type=float, default=0.5)
     images.add_argument(
         "--merge-masks",
-        "--single-tool",
-        dest="single_tool",
         action="store_true",
         help=(
             "Opt in to merging predicted fragments for single-tool images in both "

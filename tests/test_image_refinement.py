@@ -261,7 +261,7 @@ def test_cli_saves_refined_masks_in_original_coordinates(monkeypatch, tmp_path):
             return output
 
     monkeypatch.setattr(annotate, "Sam3ImageBackend", Backend)
-    monkeypatch.setattr(annotate, "show_tool_review", lambda *_: None)
+    monkeypatch.setattr(annotate.MultiToolCanvas, "show", lambda *_: None)
     commands = iter(["g 0 0", "g 3 1", "refine all", "a"])
     monkeypatch.setattr("builtins.input", lambda _: next(commands))
     annotate.main()

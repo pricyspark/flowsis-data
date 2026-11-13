@@ -513,15 +513,20 @@ The first run downloads `facebook/sam3` through Transformers. If access to the
 checkpoint requires authentication, authenticate with Hugging Face using an
 account authorized to download it. Interactive review requires a graphical
 Matplotlib backend. CUDA is selected when available; use `--device cpu` to
-select CPU explicitly. `--batch-size 1` reduces the image batch size.
+select CPU explicitly. `--batch-size 1` reduces the inference batch size; all
+pending images of a single-tool sample are still predicted before inspection.
 
 Review mode is selected from each image's declared tools, so one command can
-review both single-tool and multi-tool images. Single-tool images use a simple
-mask review without Instance ID commands. Predicted masks are **not merged** by
-default: accept the one correct mask. If the model returns alternatives, choose
-one by its preview number; this still uses the single-tool interface.
+review both single-tool and multi-tool images. Single-tool images with a Sample ID
+are reviewed together: SAM3 predicts every pending view, then a tiled preview
+shows images numbered from **0** in their queue order. Completed images are
+excluded on resume, and numbers are assigned again for the remaining views.
+Each tile also labels its mask candidates separately. Images without a Sample ID
+retain individual review. Neither single-tool interface needs Instance IDs.
+Predicted masks are **not merged** by default: accept the one correct mask for
+each image. Multi-tool images retain explicit instance assignment.
 
-Optional `--merge-masks` (also accepted as `--single-tool`) merges predicted
+Optional `--merge-masks` merges predicted
 fragments into one mask during inference. It is only for captures known to need
 fragment union, and cannot be used with pending multi-tool images. Prompts use `Tool Class` by default. When two or more declared tools share a
 class within an image, their prompts automatically include names, such as
@@ -533,7 +538,34 @@ A second pass refines a padded crop by default; disable it with
 `--no-refine-crop`.
 
 
-In the terminal review prompt:
+In the sample review prompt:
+
+- `a` accepts all remaining images when each has exactly one nonignored,
+  nonempty candidate. Ambiguous or missing masks must be resolved first.
+- `a X [MASK]` accepts image X, selecting the numbered mask when needed.
+- `focus X` opens image X by itself. Use `p TEXT`, `clicks [MASK]`, `draw [MASK]`,
+  or cleanup commands without an image number while focused. `a [MASK]` accepts
+  just that image and returns to the overview; `s` skips it. `back` returns to
+  the overview without deciding. Image numbers stay the same.
+- `p TEXT` re-prompts pending images in the sample, preserving accepted images;
+  `p X TEXT` explicitly re-prompts only image X, reopening it if already accepted.
+- `clicks X [MASK]` opens foreground/background clicks on image X, then runs SAM3.
+  `draw X [MASK]` traces a polygon prompt for SAM3 on that image. An optional mask
+  number selects the initial overlay (and initial polygon drawing).
+- `e X` explicitly accepts image X as empty. `r X` rejects it; `s X` skips it.
+  Bare `r` or `s` applies to all remaining pending images.
+- `i X 0,2` marks image X's candidates 0 and 2 as ignored; `i X` clears ignores.
+  `v X partial [MASK]` sets visibility (`clear`, `partial`, or `severe`).
+- `clean X [MASK] [OPERATION [SIZE]]` applies optional cleanup to an image's mask;
+  `unclean X [MASK]` restores it.
+- `q` quits, saving images already accepted in the sample. Pending images remain
+  unfinished. Rerunning the command resumes them.
+
+In the overview, every image-specific edit or spatial prompt requires an image
+number. Focused commands apply only to the focused image. Tile coordinates are
+only for display; clicks and drawings use original image pixels.
+
+For individual images without a Sample ID, the terminal commands remain:
 
 - `a` accepts the mask when exactly one candidate is available.
 - `a 0` selects candidate 0 when several alternatives were predicted. Only one
@@ -547,9 +579,10 @@ In the terminal review prompt:
   restores it. See the cleanup options below.
 - `q` quits. Rerunning the same command resumes unfinished images.
 
-Previously skipped images are shown after other unfinished images. Each group
-keeps its manifest order, and each image is shown at most once per run. To work
-through skipped images first, run:
+Previously skipped images are queued after other unfinished images. Single-tool
+samples stay together, with sample priority determined by their first queued image;
+other views of that sample join the same review even if previously skipped.
+Each image is shown at most once per run. To prioritize skipped images, run:
 
 ```shell
 python annotate.py images --skipped-first
@@ -654,9 +687,33 @@ python annotate.py images --multi-tool
 This selects images with multiple declared tools in `image_object_manifest.csv`,
 regardless of their folder or manifest position. Existing review decisions still
 apply; add `--skipped-first` to prioritize previously skipped multi-tool images.
-Without this flag, both kinds of images are reviewed in manifest order.
+To review only single-tool images, skipping multi-tool captures:
 
-Run multi-tool annotation **without** `--merge-masks`/`--single-tool` or `--auto-accept`.
+```shell
+python annotate.py images --single-tool
+```
+
+The two filters are mutually exclusive. Without either flag, both kinds of images
+are reviewed in manifest order. `--single-tool` only filters images; add
+`--merge-masks` separately if predicted fragments should be merged.
+
+To jump directly to a tool or sample:
+
+```shell
+python annotate.py images --tool-id 12
+python annotate.py images --sample-id 34
+python annotate.py images --tool-id 12 --sample-id 34 --single-tool
+```
+
+Tool IDs are matched against declared instances in `image_object_manifest.csv`;
+Sample IDs are matched against `image_manifest.csv`. Combining the filters selects
+images that match both. Use `--tool-ids 12 13` or repeat `--tool-id` to select images
+containing any requested tool. Repeat `--sample-id` to select any of several samples.
+For multi-tool images, the whole image and all declared instances are reviewed.
+Completed images remain skipped; `--skipped-first` still controls queue priority.
+If no unfinished images match, the command exits without loading the model.
+
+Run multi-tool annotation **without** `--merge-masks` or `--auto-accept`.
 The model runs each unique prompt once per image. Tools sharing a class use
 `name class` prompts to distinguish variants, such as `iris scissors` and
 `mayo scissors`. Tools with the same name and class still share a prompt and
@@ -669,11 +726,55 @@ masks, use the explicit per-tool crop refinement described below.
 Predictions may overlap, but accepted instance masks must not share pixels.
 Resolve any remaining overlaps after corrections using the ordering step below.
 
-The interface uses a Matplotlib image preview and terminal commands. The preview
-shows colored, numbered masks, bounding boxes, prompts, model scores, and current
-assignments. The terminal lists declared Tool IDs, classes, names,
-identification confidence, visibility, and assigned candidate indices. Prompts
-and scores are suggestions; the reviewer supplies the physical identity.
+Multi-tool review uses a persistent Matplotlib canvas. Select the physical tool
+at left, then select a proposal or choose a correction mode. The overview keeps
+its zoom and tool selection between operations; the right panel shows the
+selected tool at a closer scale. Tool colors remain stable across assignments.
+Other views of the same sample appear as reference thumbnails, with accepted
+views first. Useful text prompts from accepted views are included in subsequent
+initial predictions for that sample; masks are predicted independently.
+Terminal commands remain available alongside the canvas.
+
+Every successful edit saves an atomic checkpoint in `image_review_state/` beside
+the review log (a custom log name uses `<log stem>_state/`). It includes actual
+candidate and edited masks, assignments, points, visibility, locks, crossing
+ownership, and up to 40 undo states. Skipping, quitting, or closing the canvas
+retains this draft. Rerunning the command restores it without rerunning initial
+predictions. Changed source pixels, tool metadata, model, or threshold invalidate
+a stale draft, as do changes to configured text prompts. Completed images retain
+their normal mask bundles and manifest records; their draft is removed after
+saving. Older JSONL logs alone cannot
+restore edits made before mask checkpoints were introduced.
+
+**Reset the current image:** click **Reset image** or enter `reset`. This restores
+the original predictions and declarations and clears all assignments, corrections,
+click histories, locks, exclusions, and crossing decisions for this image.
+Reset is undoable. Click Undo/Redo, use Ctrl+Z/Ctrl+Y on the canvas, or enter
+`undo`/`redo`; the bounded history also survives reopening a draft.
+
+For routine editing, select a tool and choose a canvas mode:
+
+- **Select proposal:** click a mask; Shift-click adds another fragment. Near-identical
+  proposals share one outline and a label such as `2/5`; source numbers remain
+  available in the terminal and the Masks field.
+- **Correct mask:** stage positive left-clicks on missing tool pixels and negative
+  right-clicks on leakage, then Apply. The current mask seeds SAM3; compatible
+  consecutive corrections reuse decoder logits and cached image embeddings.
+- **Add piece:** click a disconnected visible portion and Apply. Its prediction is
+  added to the tool while preserving its existing visible pieces.
+- **Box:** drag a rectangle around the target and Apply for a SAM3 box prompt.
+- **Brush add/erase** or **Add/Erase polygon:** stage a local pixel edit and Apply.
+  Brush radius is in original image pixels. These edits do not rerun segmentation.
+- **Split piece:** select the source tool, enter the destination Tool ID in the
+  Split to Tool field, draw a polygon, and Apply to transfer those visible pixels.
+- **Crossing owner:** select the foreground tool and click a disputed region.
+  Different crossings can have different owners.
+
+Cancel clears staged geometry without altering the masks. Lock/unlock protects a
+finished tool from edits; newly added local pixels cannot overwrite locked tools.
+Discard unused first previews the unused proposals, then a second click excludes
+them. Undo restores exclusions. Prompts and model scores remain suggestions;
+the reviewer supplies physical tool identities.
 
 The explicit assignment interface below is used **only for multi-tool images**.
 Single-tool images always use the simpler reviewer described above, including
@@ -707,13 +808,10 @@ If there are **no candidates**, try `p TEXT` with a suitable tool description,
 inspect the new predictions, and assign them. Use `s` to defer an image if
 prediction still fails. `a` alone does not assign masks in multi-tool review.
 
-Candidate colors are determined by their stable candidate numbers, using a
-spread-out palette that does not wrap every 10 or 20 candidates. A tool's
-assigned mask uses the same color in the overview and its zoom panel as its
-selected candidate. Grouped fragments use the first selected candidate's color
-for the combined tool mask. Reassigning to a new candidate changes that tool's
-color; removing other candidates does not. Overlapping candidate pixels can
-still blend their colors in the overview.
+The persistent canvas uses stable colors for physical tools. Unassigned proposal
+outlines retain candidate colors and numbers; near-identical proposals are grouped
+for display without deleting their source masks. The legacy tool-preview function
+continues to support candidate-colored panels.
 
 Use `remove 1,3` to discard unwanted candidates from the preview and active
 list. Candidate numbers are never renumbered or reused within the current
@@ -726,14 +824,30 @@ Removed masks cannot be reassigned or used for subtraction. Use `x 1,3` when
 you want to exclude candidates while retaining them for possible reassignment.
 Removal is recorded in the review log and does not change the final mask format.
 
-The multi-tool preview combines a full-image overview with one zoomed panel
-per declared tool. Before any assignment, the overview shows each unassigned
-candidate as a colored mask overlay with a numbered dotted bounding box. Colored pixels show the actual mask; the bounding box
-alone does not indicate which tool pixels were segmented. Candidate numbers
-remain visible in the overview. Assigned
-tools use consistent colors in the overview and their crop panels; original
-image context remains visible around each tool, including overlapping tools.
-Panels without an assigned visible mask show a placeholder.
+The overview shows current tool masks, optional unused proposal outlines, and
+magenta disputed regions. The selected tool's crop shows its mask and, when
+available, yellow outlines of changes from its assigned source. Toggle Show
+proposals to inspect boundaries without alternative predictions in the way.
+
+Local commands use original image pixels:
+
+```text
+review> correct 3 1020,780,1 1040,820,0
+review> add 3 1200,900,1
+review> box 3 700 500 1400 1300
+review> brush 3 erase 4 1030,800 1040,810
+review> paint 3 erase 1000,800 1050,800 1050,850 1000,850
+review> split 3 0 1000,800 1050,800 1050,850 1000,850
+review> lock 3
+review> unlock 3
+review> discard
+review> discard confirm
+```
+
+Point labels are 1 for the tool and 0 for background. `correct` replaces the
+selected tool's mask using its current mask as a prompt; `add` unions a new
+prediction with its visible pieces. Brush and polygon edits preserve pixels
+outside the selected region. General undo/redo covers these commands.
 
 #### Resolve overlapping masks with tool order
 
@@ -788,11 +902,11 @@ the terminal's candidate assignments still refer to the unchanged source masks.
 `order reset` restores the masks from before ordering, including their current
 refinements and cleanup. Enter another `order ...` to change the order; each
 attempt starts from those same masks, so subtraction does not accumulate.
-Starting any editing command (assignment, visibility, refinement, cleanup,
-spatial edits, candidate removal/exclusion/ignore, declarations, or new prompts)
-clears the order before the edit, even if the edit is cancelled or invalid.
-Resolve any resulting overlaps again and review before accepting. Skip, reject,
-and quit do not save the ordered masks.
+Successful edits retain crossing ownership wherever the claimant masks are
+unchanged. Newly changed disputed pixels require inspection and a fresh ownership
+decision; canceled or invalid edits preserve the previous result. Skipping or
+quitting saves the unfinished state, including existing ownership decisions.
+`order reset` clears both global ordering and locally selected ownership.
 
 An order cannot silently erase a tool's whole mask. If this would happen, the
 command reports the tool and retains the previous order. Fix duplicate or
@@ -800,10 +914,12 @@ incorrect assignments, choose another physically correct order, or explicitly
 mark a genuinely fully hidden tool with `v TOOL_ID occluded` and resolve its
 unused candidates. Never mark a visible tool occluded just to pass validation.
 
-If tools pass over and under each other, a global order is not valid. Use
-`order impossible` to reject the image and record the reason, or `s` to leave it
-unfinished. Physical depth cannot be inferred reliably from prediction overlap:
-side-by-side tools with overlapping predictions need boundary corrections.
+If tools pass over and under each other, select Crossing owner on the canvas,
+or enter `own TOOL_ID X Y` at each crossing. The selected tool keeps the disputed
+pixels it claims in that connected region; other crossings remain unchanged.
+This avoids requiring one global order. `order impossible` still rejects an
+unusable arrangement. Physical depth is supplied by the reviewer; side-by-side
+tools with overlapping predictions need boundary corrections.
 
 After assigning the masks, refine tools individually or together:
 

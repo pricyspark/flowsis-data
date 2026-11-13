@@ -373,7 +373,7 @@ def test_cancelled_new_or_reset_prompt_preserves_active_points(monkeypatch, opti
     np.testing.assert_array_equal(result.selected[1].mask, mask)
 
 
-def test_failed_new_prompt_keeps_other_parts_and_can_be_retried(monkeypatch):
+def test_failed_new_prompt_is_transactional_and_can_be_explicitly_retried(monkeypatch):
     first = np.zeros((8, 8), dtype=np.bool_)
     first[:2, :2] = True
     second = np.zeros_like(first)
@@ -398,11 +398,11 @@ def test_failed_new_prompt_keeps_other_parts_and_can_be_retried(monkeypatch):
 
     result, logs = run_review(
         monkeypatch,
-        ["click 3", "click 3 new", "click 3", "subtract 0 0 3", "x 0", "a"],
+        ["click 3", "click 3 new", "click 3 new", "subtract 0 0 3", "x 0", "a"],
         collect,
         spatial,
     )
-    assert seen == [[], [], [(1.0, 1.0, 1)]]
+    assert seen == [[], [], []]
     assert [log["candidate_index"] for log in logs if log.get("action") == "click"] == [
         1,
         2,
@@ -489,3 +489,40 @@ def test_editing_click_prompt_discards_stale_postprocessing(monkeypatch):
         log.get("action") == "cleanup" and log["added_pixels"] == 1 for log in logs
     )
     np.testing.assert_array_equal(result.selected[1].mask, mask)
+
+
+def test_consecutive_mask_corrections_reuse_selected_decoder_logits():
+    instance = backend()
+    image = Image.new("RGB", (8, 8))
+    first = instance.segment(image, [(1, 1, 1), (5, 5, 0)])
+    instance.segment(image, [(5, 5, 0)], first.mask)
+    logits = instance.model.calls[-1]["input_masks"]
+    assert logits.shape == (1, 1, 8, 8)
+    assert logits[0, 0, 1, 1] == 10
+    assert logits[0, 0, 5, 5] == -10
+    assert instance.processor.calls[-1]["images"] is None
+    instance.offload()
+    assert instance.previous_mask is None and instance.previous_logits is None
+
+
+def test_box_prompt_is_forwarded_without_requiring_positive_clicks():
+    instance = backend()
+    instance.segment(Image.new("RGB", (8, 8)), [], box=(1.0, 1.0, 7.0, 7.0))
+    assert instance.processor.calls[-1]["input_boxes"] == [[[1.0, 1.0, 7.0, 7.0]]]
+
+
+@pytest.mark.parametrize("box", [(-1, 0, 4, 4), (3, 3, 2, 5), (0, 0, 9, 9), (0, 0, float("nan"), 5)])
+def test_invalid_boxes_fail_before_loading_model(box):
+    instance = Sam3SpatialBackend("unused", torch.device("cpu"))
+    with pytest.raises(ValueError, match="Box"):
+        instance.segment(Image.new("RGB", (8, 8)), [], box=box)
+    assert instance.model is None
+
+
+def test_failed_prompt_on_new_image_cannot_reuse_previous_image_logits():
+    instance = backend()
+    instance.segment(Image.new("RGB", (8, 8)), [(1, 1, 1), (5, 5, 0)])
+    assert instance.previous_logits is not None
+    with pytest.raises(ValueError, match="satisfying your clicks"):
+        instance.segment(Image.new("RGB", (8, 8)), [(7, 7, 1), (1, 1, 0)])
+    assert instance.previous_mask is None and instance.previous_logits is None

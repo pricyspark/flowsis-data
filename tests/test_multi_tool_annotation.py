@@ -17,9 +17,9 @@ from masks import load_mask_bundle
 def use_mockable_image_preview(monkeypatch):
     monkeypatch.setattr(annotate, "show_overlap_review", lambda *_: None)
     monkeypatch.setattr(
-        annotate,
-        "show_tool_review",
-        lambda image, candidates, title, tools: annotate.show_candidates(
+        annotate.MultiToolCanvas,
+        "show",
+        lambda self, image, candidates, title, tools: annotate.show_candidates(
             image, candidates, title
         ),
     )
@@ -231,7 +231,7 @@ def test_cli_saves_ordered_tools_and_resumes(monkeypatch, tmp_path):
     assert prompts_seen == ["tool 12 scissors", "tool 13 scissors", "forceps"]
 
 
-@pytest.mark.parametrize("flag", ["--merge-masks", "--single-tool", "--auto-accept"])
+@pytest.mark.parametrize("flag", ["--merge-masks", "--auto-accept"])
 def test_unsafe_automatic_multi_tool_modes_fail_before_model_load(
     monkeypatch, tmp_path, flag
 ):
@@ -269,6 +269,10 @@ def test_high_iou_candidates_survive_until_review(monkeypatch, tmp_path):
         annotate,
         "show_candidates",
         lambda image, parts, key: displayed.append(len(parts)),
+    )
+    monkeypatch.setattr(
+        annotate.MultiToolCanvas, "show",
+        lambda self, image, parts, key, tools: displayed.append(len(parts)),
     )
     commands = iter(["g a 0", "g b 1", "order 12 13", "v 13 occluded", "x 1", "a"])
     monkeypatch.setattr("builtins.input", lambda _: next(commands))
@@ -725,18 +729,16 @@ def test_reordering_and_reset_use_source_masks(monkeypatch, tmp_path, capsys):
 @pytest.mark.parametrize(
     "edit", ["g 12 0,2", "v 12 partial", "clean 12 holes 1", "p scissors"]
 )
-def test_editing_invalidates_order(monkeypatch, tmp_path, capsys, edit):
-    result, records = interactive_review(
-        monkeypatch, tmp_path,
-        ["g 12 0,2", "g 13 1", "order 12 13", edit, "a", "order 13 12", "a"],
-    )
-    output = capsys.readouterr().out
-    assert "Ordering cleared before editing" in output
-    assert "Instance masks overlap" in output
-    assert any(
-        record.get("action") == "overlap_order_invalidated" for record in records
-    )
-    assert result.depth_order == ["13", "12"]
+def test_edits_preserve_unchanged_crossing_decisions(monkeypatch, tmp_path, capsys, edit):
+    commands = ["g 12 0,2", "g 13 1", "order 12 13", edit]
+    if edit == "p scissors":
+        commands.append("discard confirm")
+    commands.append("a")
+    result, records = interactive_review(monkeypatch, tmp_path, commands)
+    assert result.decision == "accepted"
+    assert result.depth_order == ["12", "13"]
+    assert not np.any(result.selected[0].mask & result.selected[1].mask)
+    assert not any(record.get("action") == "overlap_order_invalidated" for record in records)
 
 
 def test_invalid_orders_and_fully_erased_tools_do_not_change_masks(

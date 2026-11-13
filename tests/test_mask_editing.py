@@ -291,7 +291,7 @@ def test_cli_saves_drawn_and_subtracted_masks_with_stable_tool_identity(
             return Candidate(known.copy(), 0.8, "SAM3 spatial prompt", "spatial")
 
     monkeypatch.setattr(annotate, "Sam3ImageBackend", Backend)
-    monkeypatch.setattr(annotate, "show_tool_review", lambda *_: None)
+    monkeypatch.setattr(annotate.MultiToolCanvas, "show", lambda *_: None)
     monkeypatch.setattr(annotate, "draw_tool_mask", lambda *_: known.copy())
     monkeypatch.setattr(
         annotate, "collect_clicks", lambda *_: [(30.0, 30.0, 1), (80.0, 30.0, 0)]

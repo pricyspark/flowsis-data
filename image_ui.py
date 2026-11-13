@@ -29,6 +29,8 @@ class ToolPreview:
     candidate_index: int | None = None
     edit_note: str = ""
     disputed: NDArray[np.bool_] | None = None
+    locked: bool = False
+    candidates: tuple[int, ...] = ()
 
 
 def candidate_color(index: int) -> tuple[float, float, float]:
