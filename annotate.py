@@ -39,6 +39,7 @@ from image_ui import (
     collect_clicks,
     draw_tool_mask,
     show_overlap_review,
+    show_tool_review,
 )
 from image_spatial import Sam3SpatialBackend
 from image_sample_review import SampleImage, review_sample
@@ -997,8 +998,12 @@ def annotate_images(args: argparse.Namespace) -> None:
                             )
                 # Reprompting appends candidates without replacing assigned fragments.
                 backend.refine_crop = False
-                canvas = MultiToolCanvas(
-                    command_input, sample_references(root, rows, row, review)
+                canvas = (
+                    MultiToolCanvas(
+                        command_input, sample_references(root, rows, row, review)
+                    )
+                    if args.new
+                    else None
                 )
                 try:
                     result = review_image_instances(
@@ -1007,9 +1012,9 @@ def annotate_images(args: argparse.Namespace) -> None:
                         instances,
                         key=key,
                         show=show_candidates,
-                        show_tools=canvas.show,
-                        read_command=canvas.read_command,
-                        report=canvas.report,
+                        show_tools=canvas.show if canvas is not None else show_tool_review,
+                        read_command=canvas.read_command if canvas is not None else None,
+                        report=canvas.report if canvas is not None else None,
                         history=histories[key],
                         box_spatial=lambda box: backend.spatial(image, [], box=box),
                         inspect_order=show_overlap_review,
@@ -1028,7 +1033,8 @@ def annotate_images(args: argparse.Namespace) -> None:
                         log=review.append,
                     )
                 finally:
-                    canvas.close()
+                    if canvas is not None:
+                        canvas.close()
                 decision, selected, ignored = (
                     result.decision,
                     result.selected,
@@ -1305,6 +1311,14 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     images.add_argument("--mask-dir", type=Path, default=Path("masks/images"))
     images.add_argument("--review-log", type=Path, default=Path("image_review.jsonl"))
+    images.add_argument(
+        "--new",
+        action="store_true",
+        help=(
+            "Use the new persistent multi-tool editing canvas. "
+            "Default: original multi-tool previews with terminal commands."
+        ),
+    )
     images.add_argument(
         "--tool-id",
         "--tool-ids",

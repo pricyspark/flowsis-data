@@ -290,6 +290,7 @@ def test_fragment_merging_remains_opt_in(flags):
         (["--tool-id", "8", "--single-tool"], []),
         (["--sample-id", "single-sample", "--multi-tool"], []),
         (["--sample-id", "multi-sample", "--multi-tool"], ["multi"]),
+        (["--multi-tool", "--new"], ["multi"]),
     ],
 )
 def test_cli_selects_review_per_image_in_mixed_batch(
@@ -349,6 +350,12 @@ def test_cli_selects_review_per_image_in_mixed_batch(
     def multi_review(image, candidates, instances, *, key, **kwargs):
         calls.append((key, "explicit"))
         assert len(instances) == 2
+        if "--new" in flags:
+            assert isinstance(kwargs["show_tools"].__self__, annotate.MultiToolCanvas)
+            assert kwargs["read_command"] is not None
+        else:
+            assert kwargs["show_tools"] is annotate.show_tool_review
+            assert kwargs["read_command"] is None
         return ImageReview("skipped", instances, [], [])
 
     monkeypatch.setattr(annotate, "Sam3ImageBackend", Backend)

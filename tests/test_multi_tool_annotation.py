@@ -17,9 +17,9 @@ from masks import load_mask_bundle
 def use_mockable_image_preview(monkeypatch):
     monkeypatch.setattr(annotate, "show_overlap_review", lambda *_: None)
     monkeypatch.setattr(
-        annotate.MultiToolCanvas,
-        "show",
-        lambda self, image, candidates, title, tools: annotate.show_candidates(
+        annotate,
+        "show_tool_review",
+        lambda image, candidates, title, tools: annotate.show_candidates(
             image, candidates, title
         ),
     )

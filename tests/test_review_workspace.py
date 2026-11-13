@@ -3,6 +3,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import matplotlib.pyplot as plt
+from matplotlib.backend_bases import KeyEvent, ResizeEvent
 import numpy as np
 import pytest
 from PIL import Image
@@ -199,12 +200,169 @@ def test_canvas_preserves_window_tool_selection_and_zoom_and_emits_local_command
     assert canvas.points == []
     canvas.buttons[4]._observers.process("clicked", None)
     assert canvas.commands.get_nowait() == "reset"
+    tools[1] = ToolPreview(
+        "3", "forceps", source[1].mask, original=np.zeros_like(source[1].mask)
+    )
+    canvas.show(image, source, "image", tools)
+    overlay = np.asarray(canvas.detail.images[1].get_array()).copy()
+    assert not canvas.detail.collections
+    canvas.edit_toggle.set_active(0)
+    assert len(canvas.detail.collections) == 1
+    canvas.edit_toggle.set_active(0)
+    assert not canvas.detail.collections
+    np.testing.assert_array_equal(canvas.detail.images[1].get_array(), overlay)
+    assert canvas.selected_tool == "3"
+    assert canvas.commands.empty()
     canvas.close()
 
 
-def test_cli_restores_draft_without_rerunning_predictions_and_clears_it_on_accept(tmp_path, monkeypatch):
+def test_canvas_resize_preserves_text_fields_and_editing(monkeypatch):
+    monkeypatch.setattr(plt, "show", lambda **kwargs: None)
+    monkeypatch.setattr(plt, "pause", lambda *_: None)
+    canvas = MultiToolCanvas()
+    source = candidates()
+    tools = [
+        ToolPreview(str(tool), "forceps", item.mask, candidates=(index,))
+        for index, (tool, item) in enumerate(zip([0, 3], source, strict=True))
+    ]
+    try:
+        canvas.show(Image.new("RGB", (20, 20)), source, "image", tools)
+        figure = canvas.figure
+        figure.canvas.callbacks.exception_handler = None
+        canvas._select_tool("3: forceps")
+        canvas.overview.set_xlim(8, 18)
+        canvas.overview.set_ylim(18, 8)
+        for textbox, text in [(canvas.destination, "0"), (canvas.mask_indices, "1")]:
+            textbox.set_val(text)
+            textbox.begin_typing()
+            figure.set_size_inches(14, 9)
+            figure.canvas.callbacks.process(
+                "resize_event", ResizeEvent("resize_event", figure.canvas)
+            )
+            assert textbox.text == text
+            assert not textbox.capturekeystrokes
+        assert canvas.selected_tool == "3"
+        assert canvas.overview.get_xlim() == (8, 18)
+        assert canvas.overview.get_ylim() == (18, 8)
+
+        # The field still accepts typing and Apply still targets the selected tool.
+        canvas.mask_indices.set_val("")
+        canvas.mask_indices.begin_typing()
+        x, y = canvas.mask_indices.ax.transAxes.transform((0.5, 0.5))
+        figure.canvas.callbacks.process(
+            "key_press_event", KeyEvent("key_press_event", figure.canvas, "1", x, y)
+        )
+        canvas.apply()
+        assert canvas.commands.get_nowait() == "g 3 1"
+    finally:
+        canvas.destination.stop_typing()
+        canvas.mask_indices.stop_typing()
+        canvas.close()
+
+
+@pytest.mark.parametrize("terminal_command", [False, True])
+def test_canvas_waits_for_commands_without_reshowing_windows(monkeypatch, terminal_command):
+    def unexpected_show(*args, **kwargs):
+        pytest.fail("Processing GUI events must not raise windows")
+
+    monkeypatch.setattr(plt, "show", unexpected_show)
+    monkeypatch.setattr(plt, "pause", unexpected_show)
+    canvas = MultiToolCanvas()
+    source = candidates()
+    tools = [ToolPreview("0", "forceps", source[0].mask)]
+    try:
+        canvas.show(Image.new("RGB", (20, 20)), source, "image", tools)
+        monkeypatch.setattr(canvas.figure, "show", unexpected_show)
+        monkeypatch.setattr(canvas.figure.canvas, "required_interactive_framework", "test")
+        monkeypatch.setattr(canvas.terminal, "start", lambda _: None)
+        commands = canvas.terminal.commands if terminal_command else canvas.commands
+
+        def process_events(timeout):
+            assert timeout > 0
+            commands.put("a")
+
+        monkeypatch.setattr(canvas.figure.canvas, "start_event_loop", process_events)
+        canvas.show(canvas.image, source, "image", tools)
+        assert canvas.read_command("review> ") == "a"
+        monkeypatch.setattr(
+            canvas.figure.canvas, "start_event_loop", lambda _: canvas.close()
+        )
+        assert canvas.read_command("review> ") == "q"
+    finally:
+        canvas.close()
+
+
+def test_large_canvas_bounds_display_work_and_keeps_original_click_coordinates(monkeypatch):
+    canvas = MultiToolCanvas()
+    mask = np.zeros((1800, 2800), dtype=np.bool_)
+    mask[200:1600, 200:2600] = True
+    # A diagonal edge must retain its individual pixel steps at close zoom.
+    mask[880:940, 1980:2040] = np.arange(60)[None, :] <= np.arange(60)[:, None]
+    mask[903, 2003] = False  # A single-pixel detail that thumbnails can miss.
+    source = Candidate(mask, 0.9, "forceps [unassigned]", "candidate-0")
+    tools = [ToolPreview("3", "forceps", mask)]
+    try:
+        canvas.show(Image.new("RGB", (2800, 1800)), [source], "image", tools)
+        for artist in canvas.overview.images:
+            assert max(artist.get_array().shape[:2]) <= 1400
+        for artist in canvas.detail.images:
+            assert max(artist.get_array().shape[:2]) <= 1200
+        assert tuple(canvas.overview.images[0].get_extent()) == (-0.5, 2799.5, 1799.5, -0.5)
+        canvas.detail.set_xlim(1979.5, 2039.5)
+        canvas.detail.set_ylim(939.5, 879.5)
+        np.testing.assert_array_equal(
+            canvas.detail.images[1].get_array()[..., 3] > 0,
+            mask[880:940, 1980:2040],
+        )
+        assert tuple(canvas.detail.images[1].get_extent()) == (
+            1979.5, 2039.5, 939.5, 879.5
+        )
+        canvas._set_mode("Correct mask")
+        assert canvas.detail.get_xlim() == (1979.5, 2039.5)
+        assert canvas.detail.get_ylim() == (939.5, 879.5)
+        # Staging a click should repaint only markers, rather than the full image.
+        monkeypatch.setattr(
+            canvas.figure.canvas, "draw",
+            lambda: pytest.fail("Staging clicks must not redraw the full figure"),
+        )
+        canvas.on_press(SimpleNamespace(
+            inaxes=canvas.overview, xdata=2000.0, ydata=900.0, button=1
+        ))
+        canvas.apply()
+        assert canvas.commands.get_nowait() == "correct 3 2000.0,900.0,1"
+        assert source.mask is mask and mask[900, 2000]
+        assert canvas._pending_artists[0].get_xdata()[0] == 2000.0
+    finally:
+        canvas.close()
+
+
+@pytest.mark.parametrize("blit", [True, False])
+def test_canvas_staged_points_survive_full_redraw(monkeypatch, blit):
+    canvas = MultiToolCanvas()
+    source = candidates()
+    try:
+        canvas.show(
+            Image.new("RGB", (20, 20)), source, "image",
+            [ToolPreview("0", "forceps", source[0].mask)],
+        )
+        monkeypatch.setattr(canvas.figure.canvas, "supports_blit", blit)
+        canvas._set_mode("Correct mask")
+        for x in (3.0, 4.0):
+            canvas.on_press(SimpleNamespace(
+                inaxes=canvas.overview, xdata=x, ydata=3.0, button=1
+            ))
+            canvas.figure.canvas.draw()
+        assert canvas.points == [(3.0, 3.0, 1), (4.0, 3.0, 1)]
+        assert len(canvas._pending_artists) == 4
+        assert all(artist.get_animated() == blit for artist in canvas._pending_artists)
+    finally:
+        canvas.close()
+
+
+@pytest.mark.parametrize("flags", [[], ["--new"]])
+def test_cli_restores_draft_without_rerunning_predictions_and_clears_it_on_accept(tmp_path, monkeypatch, flags):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--data-dir", ".", "--multi-tool"])
+    monkeypatch.setattr(sys, "argv", ["annotate.py", "images", "--data-dir", ".", "--multi-tool", *flags])
     path = Path("images/multi/tools.png")
     path.parent.mkdir(parents=True)
     Image.new("RGB", (20, 20)).save(path)
@@ -222,6 +380,7 @@ def test_cli_restores_draft_without_rerunning_predictions_and_clears_it_on_accep
 
     monkeypatch.setattr(annotate, "Sam3ImageBackend", Backend)
     monkeypatch.setattr(MultiToolCanvas, "show", lambda *_: None)
+    monkeypatch.setattr(annotate, "show_tool_review", lambda *_: None)
     commands = iter(["g 0 0", "g 3 1", "brush 0 erase 1 4,4", "lock 3", "s"])
     monkeypatch.setattr("builtins.input", lambda _: next(commands))
     annotate.main()

@@ -729,7 +729,25 @@ masks, use the explicit per-tool crop refinement described below.
 Predictions may overlap, but accepted instance masks must not share pixels.
 Resolve any remaining overlaps after corrections using the ordering step below.
 
-Multi-tool review uses a persistent Matplotlib canvas. Select the physical tool
+Multi-tool review defaults to the original Matplotlib previews and terminal
+commands, including the overview and one crop panel per tool:
+
+```shell
+python annotate.py images --multi-tool
+```
+
+To opt into the new persistent editing canvas:
+
+```shell
+python annotate.py images --multi-tool --new
+```
+
+Both interfaces use the same saved review drafts and final annotations. The
+single-tool tiled sample reviewer is available with either setting. The canvas
+controls described below require `--new`; the terminal assignment commands work
+in both interfaces.
+
+The new interface uses a persistent Matplotlib canvas. Select the physical tool
 at left, then select a proposal or choose a correction mode. The overview keeps
 its zoom and tool selection between operations; the right panel shows the
 selected tool at a closer scale. Tool colors remain stable across assignments.
@@ -738,8 +756,17 @@ views first. Useful text prompts from accepted views are included in subsequent
 initial predictions for that sample; masks are predicted independently.
 Terminal commands remain available alongside the canvas.
 
-Every successful edit saves an atomic checkpoint in `image_review_state/` beside
-the review log (a custom log name uses `<log stem>_state/`). It includes actual
+The canvas processes GUI events without repeatedly raising the window, so you
+can switch to the terminal or other applications. Display images and overlays
+use bounded previews, and staged clicks and brush strokes redraw separately.
+Clicks, edits, model prompts, and saved masks still use original image pixels.
+The right panel reloads its visible crop from the original image and mask when
+you zoom or pan. Close inspection shows actual mask pixels rather than enlarged
+thumbnail blocks; changing edit modes preserves that zoom.
+
+Both interfaces save an atomic checkpoint after each successful edit in
+`image_review_state/` beside the review log (a custom log name uses
+`<log stem>_state/`). It includes actual
 candidate and edited masks, assignments, points, visibility, locks, crossing
 ownership, and up to 40 undo states. Skipping, quitting, or closing the canvas
 retains this draft. Rerunning the command restores it without rerunning initial
@@ -828,9 +855,10 @@ you want to exclude candidates while retaining them for possible reassignment.
 Removal is recorded in the review log and does not change the final mask format.
 
 The overview shows current tool masks, optional unused proposal outlines, and
-magenta disputed regions. The selected tool's crop shows its mask and, when
-available, yellow outlines of changes from its assigned source. Toggle Show
-proposals to inspect boundaries without alternative predictions in the way.
+magenta disputed regions. The selected tool's crop shows the current mask.
+Enable **Show edit outlines** to see yellow outlines of changed pixels; these
+are hidden by default and do not require another approval. Toggle **Show
+proposals** to inspect boundaries without alternative predictions in the way.
 
 Local commands use original image pixels:
 
