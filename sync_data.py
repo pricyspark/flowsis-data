@@ -416,7 +416,7 @@ def sync(root: Path, message: str | None, retries: int = 3) -> None:
                         raise SyncError(
                             "No commit message entered. Your original data is unchanged; rerun when ready."
                         )
-                git(work, "commit", "-m", message)
+                git(work, "commit", "-m", f"[data-sync] {message}")
             verify_local(root, head, original_pointer, local, cache, session)
             print(
                 "Uploading complete datasets before publishing their Git pointers...",
@@ -478,7 +478,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Combine local and incoming dataset changes, then upload and publish safely."
     )
-    parser.add_argument("-m", "--message", help="commit message; prompted when needed")
+    parser.add_argument(
+        "-m",
+        "--message",
+        help="commit message; prompted when needed; prefixed with [data-sync]",
+    )
     args = parser.parse_args()
     try:
         directory = ROOT / ".data-sync"

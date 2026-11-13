@@ -65,6 +65,7 @@ def test_sync_combines_divergent_commits_and_uncommitted_files(repositories):
     dvc(root, "add", "data")
     git(root, "add", "data.dvc")
     git(root, "commit", "-m", "Unpublished local dataset")
+    local_commit = git(root, "rev-parse", "HEAD")
     unpublished_hash = sync_data.load_yaml(root / "data.dvc")["outs"][0]["md5"]
     (root / "data/extra.txt").write_text("extra")
     publish(other, "incoming.txt", "incoming")
@@ -79,6 +80,11 @@ def test_sync_combines_divergent_commits_and_uncommitted_files(repositories):
         "incoming.txt",
     }
     assert git(root, "rev-parse", "HEAD") == git(remote, "rev-parse", "main")
+    assert git(root, "log", "-1", "--format=%s") == "[data-sync] Combined dataset"
+    assert (
+        git(root, "show", "-s", "--format=%s", local_commit)
+        == "Unpublished local dataset"
+    )
     assert sync_data.cache_file(remote.parent / "storage", unpublished_hash).is_file()
     assert not git(root, "status", "--porcelain", "--untracked-files=no")
     assert dvc(root, "status", "--json") == "{}"

@@ -121,8 +121,11 @@ The same command handles routine updates and divergent dataset commits. It saves
 your local dataset before downloading incoming changes, combines compatible
 additions and manifest edits, and publishes any resulting dataset changes.
 It asks for a message when it needs to create a commit. You can also supply one
-with `python sync_data.py -m "Jane Doe added tool 23 videos"`. A routine update
-with no local changes can bring your checkout up to date without a new commit.
+with `python sync_data.py -m "Jane Doe added tool 23 videos"`. Generated commits
+use the prefix `[data-sync]`, for example
+`[data-sync] Jane Doe added tool 23 videos`. Existing commits keep their
+messages. A routine update with no local changes can bring your checkout up to
+date without a new commit.
 
 | What you want to do | Workflow |
 | --- | --- |
