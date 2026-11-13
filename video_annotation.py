@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections import Counter
 from collections.abc import Callable
 from pathlib import Path
 from uuid import uuid4
@@ -34,6 +35,7 @@ from video_data import (
     read_mask,
     resolve_path,
     save_frame_mask,
+    select_videos,
     validate_video_frames,
 )
 from video_ui import (
@@ -108,7 +110,7 @@ class VideoReviewer:
         self.aliases = load_taxonomy_aliases(args.aliases_json)
         self.inspected: dict[int, str] = {}
         self.zoom = True
-        self.stay = args.stay_on_video or bool(args.video_id)
+        self.stay = args.stay_on_video or bool(args.video_id) or args.video is not None
         self.click_history: dict[
             tuple[int, tuple[int, int, int, int] | None], list[tuple[float, float, int]]
         ] = {}
@@ -885,6 +887,20 @@ class VideoReviewer:
         return True
 
 
+def list_videos(args: argparse.Namespace) -> None:
+    videos = read_csv(args.manifest)
+    frames = read_csv(args.frame_manifest) if args.frame_manifest.is_file() else []
+    accepted = Counter(
+        row["Video ID"] for row in frames if row.get("Review Status") == "accepted"
+    )
+    print("Video  Tool  Accepted/Frames  File")
+    for number, video in select_videos(args, videos):
+        progress = f"{accepted[video['Video ID']]}/{video.get('Frame Count') or '?'}"
+        print(
+            f"{number:>5}  {video['Tool ID']:>4}  {progress:>15}  {video['Filepath']}"
+        )
+
+
 def annotate_videos(args: argparse.Namespace) -> None:
     videos = read_csv(args.manifest)
     all_frames = read_csv(args.frame_manifest)
@@ -892,18 +908,11 @@ def annotate_videos(args: argparse.Namespace) -> None:
         args.device or ("cuda" if torch.cuda.is_available() else "cpu")
     )
     backend = Sam3VideoBackend(args.model, device, args.threshold)
-    selected = [
-        video
-        for video in videos
-        if not args.video_id or video["Video ID"] == args.video_id
-    ]
-    if not selected:
-        raise ValueError("No matching prepared video. Run prepare-videos first.")
-    for video in selected:
+    for number, video in select_videos(args, videos):
         root = args.manifest.parent.resolve()
         if file_hash(resolve_path(root, video["Filepath"])) != video["Source SHA256"]:
             raise ValueError("Source MP4 changed; reextract before annotating.")
-        print(f"Opening {video['Filepath']} (Video ID: {video['Video ID']}).")
+        print(f"Opening {video['Filepath']} (Video {number}, Tool {video['Tool ID']}).")
         if not VideoReviewer(args, video, all_frames, backend).run():
             return
     print("No more selected videos.")
@@ -920,9 +929,7 @@ def verify_videos(args: argparse.Namespace) -> None:
     if any(row["Video ID"] not in known for row in frames):
         raise ValueError("Frame manifest refers to an unknown video.")
     log = VideoLog(args.review_log)
-    for video in videos:
-        if args.video_id and args.video_id != video["Video ID"]:
-            continue
+    for _, video in select_videos(args, videos):
         selected = [row for row in frames if row["Video ID"] == video["Video ID"]]
         validate_video_frames(args.manifest.parent.resolve(), video, selected)
         for row in selected:
@@ -957,7 +964,10 @@ def add_video_commands(
         "export-video-training",
         help="Export reviewed frames for the existing flowsis image training reader.",
     )
-    for parser in (prepare, review, verify, export):
+    listing = commands.add_parser(
+        "list-videos", help="List permanent video numbers and source paths."
+    )
+    for parser in (prepare, review, verify, export, listing):
         parser.add_argument("--manifest", type=Path, default=Path("video_manifest.csv"))
         parser.add_argument(
             "--frame-manifest", type=Path, default=Path("video_frame_manifest.csv")
@@ -965,7 +975,13 @@ def add_video_commands(
         parser.add_argument(
             "--review-log", type=Path, default=Path("video_review.jsonl")
         )
-        parser.add_argument("--video-id")
+        selection = parser.add_mutually_exclusive_group()
+        selection.add_argument(
+            "--video", type=int, help="Permanent video number; see list-videos."
+        )
+        selection.add_argument(
+            "--video-id", help="Existing hash-based video ID (also supported)."
+        )
     prepare.add_argument("--video-dir", type=Path, default=Path("videos"))
     prepare.add_argument("--frame-dir", type=Path, default=Path("frames/videos"))
     prepare.add_argument(
@@ -1002,7 +1018,10 @@ def add_video_commands(
     review.add_argument(
         "--stay-on-video",
         action="store_true",
-        help="Keep the reviewer open after completion; --video-id also enables this.",
+        help=(
+            "Keep the reviewer open after completion; "
+            "explicit video selection also enables this."
+        ),
     )
     review.add_argument("--chunk-size", type=int, default=16)
     review.add_argument("--context-frames", type=int, default=2)

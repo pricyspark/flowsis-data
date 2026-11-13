@@ -15,6 +15,7 @@ from numpy.typing import NDArray
 from PIL import Image
 
 from annotations import (
+    atomic_write_text,
     CAPTURE_SESSION_FIELD,
     VIDEO_MANIFEST_FIELDS as VIDEO_FIELDS,
     VIDEO_FRAME_FIELDS as FRAME_FIELDS,
@@ -27,6 +28,55 @@ from annotations import (
 from masks import load_mask_bundle, mask2xywh, save_mask_bundle
 
 Mask: TypeAlias = NDArray[np.bool_]
+
+
+def video_numbers(manifest: Path, videos: list[dict[str, str]]) -> dict[str, int]:
+    """Persist display numbers, retaining retired IDs so numbers are never reused."""
+    path = manifest.with_suffix(".numbers.json")
+    numbers: dict[str, int] = {}
+    if path.is_file():
+        saved = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(saved, dict):
+            raise ValueError(f"Invalid video-number registry: {path}")
+        for video_id, number in saved.items():
+            if not isinstance(video_id, str) or type(number) is not int or number < 1:
+                raise ValueError(f"Invalid video-number entry in {path}")
+            numbers[video_id] = number
+        if len(set(numbers.values())) != len(numbers):
+            raise ValueError(f"Duplicate video numbers in {path}")
+    ids = [video["Video ID"] for video in videos]
+    if len(set(ids)) != len(ids):
+        raise ValueError("Video IDs must be unique.")
+    changed = False
+    next_number = max(numbers.values(), default=0) + 1
+    for video_id in ids:
+        if video_id not in numbers:
+            numbers[video_id] = next_number
+            next_number += 1
+            changed = True
+    if changed:
+        atomic_write_text(path, json.dumps(numbers, indent=2) + "\n")
+    return numbers
+
+
+def select_videos(
+    args: argparse.Namespace, videos: list[dict[str, str]]
+) -> list[tuple[int, dict[str, str]]]:
+    numbers = video_numbers(args.manifest, videos)
+    selected = sorted(
+        (numbers[video["Video ID"]], video)
+        for video in videos
+        if (args.video is None or numbers[video["Video ID"]] == args.video)
+        and (not args.video_id or video["Video ID"] == args.video_id)
+    )
+    if not selected:
+        if args.video is not None:
+            raise ValueError(
+                f"Unknown video number {args.video}. "
+                "Run python annotate.py list-videos."
+            )
+        raise ValueError("No matching prepared video. Run prepare-videos first.")
+    return selected
 
 
 def file_hash(path: Path) -> str:
@@ -109,6 +159,10 @@ def prepare_videos(args: argparse.Namespace) -> None:
 
     root = args.manifest.parent.resolve()
     videos = read_csv(args.manifest) if args.manifest.is_file() else []
+    video_numbers(args.manifest, videos)
+    target_id = args.video_id
+    if args.video is not None:
+        target_id = select_videos(args, videos)[0][1]["Video ID"]
     frames = read_csv(args.frame_manifest) if args.frame_manifest.is_file() else []
     log = VideoLog(args.review_log)
     paths = sorted(
@@ -124,7 +178,7 @@ def prepare_videos(args: argparse.Namespace) -> None:
         video_id = (
             existing["Video ID"] if existing else stable_media_id("video", relative)
         )
-        if args.video_id and video_id != args.video_id:
+        if target_id and video_id != target_id:
             continue
         parts = source.relative_to(args.video_dir).parts
         tool_id = args.tool_id or (parts[0] if len(parts) > 1 else "")
@@ -156,6 +210,7 @@ def prepare_videos(args: argparse.Namespace) -> None:
                 }
             )
             videos.append(video)
+            video_numbers(args.manifest, videos)
         video["Manufacturer"] = metadata["Manufacturer"]
         old_frames = [row for row in frames if row["Video ID"] == video_id]
         previous_filepaths = {row["Filepath"] for row in old_frames}
@@ -469,3 +524,40 @@ def validate_video_frames(
                 raise ValueError(
                     "Accepted frame has an incorrect tool identity or mask index."
                 )
+
+
+def accepted_frame_run(
+    root: Path, video: dict[str, str], frames: list[dict[str, str]], log: VideoLog
+) -> list[dict[str, str]]:
+    """Validate and return only the earliest contiguous run accepted in both sources."""
+    ordered = sorted(frames, key=lambda row: int(row["Frame Index"]))
+    selected: list[dict[str, str]] = []
+    for row in ordered:
+        if (
+            row.get("Review Status") != "accepted"
+            or log.decisions.get(row["Frame ID"]) != "accepted"
+        ):
+            if selected:
+                break
+            continue
+        selected.append(row)
+    if not selected:
+        return []
+    selected_ids = {row["Frame ID"] for row in selected}
+    # Extraction structure still covers the complete video, but annotations outside
+    # the chosen run are irrelevant to this dataset version.
+    checked = [
+        (
+            row
+            if row["Frame ID"] in selected_ids
+            else dict(row, **{"Review Status": "pending"})
+        )
+        for row in ordered
+    ]
+    validate_video_frames(root, video, checked, check_files=False)
+    for row in selected:
+        log.validate_acceptance(root, video, row)
+        image = read_frame(root, row)
+        if image.size != (int(video["Width"]), int(video["Height"])):
+            raise ValueError(f"Frame dimensions disagree for {row['Frame ID']}")
+    return selected

@@ -1170,12 +1170,19 @@ def main() -> None:
             raise ValueError("batch-size must be positive.")
         annotate_images(args)
     else:
-        from video_annotation import annotate_videos, prepare_videos, verify_videos
+        from video_annotation import (
+            annotate_videos,
+            list_videos,
+            prepare_videos,
+            verify_videos,
+        )
 
         if args.command == "prepare-videos":
             prepare_videos(args)
         elif args.command == "verify-videos":
             verify_videos(args)
+        elif args.command == "list-videos":
+            list_videos(args)
         elif args.command == "export-video-training":
             from video_export import export_video_training
 

@@ -1148,9 +1148,29 @@ Physical Tool IDs are retained for training split grouping.
 Rerunning preparation verifies and reuses unchanged PNGs. Missing PNGs can be
 recreated exactly from the unchanged MP4. A changed MP4 or modified PNG requires
 `python annotate.py prepare-videos --reextract`; this clears affected masks,
-anchors, and review decisions before extracting again. Use `--video-id VIDEO_ID`
+anchors, and review decisions before extracting again. Use `--video NUMBER`
 to restrict preparation, annotation, verification, or export to one video.
 Interrupted extraction resumes on the next preparation run.
+
+List the permanent video numbers, tool IDs, accepted-frame counts, and filenames:
+
+```shell
+python annotate.py list-videos
+python annotate.py videos --video 4
+python annotate.py verify-videos --video 4
+python -u batch_propagate_videos.py --video 4 --auto-preview
+```
+
+Numbers are assigned on preparation, or on the first listing/selection of an
+existing dataset. They are saved in `data/video_manifest.numbers.json`, keyed
+by the original hash-based Video ID. Reordering the manifest does not change
+numbers; removing a video reserves its old number, and new videos receive new
+numbers. Keep this small registry with the dataset and include it in DVC updates
+and selective collaborator downloads. Do not delete/regenerate it. A custom
+manifest uses the same filename with `.csv` replaced by `.numbers.json`.
+Frame IDs, mask paths, and saved annotations continue to use their existing hash
+identifiers. Legacy `--video-id VIDEO_ID` selection is also supported, but cannot
+be combined with `--video`.
 
 Reviewers print a short command hint when opening an image or video, rather than
 repeating the full command list at every prompt. Refer to the command tables in
@@ -1203,7 +1223,7 @@ matching acceptance checksums or explicitly rejected. Pending, changed, or
 unverified accepted frames prevent it from being considered finished. The
 terminal prints each video's source path and ID when opening it.
 
-To revisit a finished video, use `python annotate.py videos --video-id VIDEO_ID`.
+To revisit a finished video, use `python annotate.py videos --video NUMBER`.
 Explicit selection also keeps that video open after completion. Alternatively,
 `--stay-on-video` keeps completed videos open while browsing the normal queue;
 use `next-video` to leave each one. Within a session, `stay off` resumes automatic
@@ -1269,7 +1289,8 @@ python -u batch_propagate_videos.py --chunk-size 16 --context-frames 1 --auto-pr
 ```
 
 This lightweight helper shares the options from `annotate.py videos`, including
-`--data-dir`, `--video-id`, `--device`, and preview settings. It opens no GUI and
+`--data-dir`, `--video NUMBER` (or legacy `--video-id`), `--device`, and preview
+settings. It opens no GUI and
 never accepts masks. Frames at or before the last anchor are left unchanged.
 After that anchor, pending predictions are regenerated (including existing
 masks), while accepted/rejected frames remain protected. Nonempty reviewed masks
@@ -1375,8 +1396,9 @@ it does not generate missing masks or infer absence. The first version uses
 Matplotlib windows plus terminal commands, not a timeline editor. Its segmentation
 and tracker backends load `facebook/sam3` on demand.
 
-To train from extracted frames with the existing flowsis image reader, export an
-image-style snapshot:
+For combined base and temporal training, use the [shared dataset builder](#shared-image-and-video-dataset)
+below. It references the existing assets directly. To export a separate image-style
+snapshot for legacy image workflows:
 
 ```shell
 python annotate.py export-video-training
@@ -1406,9 +1428,9 @@ Use `python annotate.py --help` and each command's `--help` for options.
 
 ### Build training data
 
-Use the repository's still-image builder from the repository root; see
+Use the repository's shared dataset builder from the repository root; see
 [Build a temporary model dataset](#build-a-temporary-model-dataset) below.
-Video exports retain their separate workflow described above.
+The builder includes reviewed video runs by default; `--no-include-videos` retains a still-only export.
 
 Run annotation tests without downloading model weights:
 
@@ -1430,11 +1452,93 @@ cd ~
 rm -rf flowsis-data
 ```
 
+## Shared image and video dataset
+
+Build one dataset for both model stages, without copying images, frames, or masks:
+
+```shell
+python build_dataset.py --output-path exports/combined-dataset
+```
+
+Video input is each video's **earliest contiguous accepted run**. Leading
+unaccepted frames are skipped; the run ends at the first subsequent unaccepted
+frame. Acceptance must agree between the frame manifest and review log, and the
+selected assets must still match their reviewed versions. Later accepted runs
+are excluded for now. Frame indices and presentation timestamps remain unchanged.
+Use `--no-include-videos` for a still-only build.
+
+The export contains shared class ordering, source type, physical tools, capture
+sessions, video/frame IDs, timestamps, interval IDs, mask paths, validity flags,
+and `base_eligible`. Severe and fully occluded frames remain available to temporal
+training, while base training filters them out. Absent frames are valid base
+negatives. Video identity and physical tools survive even when a frame has no
+visible instances. Asset paths are relative to the dataset directory; preserve
+the layout when moving the repository. No original MP4 is needed by either
+training view of this export.
+
+Splits are static and shared by both training stages. The default `--split-by tool`
+keeps connected physical tools and image samples together. `--split-by session`
+groups capture sessions, samples, and complete videos. `--split-by sample` groups
+image samples and complete videos, allowing the same physical tools in different
+splits. In sample-based modes, still images without sample IDs are excluded.
+
+For within-video development, split every accepted run into approximately equal
+sections, then allocate contiguous train/validation/test intervals in each:
+
+```shell
+python build_dataset.py --output-path exports/combined-sections \
+  --video-sections 3 --split-gap 8 --min-interval-frames 8
+```
+
+Split order rotates across sections with a seeded initial offset. `--split-gap`
+excludes that many frames between different splits inside a section. Every
+interval has a distinct ID; snippets cannot cross sections even when the same
+split touches both sides of a boundary. Still images use sample grouping in this
+mode. Short videos that cannot supply the requested minimum frames per interval
+stay entirely in training and are flagged in the report. Use
+`--short-video-policy error` to reject such builds instead.
+
+Section splits measure performance within familiar recordings; use whole-video,
+session, or tool holdouts for independent evaluation. Assign the split before
+base training: temporal holdout frames must never enter base training or replay.
+Rebuilding after accepting more frames can change splits, so keep the original
+export fixed for an experiment. The source assets are external references, not
+an immutable snapshot; re-export and re-evaluate if annotations change.
+
+`build_report.json` lists selected runs, excluded frames, interval boundaries,
+short-video fallbacks, classes, base-eligible counts, and usable snippet counts.
+`--clip-lengths 4 8 --clip-strides 1 2 3` controls the geometries counted in the
+report, not training. An 8-frame clip at stride 3 needs a 22-frame interval;
+check the report for the geometries you intend to train on.
+
+In the neighboring flowsis repo, train both stages from this same path:
+
+```shell
+flowsis-train-base --dataset-path ../flowsis-data/exports/combined-dataset \
+  --text-embeddings-dir path/to/embeddings --video-fraction 0.5
+flowsis-train-temporal --dataset-path ../flowsis-data/exports/combined-dataset \
+  --base-model outputs/base/best
+```
+
+The base trainer samples dynamically with replacement. `--video-fraction 0.5`
+assigns half the expected draws to each source when both are present. Within
+stills, capture samples receive equal total probability; within videos, each
+video receives equal total probability, then its frames are sampled uniformly.
+With only one source, that source receives all draws. `--samples-per-epoch`
+controls the training draw count; by default it equals the eligible row count.
+These probabilities are independent of annotation-confidence loss weights.
+
+The temporal trainer samples videos uniformly among those eligible for each clip
+geometry, then valid starts inside their assigned intervals. It reads saved PNGs
+and NPZs directly, with one shared spatial transform per clip. Validation uses a
+fixed, evenly spread snippet schedule and reports overall and per-video losses.
+Set `--validation-batches` and `--batches-per-epoch` high enough to cover all
+eligible validation videos. Legacy MP4-based temporal datasets still load.
+
 ## Build a temporary model dataset
 
-The current still-image dataset builder lives here in `build_dataset.py` and
-reads `image_manifest.csv`, `image_object_manifest.csv`, and `image_review.jsonl`
-from `data/` by default. Use `--root PATH` to select another dataset directory.
+The shared dataset builder lives here in `build_dataset.py` and reads image and
+video manifests plus their review logs from `data/` by default. Use `--root PATH` to select another dataset directory.
 Install the updated environment above, which includes Hugging Face `datasets`:
 
 ```shell
@@ -1483,7 +1587,7 @@ Images with ignore pixels or any instance unsuitable for base training are
 excluded as a whole to avoid teaching the model that an unlabelled tool is
 background. Pending and skipped images are excluded. Accepted images with broken
 mask references, identities, dimensions, or bounding boxes stop the build.
-Video datasets remain a separate workflow.
+Video runs follow the shared export policy described above and preserve temporal-only supervision.
 
 Explicitly accepted background images are also supported. The annotation
 workflow must save an empty mask bundle at the canonical path below
@@ -1545,8 +1649,9 @@ Rebuild and retrain after changing label fields: class IDs, training coverage,
 and split assignments may change. Prompt generation is a separate downstream
 step and must use the resulting ordered labels.
 
-Before building, every saved bundle under `masks/` is checked for pixel overlap,
-including bundles outside the accepted subset. A single shared pixel stops the
+Before building, still-image bundles under `masks/` (excluding `masks/videos/`)
+are checked for pixel overlap, including bundles outside the accepted subset.
+Video masks are validated only within the selected accepted runs. A single shared pixel stops the
 build and writes a `.mask-audit.json` report beside the requested output. No masks
 are silently trimmed. A successful output includes `build_report.json`, listing
 mask audit counts, excluded images, class coverage, and actual split sizes.

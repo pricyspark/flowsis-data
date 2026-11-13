@@ -283,6 +283,44 @@ def test_batch_skips_video_without_any_anchor(tmp_path, monkeypatch):
     assert Path("video_frame_manifest.csv").read_bytes() == original
 
 
+def test_batch_numeric_selection_processes_only_selected_video(tmp_path, monkeypatch):
+    first_video, frames = prepared(tmp_path, monkeypatch)
+    seed_frame(tmp_path, first_video, frames, 0)
+    write_video(Path("videos/12/second.mp4"))
+    prepare_videos(parse(monkeypatch, "prepare-videos"))
+    videos = read_csv("video_manifest.csv")
+    frames = read_csv("video_frame_manifest.csv")
+    second_video = videos[1]
+    start = next(row for row in frames if row["Video ID"] == second_video["Video ID"])
+    save_frame_mask(
+        tmp_path,
+        start,
+        second_video,
+        Path("masks/videos"),
+        mask(),
+        decision="pending",
+        anchor=True,
+    )
+    write_csv("video_frame_manifest.csv", frames, FRAME_FIELDS)
+    original = [
+        row.copy() for row in frames if row["Video ID"] == first_video["Video ID"]
+    ]
+    monkeypatch.setattr(
+        batch_propagate_videos, "Sam3VideoBackend", lambda *args: Tracker()
+    )
+    report = batch_propagate_videos.run_batch(
+        parse(monkeypatch, "videos", "--video", "2", "--device", "cpu")
+    )
+    assert len(report) == 1
+    assert report[0]["video_number"] == 2
+    assert report[0]["video_id"] == second_video["Video ID"]
+    saved = read_csv("video_frame_manifest.csv")
+    assert [row for row in saved if row["Video ID"] == first_video["Video ID"]] == original
+    assert all(
+        row["Mask Path"] for row in saved if row["Video ID"] == second_video["Video ID"]
+    )
+
+
 def test_extraction_uses_decoded_timestamps_and_resumes_without_changing_annotations(
     tmp_path, monkeypatch
 ):
@@ -867,6 +905,19 @@ def test_explicit_video_id_opens_finished_video_and_stays(tmp_path, monkeypatch)
     monkeypatch.setattr("builtins.input", lambda _: "q")
     assert reviewer.is_finished()
     assert reviewer.run() is False
+
+
+def test_numeric_selection_opens_finished_video_and_stays(tmp_path, monkeypatch):
+    video, frames = prepared(tmp_path, monkeypatch)
+    for index in range(len(frames)):
+        seed_frame(tmp_path, video, frames, index, "accepted")
+    displayed = []
+    monkeypatch.setattr(
+        video_annotation, "show_frame", lambda *args: displayed.append(args)
+    )
+    monkeypatch.setattr("builtins.input", lambda _: "q")
+    video_annotation.annotate_videos(parse(monkeypatch, "videos", "--video", "1"))
+    assert len(displayed) == 1
 
 
 @pytest.mark.parametrize("last_command,result", [("q", False), ("stay off", True)])

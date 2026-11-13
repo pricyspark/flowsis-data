@@ -19,7 +19,7 @@ from annotations import atomic_write_text, read_csv
 from masks import load_mask_bundle
 from video_annotation import VideoReviewer, frame_ranges
 from video_backend import Sam3VideoBackend
-from video_data import file_hash, resolve_path
+from video_data import file_hash, resolve_path, select_videos
 
 
 def run_batch(args: argparse.Namespace) -> list[dict[str, object]]:
@@ -40,19 +40,13 @@ def run_batch(args: argparse.Namespace) -> list[dict[str, object]]:
     root = args.manifest.parent.resolve()
     videos = read_csv(args.manifest)
     all_frames = read_csv(args.frame_manifest)
-    selected = [
-        video
-        for video in videos
-        if not args.video_id or video["Video ID"] == args.video_id
-    ]
-    if not selected:
-        raise ValueError("No matching prepared videos.")
+    selected = select_videos(args, videos)
     device = torch.device(
         args.device or ("cuda" if torch.cuda.is_available() else "cpu")
     )
     report: list[dict[str, object]] = []
     report_path = root / "batch_propagation_report.json"
-    for video in selected:
+    for number, video in selected:
         rows = sorted(
             (row for row in all_frames if row["Video ID"] == video["Video ID"]),
             key=lambda row: int(row["Frame Index"]),
@@ -60,6 +54,7 @@ def run_batch(args: argparse.Namespace) -> list[dict[str, object]]:
         before = {index for index, row in enumerate(rows) if row.get("Mask Path")}
         result: dict[str, object] = {
             "video_id": video["Video ID"],
+            "video_number": number,
             "filepath": video["Filepath"],
             "status": "skipped",
             "message": "No unreviewed frames after the last anchor.",
@@ -68,7 +63,7 @@ def run_batch(args: argparse.Namespace) -> list[dict[str, object]]:
         reviewer = None
         written: set[int] = set()
         anchor_index = None
-        print(f"\nBatch: {video['Filepath']} ({video['Video ID']})", flush=True)
+        print(f"\nBatch video {number}: {video['Filepath']}", flush=True)
         try:
             anchors = [
                 index for index, row in enumerate(rows)

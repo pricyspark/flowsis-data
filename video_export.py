@@ -8,7 +8,13 @@ import shutil
 from pathlib import Path
 
 from annotations import CAPTURE_SESSION_FIELD, IMAGE_OBJECT_FIELDS, read_csv, write_csv
-from video_data import VideoLog, file_hash, resolve_path, validate_video_frames
+from video_data import (
+    VideoLog,
+    file_hash,
+    resolve_path,
+    select_videos,
+    accepted_frame_run,
+)
 
 
 def snapshot_file(source: Path, destination: Path, replace: bool) -> None:
@@ -43,18 +49,9 @@ def export_video_training(args: argparse.Namespace) -> None:
     images: list[dict[str, str]] = []
     objects: list[dict[str, str]] = []
     accepted: list[str] = []
-    for video in videos:
-        if args.video_id and video["Video ID"] != args.video_id:
-            continue
+    for _, video in select_videos(args, videos):
         selected = [row for row in frames if row["Video ID"] == video["Video ID"]]
-        validate_video_frames(root, video, selected)
-        for row in selected:
-            if (
-                row.get("Review Status") != "accepted"
-                or log.decisions.get(row["Frame ID"]) != "accepted"
-            ):
-                continue
-            log.validate_acceptance(root, video, row)
+        for row in accepted_frame_run(root, video, selected, log):
             # Fully hidden tools and class-invalid severe masks are excluded from this base training export.
             if row["Visibility"] in {"occluded", "severe"}:
                 continue
