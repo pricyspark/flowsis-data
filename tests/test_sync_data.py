@@ -543,3 +543,70 @@ def test_pull_rejects_unknown_target_without_advancing_git(repositories):
     with pytest.raises(sync_data.SyncError, match="not tracked"):
         sync_data.sync(root, None, publish=False, targets=["data/images/unknown.jpg"])
     assert git(root, "rev-parse", "HEAD") == head
+
+
+def test_sync_repairs_published_pointer_from_local_cache(repositories):
+    root, _, remote = repositories
+    capture = root / "data/videos/local.mp4"
+    capture.parent.mkdir(parents=True)
+    capture.write_text("locally cached video")
+    dvc(root, "add", "data")
+    files = sync_data.index(root / "data.dvc", root / ".dvc/cache")
+    video_hash = files["videos/local.mp4"]
+    git(root, "add", "data.dvc")
+    git(root, "commit", "-m", "Pointer pushed before data")
+    git(root, "push")
+    head = git(root, "rev-parse", "HEAD")
+    storage = remote.parent / "storage"
+    assert not sync_data.cache_file(storage, video_hash).exists()
+
+    sync_data.sync(root, None)
+
+    assert sync_data.cache_file(storage, video_hash).is_file()
+    assert git(root, "rev-parse", "HEAD") == head
+    assert git(remote, "rev-parse", "main") == head
+    assert capture.read_text() == "locally cached video"
+
+
+def test_repair_still_requires_remote_verification_after_upload(
+    repositories, monkeypatch
+):
+    root, _, remote = repositories
+    (root / "data/local.txt").write_text("locally cached data")
+    dvc(root, "add", "data")
+    git(root, "add", "data.dvc")
+    git(root, "commit", "-m", "Pointer pushed before data")
+    git(root, "push")
+    head = git(remote, "rev-parse", "main")
+    original = sync_data.dvc
+    monkeypatch.setattr(
+        sync_data,
+        "dvc",
+        lambda cwd, *args: "" if args[0] == "push" else original(cwd, *args),
+    )
+
+    with pytest.raises(sync_data.SyncError, match="missing remotely"):
+        sync_data.sync(root, None)
+
+    assert git(remote, "rev-parse", "main") == head
+    assert (root / "data/local.txt").read_text() == "locally cached data"
+
+
+def test_repair_uploads_incoming_version_even_if_final_dataset_removes_file(
+    repositories,
+):
+    root, _, remote = repositories
+    capture = root / "data/removed.txt"
+    capture.write_text("historical version must remain recoverable")
+    dvc(root, "add", "data")
+    digest = sync_data.index(root / "data.dvc", root / ".dvc/cache")["removed.txt"]
+    git(root, "add", "data.dvc")
+    git(root, "commit", "-m", "Pointer pushed before data")
+    git(root, "push")
+    capture.unlink()
+    dvc(root, "add", "data")
+
+    sync_data.sync(root, "Remove obsolete file")
+
+    assert "removed.txt" not in sync_data.index(root / "data.dvc", root / ".dvc/cache")
+    assert sync_data.cache_file(remote.parent / "storage", digest).is_file()

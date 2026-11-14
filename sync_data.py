@@ -279,17 +279,13 @@ def upload_snapshots(work: Path, incoming: str, store: DatasetStore) -> None:
     """Publish all newly referenced objects without fetching missing media."""
     pointer = work / "data.dvc"
     final = pointer.read_bytes()
-    snapshots = {final}
+    snapshots = {final, git(work, "show", f"{incoming}:data.dvc").encode() + b"\n"}
     for revision in git(work, "rev-list", "HEAD", f"^{incoming}").splitlines():
         snapshots.add(git(work, "show", f"{revision}:data.dvc").encode() + b"\n")
     try:
         for content in snapshots:
             files = store.index(content)
-            absent = store.remote_missing({pointer_hash(content), *files.values()})
-            if any(not cache_file(store.cache, digest).is_file() for digest in absent):
-                raise SyncError(
-                    "Some published objects are unavailable locally and remotely. Ask their contributor to run python dvc_gdrive_sync.py push. Git publication was stopped."
-                )
+            store.require_available(files, content)
             pointer.write_bytes(content)
             dvc(work, "push", "data.dvc")
             store.verify_remote(files, content)
@@ -412,7 +408,10 @@ def sync(
                 base = store.index(
                     git(root, "show", f"{remote_revision}:data.dvc").encode() + b"\n"
                 )
-            store.verify_remote(theirs, incoming_pointer)
+            if publish:
+                store.require_available(theirs, incoming_pointer)
+            else:
+                store.verify_remote(theirs, incoming_pointer)
             combined = cached_results(
                 store, merge_dataset(base, local, theirs, store.cache, store)
             )

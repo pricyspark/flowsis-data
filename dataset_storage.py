@@ -190,6 +190,19 @@ class DatasetStore:
                 "on their original machine. Git publication was stopped."
             )
 
+    def require_available(self, files: Mapping[str, str], pointer: bytes) -> None:
+        """Allow publishing to repair a pushed pointer from locally cached data."""
+        missing = self.remote_missing({pointer_hash(pointer), *files.values()})
+        unavailable = {
+            digest for digest in missing if not cache_file(self.cache, digest).is_file()
+        }
+        if unavailable:
+            raise SyncError(
+                f"Dataset objects are unavailable both locally and remotely ({len(unavailable)}). "
+                "Ask their contributor to run python dvc_gdrive_sync.py push "
+                "on their original machine. Git publication was stopped."
+            )
+
 
 @contextmanager
 def open_store(root: Path) -> Iterator[DatasetStore]:
