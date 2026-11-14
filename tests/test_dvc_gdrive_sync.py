@@ -18,9 +18,7 @@ def test_drive_listing_batches_preserve_all_results_and_restore_method(
 
     def command(args):
         assert args == ["status", "--cloud"]
-        actual = list(
-            dvc_gdrive_sync.GDriveFileSystem._gdrive_list_ids(None, parents)
-        )
+        actual = list(dvc_gdrive_sync.GDriveFileSystem._gdrive_list_ids(None, parents))
         assert actual == list(parents)
         return 0
 

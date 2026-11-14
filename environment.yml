@@ -15,7 +15,7 @@ dependencies:
   - filelock
   - datasets
   - pip
-  - dvc
-  - dvc-gdrive
+  - dvc >=3.67,<4
+  - dvc-gdrive >=3,<4
   - pip:
     - pillow_heif

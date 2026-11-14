@@ -88,11 +88,11 @@ which `.dvc/.gitignore` excludes from Git. Without `--local`, DVC writes to the
 shared `.dvc/config`; committing OAuth values there can trigger GitHub's secret
 scanning. Never commit personal authentication tokens or credential files.
 
-Download the dataset and check its local status:
+Download the minimum working set and inspect its local status:
 
 ```shell
-python dvc_gdrive_sync.py pull
-dvc status
+python sync_data.py pull
+python sync_data.py status
 ```
 
 On the first connection, follow the Google login link DVC prints or opens.
@@ -102,45 +102,96 @@ the command is still running. DVC caches your personal authorization locally;
 each collaborator signs in individually. See the
 [DVC Google Drive authentication documentation](https://doc.dvc.org/user-guide/data-management/remote-storage/google-drive#authorization).
 
-The download restores images, masks, manifests, and review logs under `data/`.
+The default download restores designated manifests, review logs, and orientation
+metadata under `data/`, then creates the complete directory skeleton. It does not
+download images, masks, raw captures, video frames, or videos. Use the presets or
+explicit paths below when you need those files. Empty media placeholders are never
+created.
 Files there appear ignored or grayed out in Git-aware editors because DVC tracks
 them as a dataset; Git tracks the small `data.dvc` pointer. `git status` alone
-cannot show unsnapshotted data changes; use `dvc status` too.
+cannot show unsnapshotted data changes; use `python sync_data.py status` too.
+Native `dvc status` can report intentionally unmaterialized paths as deleted;
+that is not a request to delete them from the dataset.
+The image verifier recognizes managed partial checkouts: indexed images and masks
+that are absent locally are reported as not downloaded, while references absent
+from both the index and workspace remain errors. Pixel checks require local masks,
+and visual review runs only for samples whose images are all local.
 
 ### Daily synchronization
 
-Use `sync_data.py` as the standard workflow for dataset contributors. Run it
-before collecting data or annotating to get the latest dataset, and again when
-your captures or edits are ready to share.
+Use these commands from the repository root:
 
 ```shell
-python sync_data.py
+python sync_data.py pull                     # Get metadata and folder structure
+python sync_data.py pull --preset images     # Add processed images and image masks
+python sync_data.py pull --preset videos     # Add videos, frames, and video masks
+python sync_data.py pull --preset raw-images # Add original image captures
+python sync_data.py pull --preset raw-videos # Add original video captures
+python sync_data.py pull --preset all        # Download the complete dataset
+python sync_data.py pull data/images/45 data/masks/images/45
+python sync_data.py status
+python sync_data.py -m "Jane Doe: tools/samples added or corrected"
 ```
 
-The same command handles routine updates and divergent dataset commits. It saves
-your local dataset before downloading incoming changes, combines compatible
-additions and manifest edits, and publishes any resulting dataset changes.
-It asks for a message when it needs to create a commit. You can also supply one
-with `python sync_data.py -m "Jane Doe added tool 23 videos"`. Generated commits
-use the prefix `[data-sync]`, for example
-`[data-sync] Jane Doe added tool 23 videos`. Existing commits keep their
-messages. A routine update with no local changes can bring your checkout up to
-date without a new commit.
+`pull` combines compatible local and incoming dataset changes without uploading or
+creating commits. It advances Git when a fast-forward is possible. If Git histories
+have diverged, it merges the dataset into the working `data.dvc` and leaves the Git
+history for the next publishing sync to merge. `sync` (also the default command)
+saves local additions/edits, merges divergence, uploads required objects, and
+publishes the resulting Git commit. It prompts for a message when needed; generated
+commits use `[data-sync]`. Existing commit messages are preserved.
 
-| What you want to do | Workflow |
+Download selections persist locally. Rules are additive and the latest matching
+rule wins, so a targeted pull can restore a previously evicted subfolder. Metadata
+is always selected. Already downloaded files continue to receive incoming updates;
+unrelated incoming media stays remote. `images` excludes raw originals, and `videos`
+excludes raw originals and preview renders. Explicit paths select exactly those
+paths; include the corresponding mask path if you need it too. Any new local file
+is discovered even if it is outside the download selections.
+
+Missing files are never inferred to be dataset deletions. Use the explicit commands:
+
+```shell
+python sync_data.py evict data/videos/45      # Remove local copies, keep shared data
+python sync_data.py remove data/images/45/x.jpg  # Stage an intentional dataset deletion
+python sync_data.py restore data/images/45/x.jpg # Cancel a pending removal
+python sync_data.py -m "Jane Doe: remove obsolete capture"
+```
+
+Eviction refuses unpublished edits or content absent from shared storage. It also
+removes matching objects from this repository's own cache when no remaining local
+file uses them. Shared/external caches are left intact. Metadata cannot be evicted.
+`remove` preserves removed local files in a recovery session and records explicit
+deletions; edit referring manifests as well before syncing. If a tracked local file
+simply disappears, sync stops and asks you to restore it or record remove/evict.
+
+On the first command, existing checkouts are adopted without changing their files.
+Absent tracked paths are treated as not downloaded. Thereafter, the Git-ignored
+`.data-sync/workspace.json` records the applied baseline, materialized files,
+selections, and pending deletions. Preserve that file; do not delete it as routine
+cleanup. Do not use `dvc add data`, unrestricted `dvc pull`, or unrestricted
+`dvc checkout` on a partial checkout. The wrapper `dvc_gdrive_sync.py` remains a
+low-level troubleshooting tool, not the daily synchronization interface.
+
+Commit code/documentation separately and clear staged changes or unfinished Git
+merges before `sync` or `pull`. A publishing sync can push existing local code
+commits too. Pause annotation and collection while synchronizing. `status`, explicit
+remove/evict, and recovery do not require clean code files.
+
+| Need | Command |
 | --- | --- |
-| Get the latest dataset before working or publish your dataset edits | Run `python sync_data.py` on your normal tracking branch. This workflow needs write access to Git and the DVC remote. |
-| Combine local and incoming dataset changes | Run the same command. It merges compatible changes and reports conflicts that need a decision. See [Publish dataset changes](#publish-dataset-changes). |
-| Set up a fresh clone | Follow [DVC authentication and first download](#dvc-authentication-and-first-download). |
-| Update a checkout with read-only access | On a checkout with no unpublished Git or dataset changes, run `git pull --ff-only` and then `python dvc_gdrive_sync.py pull`. |
-| Work on code or documentation | Use your normal Git workflow for code commits and branches. Use `sync_data.py` for dataset changes. |
-| Restore a specific dataset version or troubleshoot storage | Follow [DVC troubleshooting and older dataset versions](#dvc-troubleshooting-and-older-dataset-versions). |
+| Read-only access or download before work | `python sync_data.py pull` |
+| Publish local data and merge divergence | `python sync_data.py -m "Name: changes"` |
+| Download one section | `python sync_data.py pull --preset images` or explicit paths |
+| Inspect a partial checkout | `python sync_data.py status` |
+| Resume an interrupted local apply | `python sync_data.py recover` |
+| Reclaim a completed recovery session | `python sync_data.py cleanup SESSION_NAME` |
 
-Treat `sync_data.py` as a command that can publish. It can push existing local
-commits on the tracking branch, including code commits. Use it when those
-commits and any local dataset edits are ready to share. Commit code changes
-separately and clear any staged changes or unfinished Git merge or rebase
-before syncing. Pause collection and annotation while the command runs.
+Recovery sessions live under `.data-sync/sessions/`. Only changed/removed files are
+retained as backups; the whole dataset is not copied. Cleanup requires a completed
+session and checks that backup contents exist in shared storage. It never runs
+remote garbage collection. Older recovery directories from the previous workflow
+remain untouched and require manual inspection.
 
 ### Maintainer setup for a replacement Google Drive remote
 
@@ -180,8 +231,9 @@ The existing remote is already configured.
    python dvc_gdrive_sync.py status --cloud
    ```
 
-   If the dataset itself changed, run `dvc add data` before pushing. Commit the
-   shared remote URL in `.dvc/config` and any updated `data.dvc`. Keep OAuth
+   Use `python sync_data.py` to snapshot and publish dataset changes. For a
+   replacement remote, first ensure all referenced objects are available locally
+   or migrated from the old remote. Commit the shared URL in `.dvc/config`. Keep OAuth
    values in `.dvc/config.local`; distribute them separately to collaborators.
 
 Follow the [DVC Google Drive setup guide](https://doc.dvc.org/user-guide/data-management/remote-storage/google-drive)
@@ -219,10 +271,11 @@ packages nor credentials, and can also run `pull` or `fetch`. This workaround
 was verified against the failing remote; it does not address unrelated HTTP
 400 errors during uploads.
 
-To restore a prior dataset, preserve local work, check out its Git commit, and
-run `dvc pull`. Git selects the version pointer; DVC restores the matching data.
-You can return to the latest version with `git switch main` followed by
-`dvc pull`. Referenced objects must still exist in the remote or local cache.
+To inspect a prior dataset, use a separate clone, check out its Git commit, and
+use targeted `python dvc_gdrive_sync.py pull data/PATH` commands there. Git selects
+the historical pointer and DVC restores those files. Keep your current managed
+checkout and its workspace state intact. Referenced objects must still exist in
+the remote or local cache; unrestricted low-level pulls download the full version.
 
 The local `.dvc/cache/` may use additional disk space. Do not manually delete
 objects from the shared Drive folder or run remote garbage collection without
@@ -342,9 +395,24 @@ Session ID** identifies the broader photography session, which can contain
 several samples.
 
 For **single-tool samples**, keep the controlled rotation protocol: one unchanged
-setup, with eight views at 0, 45, 90, 135, 180, 225, 270, and 315 degrees. Flipping
+setup, with either four views at 0, 90, 180, and 270 degrees, or eight views at
+0, 45, 90, 135, 180, 225, 270, and 315 degrees. Each angle occurs once. Flipping
 the tool, changing its opening or location, or changing the overall setup starts
 a new sample. Correct recorded angles if filenames are out of order.
+
+Angles describe relative rotation within a sample. Any shared zero direction and
+either clockwise or counterclockwise numbering are valid; conventions need not
+match between samples. Visual verification checks relative spacing after allowing
+one shared offset and direction for the whole sample. A uniform offset or reversed
+direction is not an error. Repeated orientations, isolated swaps, or inconsistent
+steps can still require review. Camera-orientation corrections remain separate
+from the manifest's relative angles.
+
+Missing angles, extra views, repeated angle labels, and incomplete four/eight-view
+coverage are collection warnings, so they do not block dataset publication.
+Malformed angle values, broken references, and conflicting physical identities
+remain errors. Verification reports collection gaps without filling or reassigning
+your samples automatically.
 
 For **multi-tool samples**, keep the same Sample ID while randomizing the
 positions and rotations of the same tools within the same overall setup. Any
@@ -406,7 +474,7 @@ You can also run an automatic verification:
 python verify_data.py
 ```
 
-The verifier first checks the CSV and files for missing images, images that are not in the manifest, duplicate paths, tool IDs that disagree with their folder, invalid confidence values, incomplete single-tool rotation samples, missing or repeated single-tool angles, and inconsistent tool sets within samples. Randomized multi-tool samples may have any image count and blank angles. It then asks whether Codex should visually review temporary, downscaled contact sheets. The visual review looks for a different tool set within a sample, suspicious single-tool rotation order, image-quality problems, and inconsistent class or name conventions. These findings are suggestions for a person to review; the verifier never changes the manifest. Temporary contact sheets are deleted automatically.
+The verifier first checks the CSV and files for missing images, images that are not in the manifest, duplicate paths, tool IDs that disagree with their folder, invalid confidence values, incomplete single-tool rotation samples, missing or repeated single-tool angles, and inconsistent tool sets within samples. Single-tool samples may have four views at 90-degree intervals or eight views at 45-degree intervals. Randomized multi-tool samples may have any image count and blank angles. Repeated physical Tool IDs within one image are errors even when annotation is unfinished. Ungrouped images and undeclared captures remain warnings. The command returns a nonzero exit code when static errors are found, so `python verify_data.py --static-only` can be used as a pre-push check. It then asks whether Codex should visually review temporary, downscaled contact sheets. The visual review looks for a different tool set within a sample, suspicious single-tool rotation order, image-quality problems, and inconsistent class or name conventions. These findings are suggestions for a person to review; the verifier never changes the manifest. Temporary contact sheets are deleted automatically.
 
 The visual review requires the Codex command-line program and a one-time ChatGPT sign-in. If `codex` is not installed, install it with:
 
@@ -454,13 +522,14 @@ Enter your name and the tools/samples added or corrected when prompted. The
 script snapshots your local work before retrieving incoming data. It combines
 independent file additions and uses a three-way comparison of manifest records
 and fields. Image records match on `Image ID`; object records match on `Image ID`
-and `Instance ID`; videos match on `Video ID`. Review logs retain distinct events.
+and `Instance ID`; videos match on `Video ID`; video frames match on `Video ID`
+and `Frame Index`. Review logs retain distinct events.
 It detects independently assigned Sample IDs that would combine different groups.
 
 After combining data, the script checks image/object identities, file references,
 and sample-ID collisions. It does not require complete eight-angle groups or
 run the full annotation-quality review. Use `python verify_data.py --static-only`
-separately for those checks. The script uses DVC to generate `data.dvc` and
+separately for those checks. The script uses DVC directory serialization to generate `data.dvc` and
 creates a local Git commit when needed. Before pushing Git, it uploads through
 `dvc_gdrive_sync.py` and verifies remote availability for the dataset snapshots
 referenced by the commits it is about to publish.
@@ -474,31 +543,30 @@ files in `data/` and rerun; ask the maintainer if the decision is unclear. A mis
 published snapshot requires its original contributor to run
 `python dvc_gdrive_sync.py push` on the machine with that snapshot.
 
-Merge attempts run in separate checkouts under `.data-sync/`; your working dataset
-is not replaced until publication succeeds. The directory is ignored by Git and
-contains recovery pointers and, after success, the previous dataset in
-`data-before-sync/`. Allow disk space for a working copy of the combined dataset.
-If the final local replacement is interrupted, the next run stops and identifies
-the recovery directory; ask the maintainer to finish applying the published
-snapshot before continuing. This prevents an incomplete replacement from being
-interpreted as intentional deletions. Keep recovery files until you have confirmed the result. Do not run DVC cache
-garbage collection during recovery. Failed attempts may also retain a combined
-working copy. Local OAuth configuration is removed from temporary checkouts when
-an attempt exits normally or reports an error.
+Merge attempts use temporary Git checkouts under `.data-sync/sessions/`. DVC
+indexes are merged without materializing complete historical datasets. Only
+metadata needed for record merging and the selected/present working files are
+retrieved. Conflicting binary captures stop for a decision without downloading
+both versions. Every outgoing dataset version, including preexisting local
+commits, must have all referenced objects remotely available before Git is pushed.
 
-For maintainers publishing manually, always upload successfully before publishing
-the Git pointer:
+Local updates use a journal and retain only replaced/deleted files in
+`data-before-sync/` within the attempt. An interrupted apply blocks further syncs:
 
 ```shell
-dvc add data
-python dvc_gdrive_sync.py push
-git add data.dvc
-git commit -m "Name: describe dataset changes"
-git push
+python sync_data.py recover
 ```
 
-Manual publishing requires reconciling incoming changes first. Do not choose one
-side of a `data.dvc` conflict to discard the other person's dataset.
+Recovery resumes idempotently and refuses to overwrite new conflicting edits.
+Keep the session and cache until recovery succeeds. A completed session can be
+removed using `python sync_data.py cleanup SESSION_NAME` once its backup objects
+are verified remotely. Temporary OAuth configuration is removed from Git checkouts
+when attempts exit normally or fail. A process killed without cleanup can leave a
+local credential copy; do not share recovery directories.
+
+Use `sync_data.py` to publish partial working sets. A manual `dvc add data` can
+interpret files you intentionally did not download as deletions. Do not resolve a
+`data.dvc` conflict by choosing one contributor's pointer and discarding the other.
 
 ## Mask annotation
 
@@ -595,8 +663,7 @@ Basic preparation assigns `Image ID` and `Capture Session ID`. Annotation reads
 tool metadata from instance rows. Review the suggested capture sessions before splitting
 training data. Outputs are `image_object_manifest.csv`, `masks/images/<tool ID>/<image stem>.npz`,
 and the append-only `image_review.jsonl`, all under `data/`. Snapshot these together
-with the updated `image_manifest.csv` using `dvc add data`, then publish the dataset
-and pointer as described above so masks and resume decisions stay synchronized. Mask
+with the updated `image_manifest.csv` by running `python sync_data.py`, as described above so masks and resume decisions stay synchronized. Mask
 bundles retain the format consumed by `flowsis` training. `--auto-accept` bypasses
 human review and should only be used when that is intended.
 

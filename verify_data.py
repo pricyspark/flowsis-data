@@ -32,7 +32,10 @@ REPORT_JSON_PATH = ROOT.parent / "verification_report.json"
 REPORT_HTML_PATH = ROOT.parent / "verification_report.html"
 REVIEW_LOG_PATH = ROOT / "visual_review_log.json"
 IMAGE_EXTENSIONS = {".avif", ".jpeg", ".jpg", ".png", ".webp"}
-EXPECTED_ANGLES = set(range(0, 360, 45))
+EXPECTED_ANGLES = {
+    4: set(range(0, 360, 90)),
+    8: set(range(0, 360, 45)),
+}
 REQUIRED_COLUMNS = {
     "Tool IDs",
     "Image ID",
@@ -157,7 +160,9 @@ def resolved_manifest_image(filepath: str) -> Path | None:
 
 
 def validate_image_annotations(
-    image: dict[str, str], instances: list[dict[str, str]]
+    image: dict[str, str],
+    instances: list[dict[str, str]],
+    tracked_files: set[str] | None = None,
 ) -> list[dict[str, str]]:
     """Check reviewed instance rows against their shared mask bundle."""
     location = image["Filepath"]
@@ -202,7 +207,17 @@ def validate_image_annotations(
             return []
         if len(paths) != 1:
             raise ValueError("Image instances must reference one shared mask bundle.")
-        bundle = load_mask_bundle(ROOT / next(iter(paths)))
+        mask_path = next(iter(paths))
+        if (
+            tracked_files is not None
+            and mask_path in tracked_files
+            and not (ROOT / mask_path).is_file()
+        ):
+            return [issue(
+                "info", "not_downloaded", location,
+                f"Mask is tracked but not downloaded: {mask_path}. Pull it to verify mask pixels.",
+            )]
+        bundle = load_mask_bundle(ROOT / mask_path)
         if len(bundle.masks) > 1 and mask_overlap(bundle.masks).any():
             raise ValueError(
                 "Instance masks overlap. Reopen annotation and resolve their front-to-back order or correct the masks."
@@ -237,6 +252,8 @@ def validate_image_annotations(
 def validate_manifest(
     rows: list[dict[str, str]],
     objects: list[dict[str, str]],
+    *,
+    tracked_files: set[str] | None = None,
 ) -> tuple[list[dict[str, str]], dict[str, list[dict[str, str]]]]:
     issues: list[dict[str, str]] = []
     samples: dict[str, list[dict[str, str]]] = defaultdict(list)
@@ -274,16 +291,31 @@ def validate_manifest(
                         f"{field} differs from the image manifest. Run prepare_manifests.py to refresh it.",
                     ))
         by_image[obj["Image ID"]].append(obj)
+        mask = obj.get("Mask Path", "").strip()
+        if (
+            tracked_files is not None and mask and mask not in tracked_files
+            and not (ROOT / mask).is_file()
+        ):
+            issues.append(issue(
+                "error", "missing_mask", location,
+                f"Mask is absent from both the dataset index and workspace: {mask}.",
+            ))
     for row in rows:
         instances = sorted(by_image[row["Image ID"]], key=lambda obj: obj["Instance ID"])
         if not instances:
             issues.append(issue("error", "missing_instances", row["Filepath"], "Image has no instance metadata."))
+        tools = [obj["Tool ID"].strip() for obj in instances]
+        if len(tools) != len(set(tools)):
+            issues.append(issue(
+                "error", "duplicate_tool_instance", row["Filepath"],
+                "Each physical Tool ID must occur only once within an image.",
+            ))
         if row.get("Tool IDs", "") != tool_id_summary(instances):
             issues.append(issue(
                 "error", "stale_tool_summary", row["Filepath"],
                 "Tool IDs differs from instance metadata. Run prepare_manifests.py to refresh it.",
             ))
-        issues.extend(validate_image_annotations(row, instances))
+        issues.extend(validate_image_annotations(row, instances, tracked_files))
         # Joined strings are only for the report; CSV storage stays one row per instance.
         for field in ("Tool ID", "Tool Class", "Tool Name"):
             row[field] = "; ".join(obj[field] for obj in instances)
@@ -307,7 +339,10 @@ def validate_manifest(
                 )
             )
         elif not image_path.is_file():
-            issues.append(issue("error", "missing_image", filepath, "The image file does not exist."))
+            if tracked_files is not None and filepath in tracked_files:
+                issues.append(issue("info", "not_downloaded", filepath, f"Image is tracked but not downloaded. Run python sync_data.py pull data/{filepath}."))
+            else:
+                issues.append(issue("error", "missing_image", filepath, "The image file does not exist."))
 
         path_parts = PurePosixPath(filepath).parts
         folder_tool_id = path_parts[1] if len(path_parts) >= 3 and path_parts[0] == "images" else None
@@ -329,10 +364,12 @@ def validate_manifest(
         if (angle and not sample_id) or (sample_id and not angle and not multi_tool):
             issues.append(
                 issue(
-                    "error",
+                    "error" if angle and not sample_id else "warning",
                     "partial_sample_assignment",
                     location,
-                    "Single-tool images require Sample ID and Angle together; multi-tool images may leave Angle blank.",
+                    "Angle is present without a Sample ID."
+                    if angle and not sample_id
+                    else "Single-tool image has a Sample ID but no angle; collection is incomplete.",
                 )
             )
         if sample_id:
@@ -370,13 +407,13 @@ def validate_manifest(
             len({obj["Tool ID"] for obj in by_image[row["Image ID"]]}) > 1
             for row in sample_rows
         )
-        if not multi_tool and len(sample_rows) != 8:
+        if not multi_tool and len(sample_rows) not in EXPECTED_ANGLES:
             issues.append(
                 issue(
-                    "error",
+                    "warning",
                     "sample_size",
                     location,
-                    f"The sample has {len(sample_rows)} images instead of 8.",
+                    f"The sample has {len(sample_rows)} images; expected 4 or 8.",
                 )
             )
         for column in ("Tool ID", "Tool Class", "Tool Name"):
@@ -411,25 +448,42 @@ def validate_manifest(
                         )
                     )
             continue
-        angles: list[int] = []
+        angles: list[float] = []
         invalid_angles: list[str] = []
         for row in sample_rows:
+            value = row["Angle"].strip()
+            if not value:
+                continue
             try:
-                angles.append(int(row["Angle"].strip()))
+                angle = float(value)
             except ValueError:
-                invalid_angles.append(row["Angle"])
+                invalid_angles.append(value)
+                continue
+            if not math.isfinite(angle) or not 0 <= angle < 360:
+                invalid_angles.append(value)
+            else:
+                angles.append(angle)
+        if invalid_angles:
+            issues.append(issue(
+                "error", "invalid_angles", location,
+                "Angles must be finite numbers from 0 to less than 360 degrees; "
+                f"invalid values: {', '.join(invalid_angles)}.",
+            ))
+        expected_angles = EXPECTED_ANGLES.get(len(sample_rows))
         if (
-            invalid_angles
-            or set(angles) != EXPECTED_ANGLES
+            set(angles) != expected_angles
             or len(angles) != len(set(angles))
+            or len(angles) != len(sample_rows)
         ):
             shown = ", ".join(row["Angle"] or "blank" for row in sample_rows)
             issues.append(
                 issue(
-                    "error",
-                    "invalid_angles",
+                    "warning",
+                    "incomplete_angle_coverage",
                     location,
-                    f"Expected each of 0, 45, ..., 315 once; found: {shown}.",
+                    "Expected each of 0, 90, 180, 270 once for four views, "
+                    f"or 0, 45, ..., 315 once for eight views; found: {shown}. "
+                    "Missing or extra views are collection notes and do not block publication.",
                 )
             )
 
@@ -582,22 +636,28 @@ Manufacturer and brand recognition are not objectives. Underscores separate word
 Each attached contact sheet is one
 sample and its tiles are labeled with filepath and recorded angle. For each sample, check that:
 1. Every tile shows the same physical tool or set of tools for the sample.
-2. For single_tool_rotation samples only, the tool rotates in approximately 45-degree steps
-   in the recorded order. These samples should have eight recorded angles.
+2. For single_tool_rotation samples only, accept either four views at 0, 90, 180, 270
+   degrees or eight views at 0, 45, ..., 315 degrees. Check rotation against the recorded
+   angles; do not flag a complete four-view sample for lacking eight views.
 3. For randomized_multi_tool samples, positions and orientations of the included tools may
    change freely. Blank angles and any image count are expected. Do not flag missing angles,
    rotation order, or rearrangements; flag an apparent change in the physical tool set.
 4. The visible tools plausibly agree with the recorded classes and names.
 5. Image quality is sufficient to identify and compare the tools.
 
-For recorded single-tool angles, interpret angles as clockwise rotations from image north (the top edge): north is 0 degrees,
-east is 90 degrees, south is 180 degrees, and west is 270 degrees. Use the tool's directed
-centerline from its handle or base toward its working end or tip. For an opened symmetric tool,
-such as a pair of scissors, use its axis of symmetry: the bisector between the working ends,
-pointing from the handles through the hinge toward the blades or jaws. If a double-ended or
-nearly symmetric tool has no visually distinguishable forward end, describe the angle as
-ambiguous rather than guessing; a possible 180-degree ambiguity alone is not evidence that its
-sample ID is wrong.
+Recorded single-tool angles are relative within each sample. The zero direction may be
+anywhere, and increasing angles may correspond to either clockwise or counterclockwise
+rotation. Different samples may use different zero directions and rotation directions.
+Compare relative orientations using one shared offset and one shared direction for the whole
+sample: observed_orientation = offset + direction * recorded_angle (modulo 360), where
+direction is +1 or -1. Do not flag a uniform offset, a consistently reversed direction, use
+of the handles instead of the working end, or differences in convention between samples.
+Do not choose a separate offset or direction for each image. Flag possible_wrong_angle only
+when no single offset and direction explain the relative spacing across the sample, such as
+repeated orientations at different labels, an isolated swapped view, or inconsistent steps.
+For an opened symmetric tool, such as scissors, compare its axis of symmetry consistently
+across views. If its forward end is ambiguous, compare the undirected axis modulo 180 and
+report uncertainty rather than guessing; axis ambiguity alone is not an angle or sample error.
 
 Do not treat lighting, shadows, framing, focus, or small camera movement as a different sample.
 Angle judgments from appearance are approximate: report uncertainty and use
@@ -1013,7 +1073,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main() -> None:
+def main() -> int:
     args = parse_args()
     if args.batch_size < 1:
         raise SystemExit("--batch-size must be at least 1.")
@@ -1037,7 +1097,23 @@ def main() -> None:
     missing = {"Image ID", "Instance ID", "Tool ID", "Tool Class", "Tool Name", "Confidence", "Sample ID", "Filepath"} - set(object_fields)
     if missing:
         raise SystemExit(f"{object_path.name} is missing columns: {', '.join(sorted(missing))}")
-    static_issues, samples = validate_manifest(rows, objects)
+    tracked_files = None
+    if (ROOT.parent / ".data-sync/workspace.json").exists():
+        from dataset_storage import open_store
+        from dataset_workspace import load_state
+
+        pointer = (ROOT.parent / "data.dvc").read_bytes()
+        state = load_state(ROOT.parent, pointer)
+        with open_store(ROOT.parent) as store:
+            tracked_files = set(store.index(pointer)) - state["deletions"].keys()
+    static_issues, samples = validate_manifest(
+        rows, objects, tracked_files=tracked_files
+    )
+    local_samples: dict[str, list[dict[str, str]]] = {}
+    for sample_id, sample_rows in samples.items():
+        paths = [resolved_manifest_image(row["Filepath"]) for row in sample_rows]
+        if all(path is not None and path.is_file() for path in paths):
+            local_samples[sample_id] = sample_rows
     sample_reviews: list[dict[str, object]] = []
     taxonomy_suggestions: list[dict[str, object]] = []
     agent_errors: list[str] = []
@@ -1048,15 +1124,17 @@ def main() -> None:
         f"in {len(rows)} rows."
     )
 
-    if not args.static_only and samples:
+    if not args.static_only and local_samples:
         sample_reviews, taxonomy_suggestions, agent_errors = run_agent_review(
-            samples, objects, args.batch_size, args.model,
+            local_samples, objects, args.batch_size, args.model,
             log_path=args.review_log, force=args.force_review, yes=args.yes,
         )
     elif args.static_only:
         agent_errors.append("Visual review was skipped because --static-only was used.")
     else:
-        agent_errors.append("No assigned samples were available for visual review.")
+        agent_errors.append("No complete local samples were available for visual review. Pull the required images first.")
+    if len(local_samples) < len(samples):
+        agent_errors.append(f"Visual review deferred for {len(samples) - len(local_samples)} samples with images not downloaded locally.")
 
     report: dict[str, object] = {
         "generated_at": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
@@ -1070,7 +1148,8 @@ def main() -> None:
         "agent_errors": agent_errors,
     }
     write_reports(report)
+    return 1 if error_count else 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

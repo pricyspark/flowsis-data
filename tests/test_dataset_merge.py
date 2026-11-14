@@ -6,6 +6,7 @@ import pytest
 
 from dataset_merge import Conflict, choose, merge_content
 from sync_data import merge_dataset
+from dataset_merge import validate_references
 
 
 def csv_bytes(rows):
@@ -25,6 +26,38 @@ def image(identity, sample="1", angle="0"):
         "Angle": angle,
         "Filepath": f"images/{identity}.jpg",
     }
+
+
+def test_video_frame_edits_merge_by_video_and_frame_index():
+    header = b"Video ID,Frame Index,Filepath,Reviewed\n"
+    first = b"v,0,frames/v/0.png,FALSE\n"
+    second = b"v,1,frames/v/1.png,FALSE\n"
+    result = merge_content(
+        "video_frame_manifest.csv",
+        header + first,
+        header + first.replace(b"FALSE", b"TRUE"),
+        header + first + second,
+    )
+    rows = list(csv.DictReader(io.StringIO(result.decode())))
+    assert [(row["Frame Index"], row["Reviewed"]) for row in rows] == [
+        ("0", "TRUE"),
+        ("1", "FALSE"),
+    ]
+
+
+def test_frame_references_are_checked_without_image_manifests():
+    contents = {
+        "video_manifest.csv": b"Video ID,Filepath\nv,videos/v.mp4\n",
+        "video_frame_manifest.csv": b"Video ID,Frame Index,Filepath,Mask Path,Anchor Path\nv,0,frames/v/0.png,masks/v/0.npz,anchors/v/0.npz\n",
+        "videos/v.mp4": b"video",
+        "frames/v/0.png": b"frame",
+        "masks/v/0.npz": b"mask",
+        "anchors/v/0.npz": b"anchor",
+    }
+    validate_references(contents, contents.__getitem__)
+    del contents["anchors/v/0.npz"]
+    with pytest.raises(Conflict, match="missing Anchor Path"):
+        validate_references(contents, contents.__getitem__)
 
 
 def test_manifest_preserves_local_correction_and_remote_addition():

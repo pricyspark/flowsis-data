@@ -1,9 +1,11 @@
+import sys
+
 import pytest
 from PIL import Image
 
 import prepare_manifests
 import verify_data
-from annotations import read_csv, write_image_manifests
+from annotations import read_csv, write_csv, write_image_manifests
 
 
 def sample_manifests(tmp_path, monkeypatch, tool_sets, angles=None):
@@ -78,19 +80,114 @@ def test_multi_tool_sample_rejects_changed_tool_set(tmp_path, monkeypatch):
 @pytest.mark.parametrize(
     "angles, expected",
     [
-        (["", ""], {"partial_sample_assignment", "sample_size", "invalid_angles"}),
-        (["0", "45"], {"sample_size", "invalid_angles"}),
+        (["", ""], set()),
+        (["0", "45"], set()),
+        (["0", "90", "180", "270"], set()),
+        (["270", "0", "180", "90"], set()),
+        (["0", "45", "90", "135"], set()),
+        (["0", "90", "180", "180"], set()),
+        (["0", "90", "180", "360"], {"invalid_angles"}),
+        (["0", "90", "180", "nan"], {"invalid_angles"}),
         ([str(angle) for angle in range(0, 360, 45)], set()),
-        (["0"] * 8, {"invalid_angles"}),
+        (["0"] * 8, set()),
     ],
 )
-def test_single_tool_rotation_requirements_remain_strict(
+def test_single_tool_collection_gaps_are_allowed_but_malformed_angles_fail(
     tmp_path, monkeypatch, angles, expected
 ):
     manifest, objects = sample_manifests(
         tmp_path, monkeypatch, [["2"]] * len(angles), angles
     )
     assert error_codes(manifest, objects) == expected
+
+
+@pytest.mark.parametrize("angles", [["", ""], ["0", "90", "180"], ["0"] * 8])
+def test_collection_gaps_are_reported_as_warnings(tmp_path, monkeypatch, angles):
+    manifest, objects = sample_manifests(
+        tmp_path, monkeypatch, [["2"]] * len(angles), angles
+    )
+    issues, _ = verify_data.validate_manifest(read_csv(manifest), read_csv(objects))
+    coverage = [item for item in issues if item["code"] == "incomplete_angle_coverage"]
+    assert coverage and all(item["severity"] == "warning" for item in coverage)
+    assert not any(item["severity"] == "error" for item in issues)
+
+
+def test_partial_validation_distinguishes_undownloaded_from_missing(
+    tmp_path, monkeypatch
+):
+    manifest, objects = sample_manifests(
+        tmp_path, monkeypatch, [["2"]] * 4, ["0", "90", "180", "270"]
+    )
+    rows = read_csv(manifest)
+    path = rows[0]["Filepath"]
+    (tmp_path / path).unlink()
+    tracked = {row["Filepath"] for row in rows}
+    issues, _ = verify_data.validate_manifest(
+        rows, read_csv(objects), tracked_files=tracked
+    )
+    assert not any(item["severity"] == "error" for item in issues)
+    assert any(
+        item["code"] == "not_downloaded" and item["severity"] == "info"
+        for item in issues
+    )
+    issues, _ = verify_data.validate_manifest(
+        read_csv(manifest), read_csv(objects), tracked_files=tracked - {path}
+    )
+    assert any(
+        item["code"] == "missing_image" and item["severity"] == "error"
+        for item in issues
+    )
+
+
+def test_partial_validation_still_checks_remote_mask_metadata(tmp_path, monkeypatch):
+    manifest, objects = sample_manifests(
+        tmp_path, monkeypatch, [["2"]] * 4, ["0", "90", "180", "270"]
+    )
+    instances = read_csv(objects)
+    mask = "masks/images/2/0.npz"
+    instances[0].update(
+        {
+            "Mask Path": mask,
+            "Mask Index": "0",
+            "Visibility": "clear",
+            "Reviewed": "TRUE",
+            "Annotation Complete": "TRUE",
+            "Visible": "TRUE",
+            "Mask Valid": "TRUE",
+            "Class Valid": "TRUE",
+            "Base Valid": "TRUE",
+        }
+    )
+    rows = read_csv(manifest)
+    tracked = {row["Filepath"] for row in rows} | {mask}
+    issues, _ = verify_data.validate_manifest(rows, instances, tracked_files=tracked)
+    assert not any(item["severity"] == "error" for item in issues)
+    instances[0]["Class Valid"] = "FALSE"
+    issues, _ = verify_data.validate_manifest(
+        read_csv(manifest), instances, tracked_files=tracked
+    )
+    assert any(item["code"] == "invalid_annotation" for item in issues)
+
+
+def test_duplicate_physical_tool_is_rejected_before_annotation(tmp_path, monkeypatch):
+    manifest, objects = sample_manifests(tmp_path, monkeypatch, [["2", "12"]])
+    instances = read_csv(objects)
+    instances[1]["Tool ID"] = "2"
+    write_csv(objects, instances, instances[0].keys())
+    assert "duplicate_tool_instance" in error_codes(manifest, objects)
+
+
+@pytest.mark.parametrize("angle, expected", [("270", 0), ("180", 0), ("360", 1)])
+def test_static_command_exit_status_reflects_errors(
+    tmp_path, monkeypatch, angle, expected
+):
+    manifest, objects = sample_manifests(
+        tmp_path, monkeypatch, [["2"]] * 4, ["0", "90", "180", angle]
+    )
+    monkeypatch.setattr(verify_data, "MANIFEST_PATH", manifest)
+    monkeypatch.setattr(verify_data, "write_reports", lambda report: None)
+    monkeypatch.setattr(sys, "argv", ["verify_data.py", "--static-only"])
+    assert verify_data.main() == expected
 
 
 @pytest.mark.parametrize(

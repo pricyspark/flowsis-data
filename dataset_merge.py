@@ -15,6 +15,7 @@ CSV_KEYS = {
     "image_manifest.csv": ("Image ID",),
     "image_object_manifest.csv": ("Image ID", "Instance ID"),
     "video_manifest.csv": ("Video ID",),
+    "video_frame_manifest.csv": ("Video ID", "Frame Index"),
 }
 
 
@@ -38,6 +39,8 @@ def safe_path(path: str) -> str:
     parsed = PurePosixPath(path)
     if (
         not path
+        or path == "."
+        or "\0" in path
         or parsed.is_absolute()
         or ".." in parsed.parts
         or "\\" in path
@@ -204,6 +207,7 @@ def validate_references(
 ) -> None:
     """Check identities and references; allow existing incomplete annotation groups."""
     video_data = read("video_manifest.csv") if "video_manifest.csv" in files else b""
+    videos: Records = {}
     if video_data.strip():
         fields, videos = csv_rows(
             video_data,
@@ -217,6 +221,33 @@ def validate_references(
             path not in files for path in video_paths
         ):
             raise Conflict("Video manifest contains duplicate or missing video files.")
+    if "video_frame_manifest.csv" in files:
+        _, frames = csv_rows(
+            read("video_frame_manifest.csv"),
+            CSV_KEYS["video_frame_manifest.csv"],
+            "video_frame_manifest.csv",
+        )
+        video_ids = set(videos) if video_data.strip() else set()
+        frame_ids: set[str] = set()
+        for (video_id, frame_index), row in frames.items():
+            if (video_id,) not in video_ids:
+                raise Conflict(f"Frame refers to unknown Video ID {video_id}.")
+            try:
+                if int(frame_index) < 0:
+                    raise ValueError
+            except ValueError:
+                raise Conflict(f"Invalid frame index: {frame_index}") from None
+            frame_id = row.get("Frame ID", "").strip()
+            if frame_id and frame_id in frame_ids:
+                raise Conflict(f"Duplicate Frame ID: {frame_id}")
+            if frame_id:
+                frame_ids.add(frame_id)
+            for field in ("Filepath", "Mask Path", "Anchor Path"):
+                path = row.get(field, "").strip()
+                if path and safe_path(path) not in files:
+                    raise Conflict(
+                        f"Frame {video_id}/{frame_index}: missing {field} {path}."
+                    )
     if "image_manifest.csv" not in files:
         return
     fields, images = csv_rows(

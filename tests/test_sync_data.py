@@ -1,5 +1,6 @@
 from pathlib import Path
 import subprocess
+import sys
 
 import pytest
 
@@ -16,7 +17,7 @@ def git(path, *args):
 
 
 def dvc(path, *args):
-    return call(path, "python", str(sync_data.WRAPPER), *args)
+    return call(path, sys.executable, str(sync_data.WRAPPER), *args)
 
 
 @pytest.fixture
@@ -51,6 +52,7 @@ def repositories(tmp_path, monkeypatch):
 
 
 def publish(root, name, content):
+    (root / "data" / name).parent.mkdir(parents=True, exist_ok=True)
     (root / "data" / name).write_text(content)
     dvc(root, "add", "data")
     dvc(root, "push")
@@ -71,9 +73,9 @@ def test_sync_combines_divergent_commits_and_uncommitted_files(repositories):
     publish(other, "incoming.txt", "incoming")
     dvc(root, "config", "--local", "core.autostage", "true")
 
-    sync_data.sync(root, "Combined dataset")
+    sync_data.sync(root, "Combined dataset", preset="all")
 
-    assert {p.name for p in (root / "data").iterdir()} == {
+    assert {p.name for p in (root / "data").iterdir() if p.is_file()} == {
         "base.txt",
         "local.txt",
         "extra.txt",
@@ -89,12 +91,13 @@ def test_sync_combines_divergent_commits_and_uncommitted_files(repositories):
     assert not git(root, "status", "--porcelain", "--untracked-files=no")
     assert dvc(root, "status", "--json") == "{}"
     assert dvc(root, "status", "--cloud", "--json") == "{}"
-    backups = list((root / ".data-sync").glob("*/data-before-sync"))
-    assert len(backups) == 1
-    assert (backups[0] / "extra.txt").read_text() == "extra"
+    snapshots = list((root / ".data-sync/sessions").glob("*/local.dvc"))
+    assert len(snapshots) == 1
+    cache = root / ".dvc/cache"
+    assert "extra.txt" in sync_data.index(snapshots[0], cache)
     # An unchanged rerun should not create another commit.
     head = git(root, "rev-parse", "HEAD")
-    sync_data.sync(root, "No changes")
+    sync_data.sync(root, "No changes", preset="all")
     assert git(root, "rev-parse", "HEAD") == head
 
 
@@ -105,7 +108,7 @@ def test_same_path_conflict_preserves_original_workspace(repositories):
     (root / "data/base.txt").write_text("local edit")
     publish(other, "base.txt", "different incoming edit")
     with pytest.raises(sync_data.Conflict, match="different file contents"):
-        sync_data.sync(root, "Cannot combine")
+        sync_data.sync(root, "Cannot combine", preset="all")
     assert (root / "data/base.txt").read_text() == "local edit"
     assert (root / "data.dvc").read_bytes() == pointer
     assert git(root, "rev-parse", "HEAD") == head
@@ -125,7 +128,7 @@ def test_failed_dvc_upload_never_publishes_git(repositories, monkeypatch):
 
     monkeypatch.setattr(sync_data, "dvc", failing)
     with pytest.raises(sync_data.SyncError, match="upload failure"):
-        sync_data.sync(root, "Not uploaded")
+        sync_data.sync(root, "Not uploaded", preset="all")
     assert git(remote, "rev-parse", "main") == before
     assert git(root, "rev-parse", "HEAD") == before
     assert (root / "data/local.txt").read_text() == "local"
@@ -145,7 +148,7 @@ def test_publication_race_retries_without_force_push(repositories, monkeypatch):
         return original(args, cwd, check=check)
 
     monkeypatch.setattr(sync_data, "run", racing)
-    sync_data.sync(root, "Handle race")
+    sync_data.sync(root, "Handle race", preset="all")
     assert raced
     assert (root / "data/racing.txt").read_text() == "raced"
     assert (root / "data/local.txt").read_text() == "local"
@@ -163,7 +166,7 @@ def test_missing_incoming_cache_stops_before_publication(repositories):
     git(other, "push")
     remote_head = git(remote, "rev-parse", "main")
     with pytest.raises(sync_data.SyncError, match="dvc_gdrive_sync.py push"):
-        sync_data.sync(root, "Must stop")
+        sync_data.sync(root, "Must stop", preset="all")
     assert git(remote, "rev-parse", "main") == remote_head
     assert git(root, "rev-parse", "HEAD") == before
     assert (root / "data/local.txt").read_text() == "local"
@@ -186,7 +189,7 @@ def test_edit_during_upload_preserves_work_and_stops_git_push(
     with pytest.raises(
         sync_data.SyncError, match="data changed during synchronization"
     ):
-        sync_data.sync(root, "Do not overwrite")
+        sync_data.sync(root, "Do not overwrite", preset="all")
     assert git(remote, "rev-parse", "main") == before
     assert git(root, "rev-parse", "HEAD") == before
     assert (root / "data/local.txt").read_text() == "edited during upload"
@@ -198,7 +201,7 @@ def test_missing_working_data_is_restored_without_new_commit(repositories):
     root, _, _ = repositories
     head = git(root, "rev-parse", "HEAD")
     shutil.rmtree(root / "data")
-    sync_data.sync(root, "Restore")
+    sync_data.sync(root, "Restore", preset="all")
     assert (root / "data/base.txt").read_text() == "base"
     assert git(root, "rev-parse", "HEAD") == head
 
@@ -218,9 +221,325 @@ def test_interrupted_final_update_cannot_be_misread_as_local_deletions(
 
     monkeypatch.setattr(sync_data, "git", interrupted)
     with pytest.raises(sync_data.SyncError, match="Simulated interruption"):
-        sync_data.sync(root, "Published before interruption")
+        sync_data.sync(root, "Published before interruption", preset="all")
     assert (root / ".data-sync/apply.pending").is_file()
     assert (root / "data/local.txt").read_text() == "local"
     monkeypatch.setattr(sync_data, "git", original)
     with pytest.raises(sync_data.SyncError, match="interrupted while updating"):
-        sync_data.sync(root, "Must not infer deletions")
+        sync_data.sync(root, "Must not infer deletions", preset="all")
+    sync_data.recover(root)
+    assert not (root / ".data-sync/apply.pending").exists()
+    assert (root / "data/local.txt").read_text() == "local"
+
+
+def sparse_dataset(repositories):
+    import shutil
+
+    root, other, remote = repositories
+    for name, content in {
+        "videos/45/capture.mp4": "video-content" * 100,
+        "images/45/photo.jpg": "image-content",
+        "raw-images/45/photo.HEIC": "raw-content",
+        "video_manifest.csv": "Video ID,Filepath\nvideo-1,videos/45/capture.mp4\n",
+        "image_orientation_corrections.json": "{}\n",
+    }.items():
+        path = other / "data" / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content)
+    dvc(other, "add", "data")
+    dvc(other, "push")
+    git(other, "add", "data.dvc")
+    git(other, "commit", "-m", "Add images and videos")
+    git(other, "push")
+    shutil.rmtree(root / "data")
+    shutil.rmtree(root / ".dvc/cache")
+    return root, other, remote
+
+
+def test_metadata_pull_and_contribution_never_download_videos(
+    repositories, monkeypatch
+):
+    import json
+    from dataset_storage import DatasetStore
+
+    root, other, remote = sparse_dataset(repositories)
+    source = sync_data.index(other / "data.dvc", other / ".dvc/cache")
+    video_hash = source["videos/45/capture.mp4"]
+    original_get = DatasetStore.get
+    requested = []
+
+    def get(self, digest):
+        requested.append(digest)
+        return original_get(self, digest)
+
+    monkeypatch.setattr(DatasetStore, "get", get)
+    sync_data.sync(root, None, publish=False)
+    assert (root / "data/video_manifest.csv").is_file()
+    assert (root / "data/images/45").is_dir()
+    assert not (root / "data/images/45/photo.jpg").exists()
+    assert not sync_data.cache_file(root / ".dvc/cache", video_hash).exists()
+    assert git(root, "rev-parse", "HEAD") == git(remote, "rev-parse", "main")
+    (root / "data/images/45/new.jpg").write_text("new local capture")
+    publish(other, "images/45/incoming.jpg", "new incoming capture")
+    sync_data.sync(root, "Add image from sparse checkout")
+    files = sync_data.index(root / "data.dvc", root / ".dvc/cache")
+    assert files["videos/45/capture.mp4"] == video_hash
+    assert "images/45/new.jpg" in files and "images/45/incoming.jpg" in files
+    assert not (root / "data/images/45/incoming.jpg").exists()
+    assert video_hash not in requested
+    assert not sync_data.cache_file(root / ".dvc/cache", video_hash).exists()
+    assert not json.loads((root / ".data-sync/workspace.json").read_text())["deletions"]
+
+
+def test_image_preset_is_persistent_and_excludes_raw_and_videos(repositories):
+    root, other, _ = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False, preset="images")
+    assert (root / "data/images/45/photo.jpg").is_file()
+    assert not (root / "data/raw-images/45/photo.HEIC").exists()
+    assert not (root / "data/videos/45/capture.mp4").exists()
+    publish(other, "images/45/later.jpg", "later capture")
+    sync_data.sync(root, None, publish=False)
+    assert (root / "data/images/45/later.jpg").read_text() == "later capture"
+
+
+def test_eviction_reclaims_cache_and_does_not_delete_or_redownload(repositories):
+    from dataset_commands import remove_or_evict
+
+    root, other, _ = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False, preset="videos")
+    before = sync_data.index(root / "data.dvc", root / ".dvc/cache")
+    digest = before["videos/45/capture.mp4"]
+    remove_or_evict(root, ["data/videos/45"], evict=True)
+    assert not (root / "data/videos/45/capture.mp4").exists()
+    assert not sync_data.cache_file(root / ".dvc/cache", digest).exists()
+    sync_data.sync(root, "Keep video remote")
+    assert sync_data.index(root / "data.dvc", root / ".dvc/cache") == before
+    assert not (root / "data/videos/45/capture.mp4").exists()
+    assert not sync_data.cache_file(root / ".dvc/cache", digest).exists()
+    sync_data.sync(root, None, publish=False, targets=["data/videos/45/capture.mp4"])
+    assert (root / "data/videos/45/capture.mp4").is_file()
+
+
+def test_unexpected_missing_file_requires_explicit_remove(repositories):
+    from dataset_commands import remove_or_evict
+
+    root, _, _ = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False, preset="images")
+    (root / "data/images/45/photo.jpg").unlink()
+    with pytest.raises(sync_data.SyncError, match="disappeared"):
+        sync_data.sync(root, "Do not infer deletion")
+    remove_or_evict(root, ["data/images/45/photo.jpg"], evict=False)
+    sync_data.sync(root, "Explicitly remove image")
+    assert "images/45/photo.jpg" not in sync_data.index(
+        root / "data.dvc", root / ".dvc/cache"
+    )
+    assert "videos/45/capture.mp4" in sync_data.index(
+        root / "data.dvc", root / ".dvc/cache"
+    )
+
+
+def test_eviction_refuses_unpublished_edits(repositories):
+    from dataset_commands import remove_or_evict
+
+    root, _, _ = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False, preset="images")
+    image = root / "data/images/45/photo.jpg"
+    image.write_text("unpublished edit")
+    with pytest.raises(sync_data.SyncError, match="unpublished edits"):
+        remove_or_evict(root, ["data/images/45"], evict=True)
+    assert image.read_text() == "unpublished edit"
+
+
+def test_sparse_remove_conflicts_with_remote_edit(repositories):
+    from dataset_commands import remove_or_evict
+
+    root, other, _ = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False)
+    remove_or_evict(root, ["data/images/45/photo.jpg"], evict=False)
+    publish(other, "images/45/photo.jpg", "different incoming edit")
+    with pytest.raises(sync_data.Conflict, match="deleted on one side"):
+        sync_data.sync(root, "Do not discard edit")
+
+
+def test_git_pull_before_sparse_sync_preserves_local_edits(repositories):
+    root, other, _ = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False, preset="images")
+    (root / "data/images/45/photo.jpg").write_text("local edit")
+    publish(other, "images/45/incoming.jpg", "incoming")
+    git(root, "pull", "--ff-only")
+    sync_data.sync(root, "Preserve local edit")
+    assert (root / "data/images/45/photo.jpg").read_text() == "local edit"
+    assert (root / "data/images/45/incoming.jpg").read_text() == "incoming"
+
+
+def test_interrupted_file_apply_can_be_resumed(repositories, monkeypatch):
+    root, other, _ = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False, preset="images")
+    publish(other, "images/45/photo.jpg", "updated image")
+    original = Path.replace
+    interrupted = False
+
+    def replace(self, target):
+        nonlocal interrupted
+        if (
+            not interrupted
+            and "staged" in self.parts
+            and str(target).endswith("data/images/45/photo.jpg")
+        ):
+            interrupted = True
+            raise OSError("Simulated interrupted file replacement")
+        return original(self, target)
+
+    monkeypatch.setattr(Path, "replace", replace)
+    with pytest.raises(OSError, match="Simulated interrupted"):
+        sync_data.sync(root, None, publish=False)
+    monkeypatch.setattr(Path, "replace", original)
+    sync_data.recover(root)
+    assert (root / "data/images/45/photo.jpg").read_text() == "updated image"
+    assert not (root / ".data-sync/apply.pending").exists()
+
+
+def test_recovery_preserves_new_edits_after_interruption(repositories, monkeypatch):
+    root, other, _ = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False, preset="images")
+    publish(other, "images/45/photo.jpg", "incoming version")
+    original = Path.replace
+
+    def replace(self, target):
+        if "staged" in self.parts and str(target).endswith("data/images/45/photo.jpg"):
+            raise OSError("Interrupted")
+        return original(self, target)
+
+    monkeypatch.setattr(Path, "replace", replace)
+    with pytest.raises(OSError, match="Interrupted"):
+        sync_data.sync(root, None, publish=False)
+    monkeypatch.setattr(Path, "replace", original)
+    target = root / "data/images/45/photo.jpg"
+    target.write_text("new edit during recovery")
+    with pytest.raises(sync_data.SyncError, match="overwrite a new edit"):
+        sync_data.recover(root)
+    assert target.read_text() == "new edit during recovery"
+
+
+def test_metadata_cannot_be_evicted_and_target_paths_are_safe(repositories):
+    from dataset_commands import remove_or_evict
+
+    root, _, _ = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False)
+    with pytest.raises(sync_data.SyncError, match="metadata working set"):
+        remove_or_evict(root, ["data/video_manifest.csv"], evict=True)
+    with pytest.raises(sync_data.Conflict, match="Unsafe"):
+        remove_or_evict(root, ["../outside"], evict=False)
+
+
+def test_symlinked_dataset_paths_are_refused(repositories):
+    root, _, remote = repositories
+    outside = remote.parent / "outside.txt"
+    outside.write_text("outside")
+    (root / "data/link.txt").symlink_to(outside)
+    with pytest.raises(sync_data.SyncError, match="symlinks"):
+        sync_data.sync(root, "Do not follow links")
+    assert outside.read_text() == "outside"
+
+
+def test_restore_cancels_pending_deletion_without_publishing(repositories):
+    import json
+    from dataset_commands import remove_or_evict, restore_removed
+
+    root, _, remote = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False, preset="images")
+    head = git(remote, "rev-parse", "main")
+    image = root / "data/images/45/photo.jpg"
+    remove_or_evict(root, ["data/images/45/photo.jpg"], evict=False)
+    assert not image.exists()
+    restore_removed(root, ["data/images/45/photo.jpg"])
+    assert image.read_text() == "image-content"
+    assert not json.loads((root / ".data-sync/workspace.json").read_text())["deletions"]
+    assert git(remote, "rev-parse", "main") == head
+
+
+def test_status_shows_pending_removal_before_references_are_fixed(repositories, capsys):
+    from dataset_commands import remove_or_evict, status
+
+    root, _, _ = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False)
+    remove_or_evict(root, ["data/videos/45/capture.mp4"], evict=False)
+    status(root)
+    assert '"videos/45/capture.mp4"' in capsys.readouterr().out
+    with pytest.raises(sync_data.Conflict, match="missing video files"):
+        sync_data.sync(root, "Refuse dangling reference")
+
+
+def test_git_pull_after_readonly_merge_keeps_unpublished_addition(repositories):
+    root, other, _ = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False)
+    local = root / "data/images/45/local.jpg"
+    local.write_text("unpublished capture")
+    sync_data.sync(root, None, publish=False)
+    publish(other, "images/45/later.jpg", "incoming capture")
+    git(root, "checkout", "HEAD", "--", "data.dvc")
+    git(root, "pull", "--ff-only")
+    sync_data.sync(root, "Keep unpublished capture")
+    files = sync_data.index(root / "data.dvc", root / ".dvc/cache")
+    assert "images/45/local.jpg" in files and "images/45/later.jpg" in files
+    assert local.read_text() == "unpublished capture"
+
+
+def test_divergent_pull_then_remote_metadata_edit_uses_last_remote_baseline(
+    repositories,
+):
+    import json
+
+    root, other, _ = sparse_dataset(repositories)
+    sync_data.sync(root, None, publish=False)
+    (root / "code.txt").write_text("local code")
+    git(root, "add", "code.txt")
+    git(root, "commit", "-m", "Unpublished code")
+    (root / "data/images/45/local.jpg").write_text("unpublished capture")
+    publish(other, "image_orientation_corrections.json", '{"45/photo.jpg": 90}\n')
+    sync_data.sync(root, None, publish=False)
+    publish(other, "image_orientation_corrections.json", '{"45/photo.jpg": 180}\n')
+    sync_data.sync(root, "Combine latest metadata")
+    assert json.loads(
+        (root / "data/image_orientation_corrections.json").read_text()
+    ) == {"45/photo.jpg": 180}
+    assert (root / "data/images/45/local.jpg").read_text() == "unpublished capture"
+
+
+@pytest.mark.parametrize(
+    "arguments,publish,preset,targets",
+    [
+        (["-m", "Share captures"], True, None, []),
+        (
+            ["pull", "--preset", "images", "data/images/45"],
+            False,
+            "images",
+            ["data/images/45"],
+        ),
+        (
+            ["sync", "data/masks/images/45", "-m", "Share masks"],
+            True,
+            None,
+            ["data/masks/images/45"],
+        ),
+    ],
+)
+def test_cli_accepts_presets_paths_and_options_in_either_order(
+    tmp_path, monkeypatch, arguments, publish, preset, targets
+):
+    calls = []
+    monkeypatch.setattr(sync_data, "ROOT", tmp_path)
+    monkeypatch.setattr(sys, "argv", ["sync_data.py", *arguments])
+    monkeypatch.setattr(
+        sync_data, "sync", lambda root, message, **kwargs: calls.append(kwargs)
+    )
+    assert sync_data.main() == 0
+    assert calls == [{"publish": publish, "targets": targets, "preset": preset}]
+
+
+def test_pull_rejects_unknown_target_without_advancing_git(repositories):
+    root, _, _ = sparse_dataset(repositories)
+    head = git(root, "rev-parse", "HEAD")
+    with pytest.raises(sync_data.SyncError, match="not tracked"):
+        sync_data.sync(root, None, publish=False, targets=["data/images/unknown.jpg"])
+    assert git(root, "rev-parse", "HEAD") == head

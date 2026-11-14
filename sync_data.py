@@ -1,35 +1,54 @@
-"""Synchronize the dataset safely: python sync_data.py [-m 'What changed']."""
+"""Metadata-first DVC synchronization, selective pulls, and explicit deletions."""
 
 from __future__ import annotations
 
 import argparse
+from copy import deepcopy
+from datetime import datetime, timezone
 import json
 from pathlib import Path
-import re
 import shutil
 import subprocess
 import sys
-from datetime import datetime, timezone
 
 from dvc.utils.serialize import load_yaml
 from filelock import FileLock, Timeout
 
 from dataset_merge import (
-    Missing,
-    MISSING,
+    CSV_KEYS,
     Conflict,
+    MISSING,
+    Missing,
     choose,
     merge_content,
-    safe_path,
     validate_references,
+)
+from dataset_storage import (
+    DatasetStore,
+    SyncError,
+    cache_file,
+    open_store,
+    pointer_hash,
+    read_index,
+)
+from dataset_workspace import (
+    FileRecord,
+    WorkspaceState,
+    finish_apply,
+    data_path,
+    load_state,
+    normalize_target,
+    save_state,
+    scan,
+    select,
+    stage_apply,
+    verify_scan,
+    within,
+    write_json,
 )
 
 ROOT = Path(__file__).resolve().parent
 WRAPPER = ROOT / "dvc_gdrive_sync.py"
-
-
-class SyncError(RuntimeError):
-    pass
 
 
 def run(
@@ -51,79 +70,49 @@ def git(cwd: Path, *args: str, check: bool = True) -> str:
 
 def dvc(cwd: Path, *args: str) -> str:
     command = [sys.executable, str(WRAPPER), *args]
-    if args[0] in {"fetch", "push"}:
-        # Show download progress and OAuth login links while the command runs.
+    if args[0] == "push":
         result = subprocess.run(command, cwd=cwd)
         if result.returncode:
-            raise SyncError(f"DVC {args[0]} failed. See the command output above.")
+            raise SyncError("DVC push failed. Git publication was stopped.")
         return ""
     return run(command, cwd).stdout.strip()
 
 
-def cache_file(cache: Path, digest: str) -> Path:
-    if not re.fullmatch(r"[0-9a-f]{32}(?:\.dir)?", digest):
-        raise SyncError(f"Unsupported DVC object hash: {digest}")
-    return cache / "files/md5" / digest[:2] / digest[2:]
-
-
 def index(pointer: Path, cache: Path) -> dict[str, str]:
-    outputs = load_yaml(pointer).get("outs", [])
-    if len(outputs) != 1 or outputs[0].get("path") != "data":
-        raise SyncError("Expected data.dvc to track the single data/ directory.")
-    digest = outputs[0].get("md5", "")
-    if not digest.endswith(".dir"):
-        raise SyncError("Expected an MD5 directory snapshot in data.dvc.")
-    path = cache_file(cache, digest)
+    path = cache_file(cache, pointer_hash(pointer.read_bytes()))
     if not path.is_file():
-        raise SyncError(
-            f"Dataset index {digest} is missing. Ask the contributor who published it to run python dvc_gdrive_sync.py push on their original machine."
-        )
-    result = {}
-    for row in json.loads(path.read_text()):
-        relative = safe_path(row["relpath"])
-        cache_file(cache, row["md5"])
-        if relative in result:
-            raise SyncError(f"Repeated dataset path: {relative}")
-        result[relative] = row["md5"]
-    return result
-
-
-def snapshot(root: Path, destination: Path) -> None:
-    """Cache working data, saving its pointer without changing Git's working copy."""
-    pointer = root / "data.dvc"
-    original = pointer.read_bytes()
-    config = root / ".dvc/config.local"
-    original_config = config.read_bytes() if config.exists() else None
-    try:
-        # A contributor's autostage setting must not alter the real Git index.
-        dvc(root, "config", "--local", "core.autostage", "false")
-        dvc(root, "add", "data")
-        destination.write_bytes(pointer.read_bytes())
-    finally:
-        pointer.write_bytes(original)
-        if original_config is None:
-            config.unlink(missing_ok=True)
-        else:
-            config.write_bytes(original_config)
+        raise SyncError(f"Dataset index is missing: {path.name}")
+    return read_index(path)
 
 
 def merge_dataset(
-    base: dict[str, str], local: dict[str, str], remote: dict[str, str], cache: Path
+    base: dict[str, str],
+    local: dict[str, str],
+    remote: dict[str, str],
+    cache: Path,
+    store: DatasetStore | None = None,
+    *,
+    validate: bool = True,
 ) -> dict[str, str | bytes]:
+    def read(digest: str) -> bytes:
+        return (store.get(digest) if store else cache_file(cache, digest)).read_bytes()
+
     result: dict[str, str | bytes] = {}
-    missing = MISSING
     for path in sorted(base.keys() | local.keys() | remote.keys()):
-        b, l, r = (mapping.get(path, missing) for mapping in (base, local, remote))
-        value: str | bytes | Missing
+        b, l, r = (mapping.get(path, MISSING) for mapping in (base, local, remote))
         try:
             value = choose(b, l, r, path)
         except Conflict:
             if isinstance(l, str) and isinstance(r, str):
+                if path not in CSV_KEYS and Path(path).suffix not in {
+                    ".json",
+                    ".jsonl",
+                }:
+                    raise Conflict(
+                        f"{path}: different file contents were supplied at the same path. Choose the intended edit or rename the new capture."
+                    ) from None
                 value = merge_content(
-                    path,
-                    cache_file(cache, b).read_bytes() if isinstance(b, str) else None,
-                    cache_file(cache, l).read_bytes(),
-                    cache_file(cache, r).read_bytes(),
+                    path, read(b) if isinstance(b, str) else None, read(l), read(r)
                 )
             else:
                 raise Conflict(
@@ -131,43 +120,38 @@ def merge_dataset(
                 ) from None
         if not isinstance(value, Missing):
             result[path] = value
-    # Reject file/directory collisions before materializing anything.
     for path in result:
-        for parent in Path(path).parents:
-            if parent.as_posix() in result:
-                raise Conflict(
-                    f"{path}: another contributor used a parent directory as a file."
-                )
+        if any(parent.as_posix() in result for parent in Path(path).parents):
+            raise Conflict(
+                f"{path}: another contributor used a parent directory as a file."
+            )
 
-    def read(path: str) -> bytes:
+    def contents(path: str) -> bytes:
         value = result[path]
-        return (
-            value if isinstance(value, bytes) else cache_file(cache, value).read_bytes()
-        )
+        return value if isinstance(value, bytes) else read(value)
 
-    validate_references(result, read)
+    if validate:
+        validate_references(result, contents)
     return result
 
 
-def materialize(files: dict[str, str | bytes], cache: Path, directory: Path) -> None:
-    directory.mkdir()
-    for name, value in files.items():
-        target = directory / safe_path(name)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        if isinstance(value, bytes):
-            target.write_bytes(value)
-        else:
-            # Copy rather than hardlink: editing the result must not mutate the cache.
-            shutil.copyfile(cache_file(cache, value), target)
+def cached_results(
+    store: DatasetStore, files: dict[str, str | bytes]
+) -> dict[str, str]:
+    return {
+        path: store.put_bytes(value) if isinstance(value, bytes) else value
+        for path, value in files.items()
+    }
 
 
 def check_workspace(root: Path) -> None:
     if git(root, "diff", "--cached", "--name-only"):
         raise SyncError(
-            "Files are already staged in Git. Commit or unstage them before synchronizing; this command publishes dataset changes only."
+            "Files are already staged in Git. Commit or unstage them before synchronizing."
         )
-    changes = git(root, "diff", "--name-only").splitlines()
-    if any(path != "data.dvc" for path in changes):
+    if any(
+        path != "data.dvc" for path in git(root, "diff", "--name-only").splitlines()
+    ):
         raise SyncError(
             "There are uncommitted code/documentation changes. Commit or save those separately before synchronizing."
         )
@@ -183,8 +167,91 @@ def check_workspace(root: Path) -> None:
             path = root / path
         if path.exists():
             raise SyncError(
-                "An earlier Git merge/rebase is unfinished. Finish or abort it first; no dataset changes were made."
+                "An earlier Git merge/rebase is unfinished. Finish or abort it first."
             )
+
+
+def check_pending(root: Path) -> None:
+    if (root / ".data-sync/apply.pending").exists():
+        raise SyncError(
+            "An earlier operation was interrupted while updating this machine. Run python sync_data.py recover. Do not pull DVC over the current data."
+        )
+
+
+def new_session(root: Path) -> Path:
+    path = (
+        root
+        / ".data-sync/sessions"
+        / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    )
+    path.mkdir(parents=True)
+    return path
+
+
+def local_snapshot(
+    store: DatasetStore,
+    *,
+    validate: bool = True,
+) -> tuple[WorkspaceState, dict[str, FileRecord], dict[str, str]]:
+    root = store.root
+    pointer = (root / "data.dvc").read_bytes()
+    managed = (root / ".data-sync/workspace.json").exists()
+    state = load_state(root, pointer)
+    adopting_revision = "git_revision" not in state
+    if adopting_revision:
+        state["git_revision"] = git(root, "rev-parse", "HEAD")
+    base = store.index(state["pointer"].encode())
+    current = store.index(pointer)
+    observed = scan(store, state["materialized"])
+    missing = state["materialized"].keys() - observed.keys() - state["deletions"].keys()
+    if missing:
+        raise SyncError(
+            f"Previously downloaded files disappeared, starting with {sorted(missing)[0]}. Use 'remove' for dataset deletion, 'evict' for local removal, or restore the files."
+        )
+    local = {**base, **{name: record["md5"] for name, record in observed.items()}}
+    for name in state["deletions"]:
+        if name in observed:
+            raise SyncError(
+                f"{name} is marked for removal but exists again. Resolve the pending deletion first."
+            )
+        local.pop(name, None)
+    merge_base = base
+    if managed and pointer != state["pointer"].encode():
+        head_pointer = git(root, "show", "HEAD:data.dvc").encode() + b"\n"
+        if pointer != head_pointer and (
+            base.keys() - current.keys() - state["deletions"].keys()
+        ):
+            raise SyncError(
+                "An external DVC snapshot dropped tracked paths. Do not run 'dvc add data' on a partial checkout; restore its pointer and use explicit remove commands."
+            )
+        if pointer == head_pointer:
+            assert "git_revision" in state
+            public_revision = state["git_revision"]
+            remote_revision = state.get("remote_revision")
+            if (
+                remote_revision
+                and run(
+                    ["git", "merge-base", "--is-ancestor", remote_revision, "HEAD"],
+                    root,
+                    check=False,
+                ).returncode
+                == 0
+            ):
+                public_revision = remote_revision
+            merge_base = store.index(
+                git(root, "show", f"{public_revision}:data.dvc").encode() + b"\n"
+            )
+    local = cached_results(
+        store,
+        merge_dataset(
+            merge_base, local, current, store.cache, store, validate=validate
+        ),
+    )
+    if not managed:
+        state["materialized"] = observed
+    if not managed or adopting_revision:
+        save_state(root, state)
+    return state, observed, local
 
 
 def prepare_clone(
@@ -200,304 +267,336 @@ def prepare_clone(
     source = root / ".dvc/config.local"
     if source.exists():
         shutil.copy2(source, work / ".dvc/config.local")
-    dvc(work, "config", "--local", "cache.dir", str(cache))
-
-
-def fetch_snapshot(
-    work: Path, pointer: bytes, destination: Path, cache: Path
-) -> dict[str, str]:
-    (work / "data.dvc").write_bytes(pointer)
-    destination.write_bytes(pointer)
-    try:
-        output = dvc(work, "fetch", "data.dvc")
-    except SyncError as error:
-        raise SyncError(
-            f"Could not retrieve a published dataset. Its contributor may need to upload it using python dvc_gdrive_sync.py push.\n{error}"
-        ) from error
-    if output:
-        print(output, flush=True)
-    files = index(destination, cache)
-    absent = [
-        name
-        for name, digest in files.items()
-        if not cache_file(cache, digest).is_file()
-    ]
-    if absent:
-        raise SyncError(
-            f"Published dataset files are unavailable, starting with {absent[0]}. Ask its contributor to run python dvc_gdrive_sync.py push on their original machine."
-        )
-    return files
-
-
-def verify_local(
-    root: Path,
-    head: str,
-    pointer: bytes,
-    local: dict[str, str],
-    cache: Path,
-    session: Path,
-) -> None:
-    check_workspace(root)
-    if (
-        git(root, "rev-parse", "HEAD") != head
-        or (root / "data.dvc").read_bytes() != pointer
+    for key, value in (
+        ("cache.dir", str(cache)),
+        ("core.autostage", "false"),
+        ("core.site_cache_dir", str(root / ".data-sync/dvc-state")),
     ):
-        raise SyncError(
-            "Git changed during synchronization. Your data is preserved; finish that operation and rerun."
-        )
-    if (root / "data").is_dir():
-        snapshot(root, session / "recheck.dvc")
-        if index(session / "recheck.dvc", cache) != local:
-            raise SyncError(
-                "Your data changed during synchronization. Stop annotation/collection and rerun; the working dataset has not been replaced."
-            )
+        dvc(work, "config", "--local", key, value)
 
 
-def upload_snapshots(work: Path, incoming: str) -> None:
-    """Upload every newly published pointer, including existing local commits."""
+def upload_snapshots(work: Path, incoming: str, store: DatasetStore) -> None:
+    """Publish all newly referenced objects without fetching missing media."""
     pointer = work / "data.dvc"
     final = pointer.read_bytes()
     snapshots = {final}
     for revision in git(work, "rev-list", "HEAD", f"^{incoming}").splitlines():
         snapshots.add(git(work, "show", f"{revision}:data.dvc").encode() + b"\n")
-    cache = Path(dvc(work, "cache", "dir")).resolve()
     try:
-        for content in sorted(snapshots):
-            pointer.write_bytes(content)
-            if not cache_file(cache, load_yaml(pointer)["outs"][0]["md5"]).is_file():
-                dvc(work, "fetch", "data.dvc")
-            index(pointer, cache)
-            dvc(work, "push", "data.dvc")
-            cloud = dvc(work, "status", "--cloud", "--json", "data.dvc")
-            if json.loads(cloud):
+        for content in snapshots:
+            files = store.index(content)
+            absent = store.remote_missing({pointer_hash(content), *files.values()})
+            if any(not cache_file(store.cache, digest).is_file() for digest in absent):
                 raise SyncError(
-                    "Remote verification found missing dataset objects. Git publication was stopped."
+                    "Some published objects are unavailable locally and remotely. Ask their contributor to run python dvc_gdrive_sync.py push. Git publication was stopped."
                 )
+            pointer.write_bytes(content)
+            dvc(work, "push", "data.dvc")
+            store.verify_remote(files, content)
     finally:
         pointer.write_bytes(final)
 
 
-def sync(root: Path, message: str | None, retries: int = 3) -> None:
-    pending_apply = root / ".data-sync/apply.pending"
-    if pending_apply.exists():
+def recover(root: Path) -> None:
+    pending = root / ".data-sync/apply.pending"
+    if not pending.exists():
+        print("No interrupted update needs recovery.")
+        return
+    try:
+        plan = json.loads(pending.read_text())
+    except json.JSONDecodeError as error:
         raise SyncError(
-            "An earlier synchronization published successfully but was interrupted while updating this machine. "
-            f"Ask the maintainer to finish recovery using {pending_apply.read_text().strip()}. "
-            "Do not pull DVC over the current data or delete recovery files."
-        )
+            "This is a legacy recovery journal. Preserve it for manual inspection."
+        ) from error
+    if "git_before" in plan:
+        check_workspace(root)
+        head = git(root, "rev-parse", "HEAD")
+        if head not in {plan["git_before"], plan["git_after"]}:
+            raise SyncError(
+                "Git changed since interruption; recovery needs manual review."
+            )
+        head_pointer = git(root, "show", "HEAD:data.dvc").encode() + b"\n"
+        if (root / "data.dvc").read_bytes() not in {
+            plan["original_pointer"].encode(),
+            plan["pointer"].encode(),
+            head_pointer,
+        }:
+            raise SyncError(
+                "data.dvc changed since interruption; preserve it before recovering."
+            )
+        if head != plan["git_after"]:
+            (root / "data.dvc").write_bytes(head_pointer)
+            git(root, "merge", "--ff-only", plan["git_after"])
+        (root / "data.dvc").write_text(plan["pointer"])
+    finish_apply(root, plan)
+
+
+def sync(
+    root: Path,
+    message: str | None,
+    retries: int = 3,
+    *,
+    publish: bool = True,
+    targets: list[str] | None = None,
+    preset: str | None = None,
+) -> None:
+    check_pending(root)
     check_workspace(root)
     branch = git(root, "symbolic-ref", "--quiet", "--short", "HEAD", check=False)
-    if not branch:
-        raise SyncError(
-            "Switch to your normal branch before synchronizing (usually main)."
-        )
     remote = git(root, "config", "--get", f"branch.{branch}.remote", check=False)
     remote_ref = git(root, "config", "--get", f"branch.{branch}.merge", check=False)
-    if not remote or remote == "." or not remote_ref.startswith("refs/heads/"):
-        raise SyncError(
-            "This branch needs a Git remote tracking branch. Ask the maintainer to configure it."
-        )
-    remote_url = git(root, "remote", "get-url", "--push", remote)
+    if (
+        not branch
+        or not remote
+        or remote == "."
+        or not remote_ref.startswith("refs/heads/")
+    ):
+        raise SyncError("Use a normal branch with a configured remote tracking branch.")
     head = git(root, "rev-parse", "HEAD")
-    cache = Path(dvc(root, "cache", "dir")).resolve()
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
-    session = root / ".data-sync" / timestamp
-    session.mkdir(parents=True)
-    local_pointer = session / "local.dvc"
     original_pointer = (root / "data.dvc").read_bytes()
-    (session / "original.dvc").write_bytes(original_pointer)
-    (session / "state.json").write_text(
-        json.dumps({"head": head, "branch": branch, "remote_ref": remote_ref}, indent=2)
-        + "\n"
-    )
-    (session / "README.txt").write_text(
-        "Dataset synchronization recovery\n\n"
-        "Before publication, your original working data stays in data/.\n"
-        "local.dvc preserves its cached snapshot; original.dvc preserves the original pointer.\n"
-        "base.dvc and incoming.dvc identify the snapshots used for comparison.\n"
-        "After success, data-before-sync/ contains your previous working directory.\n"
-        "Do not delete recovery files or run DVC cache garbage collection while recovering.\n"
-        "For an ambiguous edit, correct/rename the reported file in data/ and rerun.\n"
-        "If unsure, share the error and this directory with the project maintainer.\n"
-        "No force-push or manual hash editing is needed.\n"
-    )
-    print(f"Recovery files: {session.relative_to(root)}", flush=True)
-    if (root / "data").is_dir():
-        print("Saving your current dataset before downloading changes...", flush=True)
-        snapshot(root, local_pointer)
-    else:
-        local_pointer.write_bytes(original_pointer)
-    for attempt in range(1, retries + 1):
-        print(f"Checking incoming changes (attempt {attempt}/{retries})...", flush=True)
-        git(root, "fetch", remote, remote_ref)
-        incoming = git(root, "rev-parse", "FETCH_HEAD")
-        ancestors = git(root, "merge-base", "--all", head, incoming).splitlines()
-        if len(ancestors) != 1:
-            raise SyncError(
-                "The branches have an ambiguous common ancestor. Ask the maintainer to review the Git history."
-            )
-        work = session / f"attempt-{attempt}"
-        try:
-            prepare_clone(root, work, head, remote_url, cache)
-            local = fetch_snapshot(
-                work, local_pointer.read_bytes(), session / "local.dvc", cache
-            )
-            base = fetch_snapshot(
-                work,
-                git(root, "show", f"{ancestors[0]}:data.dvc").encode() + b"\n",
-                session / "base.dvc",
-                cache,
-            )
+    session = new_session(root)
+    print(f"Recovery session: {session.relative_to(root)}", flush=True)
+    with open_store(root) as store:
+        state, observed, local = local_snapshot(store)
+        select(state, targets or [], preset)
+        (session / "local.dvc").write_bytes(store.pointer(local, original_pointer))
+
+        def verify_local() -> None:
+            check_workspace(root)
+            if (
+                git(root, "rev-parse", "HEAD") != head
+                or (root / "data.dvc").read_bytes() != original_pointer
+            ):
+                raise SyncError(
+                    "Git changed during synchronization. Your data is preserved; rerun."
+                )
+            verify_scan(store, observed)
+
+        for attempt in range(1, retries + 1):
+            git(root, "fetch", remote, remote_ref)
+            incoming = git(root, "rev-parse", "FETCH_HEAD")
+            ancestors = git(root, "merge-base", "--all", head, incoming).splitlines()
+            if len(ancestors) != 1:
+                raise SyncError(
+                    "The branches have an ambiguous common ancestor; review Git history first."
+                )
             incoming_pointer = (
                 git(root, "show", f"{incoming}:data.dvc").encode() + b"\n"
             )
-            theirs = fetch_snapshot(
-                work, incoming_pointer, session / "incoming.dvc", cache
+            base = store.index(
+                git(root, "show", f"{ancestors[0]}:data.dvc").encode() + b"\n"
             )
-            print("Combining files and manifest records...", flush=True)
-            combined = merge_dataset(base, local, theirs, cache)
+            theirs = store.index(incoming_pointer)
+            remote_revision = state.get("remote_revision")
             if (
-                head == incoming
-                and local == theirs
-                and original_pointer == incoming_pointer
-                and (root / "data").is_dir()
+                remote_revision
+                and run(
+                    ["git", "merge-base", "--is-ancestor", remote_revision, incoming],
+                    root,
+                    check=False,
+                ).returncode
+                == 0
+                and run(
+                    [
+                        "git",
+                        "merge-base",
+                        "--is-ancestor",
+                        ancestors[0],
+                        remote_revision,
+                    ],
+                    root,
+                    check=False,
+                ).returncode
+                == 0
             ):
-                verify_local(root, head, original_pointer, local, cache, session)
-                upload_snapshots(work, incoming)
-                verify_local(root, head, original_pointer, local, cache, session)
-                git(root, "fetch", remote, remote_ref)
-                if git(root, "rev-parse", "FETCH_HEAD") != incoming:
-                    print("New incoming changes arrived. Checking again...", flush=True)
-                    continue
+                base = store.index(
+                    git(root, "show", f"{remote_revision}:data.dvc").encode() + b"\n"
+                )
+            store.verify_remote(theirs, incoming_pointer)
+            combined = cached_results(
+                store, merge_dataset(base, local, theirs, store.cache, store)
+            )
+            for target in targets or []:
+                prefix = normalize_target(target)
+                if (
+                    prefix
+                    and not any(within(name, prefix) for name in combined)
+                    and not data_path(root, prefix).is_dir()
+                ):
+                    raise SyncError(f"Requested dataset path is not tracked: {target}")
+            pointer = store.pointer(combined, incoming_pointer)
+            next_state = deepcopy(state)
+            next_state["pointer"] = pointer.decode()
+            if publish:
+                next_state["deletions"] = {}
+            attempt_dir = session / f"attempt-{attempt}"
+            attempt_dir.mkdir()
+            plan = stage_apply(store, combined, observed, next_state, attempt_dir)
+            fast_forward = git(root, "merge-base", head, incoming) == head
+            after = incoming if fast_forward else head
+            work = attempt_dir / "git"
+            try:
+                if publish:
+                    prepare_clone(
+                        root,
+                        work,
+                        head,
+                        git(root, "remote", "get-url", "--push", remote),
+                        store.cache,
+                    )
+                    if fast_forward:
+                        git(work, "reset", "--hard", incoming)
+                    elif head != incoming:
+                        result = run(
+                            ["git", "merge", "--no-ff", "--no-commit", incoming],
+                            work,
+                            check=False,
+                        )
+                        conflicts = git(
+                            work, "diff", "--name-only", "--diff-filter=U"
+                        ).splitlines()
+                        if any(path != "data.dvc" for path in conflicts):
+                            raise Conflict(
+                                "Code changes also conflict: " + ", ".join(conflicts)
+                            )
+                        if result.returncode and not conflicts:
+                            raise SyncError(result.stdout)
+                    (work / "data.dvc").write_bytes(pointer)
+                    git(work, "add", "--", "data.dvc")
+                    if (
+                        git(work, "diff", "--cached", "--name-only")
+                        or (work / ".git/MERGE_HEAD").exists()
+                    ):
+                        if message is None:
+                            if not sys.stdin.isatty():
+                                raise SyncError(
+                                    'Supply a message with -m "Name: dataset changes".'
+                                )
+                            message = input("Describe your changes: ").strip()
+                        if not message:
+                            raise SyncError("A nonempty commit message is required.")
+                        git(work, "commit", "-m", f"[data-sync] {message}")
+                    verify_local()
+                    upload_snapshots(work, incoming, store)
+                    verify_local()
+                    after = git(work, "rev-parse", "HEAD")
+                    if after != incoming:
+                        pushed = run(
+                            ["git", "push", "origin", f"HEAD:{remote_ref}"],
+                            work,
+                            check=False,
+                        )
+                        if pushed.returncode:
+                            git(root, "fetch", remote, remote_ref)
+                            if (
+                                git(root, "rev-parse", "FETCH_HEAD") != incoming
+                                and attempt < retries
+                            ):
+                                print(
+                                    "Another contributor published first; merging and retrying...",
+                                    flush=True,
+                                )
+                                continue
+                            raise SyncError(
+                                "Git publication failed; your data is preserved.\n"
+                                + pushed.stdout
+                            )
+                    git(root, "fetch", str(work), "HEAD")
+                else:
+                    git(root, "fetch", remote, remote_ref)
+                    if git(root, "rev-parse", "FETCH_HEAD") != incoming:
+                        continue
+                verify_local()
+                next_state["git_revision"] = after
+                next_state["remote_revision"] = after if publish else incoming
+                plan.update(
+                    {
+                        "git_before": head,
+                        "git_after": after,
+                        "pointer": pointer.decode(),
+                        "original_pointer": original_pointer.decode(),
+                    }
+                )
+                write_json(root / ".data-sync/apply.pending", plan)
+                recover(root)
                 print(
-                    "Your dataset is already synchronized. No new commit or data copy was needed.",
+                    (
+                        "Synchronization complete."
+                        if publish
+                        else "Pull complete; nothing was uploaded or committed."
+                    ),
                     flush=True,
                 )
                 return
-            # Restore the clone before merging code/history; all dataset changes are separate.
-            git(work, "checkout", "HEAD", "--", "data.dvc")
-            if git(root, "merge-base", head, incoming) == head:
-                git(work, "reset", "--hard", incoming)
-            else:
-                result = run(
-                    ["git", "merge", "--no-ff", "--no-commit", incoming],
-                    work,
-                    check=False,
-                )
-                conflicts = git(
-                    work, "diff", "--name-only", "--diff-filter=U"
-                ).splitlines()
-                if any(path != "data.dvc" for path in conflicts):
-                    raise Conflict(
-                        "Code changes also conflict: "
-                        + ", ".join(conflicts)
-                        + ". Ask the maintainer to resolve these separately."
-                    )
-                if result.returncode and not conflicts:
-                    raise SyncError(result.stdout)
-            (work / "data.dvc").write_bytes(incoming_pointer)
-            materialize(combined, cache, work / "data")
-            dvc(work, "add", "data")
-            git(work, "add", "--", "data.dvc")
-            pending = (
-                bool(git(work, "diff", "--cached", "--name-only"))
-                or (work / ".git/MERGE_HEAD").exists()
-            )
-            if pending:
-                if message is None:
-                    if not sys.stdin.isatty():
-                        raise SyncError(
-                            'Supply a commit message with -m "Name: tools/samples added or corrected".'
-                        )
-                    message = input(
-                        "Describe your changes (name, tools/samples): "
-                    ).strip()
-                    if not message:
-                        raise SyncError(
-                            "No commit message entered. Your original data is unchanged; rerun when ready."
-                        )
-                git(work, "commit", "-m", f"[data-sync] {message}")
-            verify_local(root, head, original_pointer, local, cache, session)
-            print(
-                "Uploading complete datasets before publishing their Git pointers...",
-                flush=True,
-            )
-            upload_snapshots(work, incoming)
-            verify_local(root, head, original_pointer, local, cache, session)
-            pushed = run(
-                ["git", "push", "origin", f"HEAD:{remote_ref}"], work, check=False
-            )
-            if pushed.returncode:
-                git(root, "fetch", remote, remote_ref)
-                if (
-                    git(root, "rev-parse", "FETCH_HEAD") != incoming
-                    and attempt < retries
-                ):
-                    print(
-                        "Another contributor published first. Combining their changes and retrying...",
-                        flush=True,
-                    )
-                    shutil.rmtree(work / "data")
-                    continue
-                raise SyncError(
-                    "Git publication failed; your data is preserved. Check connectivity/access and rerun.\n"
-                    + pushed.stdout
-                )
-            verify_local(root, head, original_pointer, local, cache, session)
-            # The candidate includes the original local HEAD, so this is always a fast-forward.
-            git(root, "fetch", str(work), "HEAD")
-            # An interrupted directory replacement must not be mistaken for user deletions.
-            pending_apply.write_text(str(session) + "\n")
-            (root / "data.dvc").write_bytes(
-                git(root, "show", "HEAD:data.dvc").encode() + b"\n"
-            )
-            git(root, "merge", "--ff-only", "FETCH_HEAD")
-            if (root / "data").exists():
-                (root / "data").rename(session / "data-before-sync")
-            (work / "data").rename(root / "data")
-            pending_apply.unlink()
-            git(root, "fetch", remote, remote_ref)
-            print(
-                "Synchronization complete. Your data and Git commit are published.",
-                flush=True,
-            )
-            print(
-                f"Your previous data remains in {session.relative_to(root)}/data-before-sync (if present).",
-                flush=True,
-            )
-            return
-        finally:
-            # Do not leave copies of local OAuth credentials in recovery checkouts.
-            (work / ".dvc/config.local").unlink(missing_ok=True)
+            finally:
+                (work / ".dvc/config.local").unlink(missing_ok=True)
     raise SyncError(
-        "Other contributors kept publishing. Your data is preserved; rerun shortly."
+        "Contributors kept publishing; your data is preserved. Retry shortly."
     )
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Combine local and incoming dataset changes, then upload and publish safely."
-    )
+    from dataset_commands import cleanup, remove_or_evict, restore_removed, status
+    from dataset_workspace import PRESETS
+
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "-m",
-        "--message",
-        help="commit message; prompted when needed; prefixed with [data-sync]",
+        "command",
+        nargs="?",
+        default="sync",
+        choices=(
+            "sync",
+            "pull",
+            "status",
+            "remove",
+            "evict",
+            "restore",
+            "recover",
+            "cleanup",
+        ),
     )
-    args = parser.parse_args()
+    parser.add_argument("targets", nargs="*")
+    parser.add_argument("--preset", choices=tuple(PRESETS))
+    parser.add_argument(
+        "-m", "--message", help="commit message; prefixed with [data-sync]"
+    )
+    args = parser.parse_intermixed_args()
     try:
-        directory = ROOT / ".data-sync"
-        directory.mkdir(exist_ok=True)
-        with FileLock(directory / "sync.lock", timeout=0):
-            sync(ROOT, args.message)
+        (ROOT / ".data-sync").mkdir(exist_ok=True)
+        with FileLock(ROOT / ".data-sync/sync.lock", timeout=0):
+            if args.command in {"sync", "pull"}:
+                sync(
+                    ROOT,
+                    args.message,
+                    publish=args.command == "sync",
+                    targets=args.targets,
+                    preset=args.preset,
+                )
+            elif args.command == "status":
+                status(ROOT)
+            elif args.command in {"remove", "evict"}:
+                if not args.targets:
+                    parser.error("remove/evict requires at least one dataset path")
+                remove_or_evict(ROOT, args.targets, evict=args.command == "evict")
+            elif args.command == "recover":
+                recover(ROOT)
+            elif args.command == "restore":
+                if not args.targets:
+                    parser.error("restore requires at least one pending-removal path")
+                restore_removed(ROOT, args.targets)
+            else:
+                if len(args.targets) != 1:
+                    parser.error("cleanup requires one completed session name")
+                cleanup(ROOT, args.targets[0])
     except Timeout:
         print(
-            "Another dataset synchronization is already running. Wait for it to finish.",
+            "Another dataset operation is running. Wait for it to finish.",
             file=sys.stderr,
         )
         return 1
     except (SyncError, Conflict, OSError, ValueError, KeyboardInterrupt) as error:
         print(
-            f"\nSynchronization stopped: {error}\nYour local data and recovery snapshots have been preserved. Resolve the reported issue and rerun python sync_data.py. Do not delete .data-sync/ while recovering work.",
+            f"Synchronization stopped: {error}\nYour local data and recovery files are preserved.",
             file=sys.stderr,
         )
         return 1

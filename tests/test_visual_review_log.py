@@ -292,3 +292,15 @@ def test_surgical_context_and_per_image_labels_are_in_prompt(review_data):
     assert "surgical\nlineman (linemen) pliers" in prompt
     metadata = json.loads(prompt.split("Sample metadata: ")[1].split("\n\n")[0])
     assert metadata[0]["images"][0]["tool_name"] == "lineman"
+
+
+def test_angle_review_allows_sample_relative_offset_and_direction(review_data):
+    samples, _, _ = review_data
+    prompt = verify_data.agent_prompt([("7", samples["7"], Path("sheet.jpg"))], None)
+    assert "observed_orientation = offset + direction * recorded_angle" in prompt
+    assert "direction is +1 or -1" in prompt
+    assert "Do not flag a uniform offset" in prompt
+    assert "Do not choose a separate offset or direction for each image" in prompt
+    assert "undirected axis modulo 180" in prompt
+    assert "inconsistent steps" in prompt
+    assert "clockwise rotations from image north" not in prompt
