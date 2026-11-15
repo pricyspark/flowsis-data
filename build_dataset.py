@@ -397,7 +397,10 @@ def build_dataset(
     test_size: float = 0.15,
     seed: int = 42,
     force: bool = False,
-    split_by: Literal["tool", "sample", "session"] = "tool",
+    split_by: Literal["tool", "sample", "session", "tool-sample"] = "tool",
+    unseen_tool_size: float = 0.1,
+    capture_grouping: Literal["sample", "session"] = "sample",
+    unseen_tool_ids: list[str] | None = None,
     label_fields: tuple[str, ...] = LABEL_FIELDS,
     include_videos: bool = True,
     video_sections: int = 0,
@@ -408,6 +411,10 @@ def build_dataset(
     clip_strides: tuple[int, ...] = (1, 2, 3),
 ) -> DatasetDict:
     root, output = root.resolve(), output.resolve()
+    if split_by == "tool-sample" and video_sections:
+        raise ValueError(
+            "tool-sample splitting requires whole videos: --video-sections 0"
+        )
     if output.exists() and not force:
         raise FileExistsError(
             f"Output already exists; use --force to replace it: {output}"
@@ -449,7 +456,11 @@ def build_dataset(
     print("Reading reviewed image and video manifests...", flush=True)
     rows, names, skipped = build_rows(
         root,
-        split_by="sample" if video_sections else split_by,
+        split_by=(
+            capture_grouping
+            if split_by == "tool-sample"
+            else ("sample" if video_sections else split_by)
+        ),
         label_fields=label_fields,
         include_videos=include_videos,
     )
@@ -472,7 +483,22 @@ def build_dataset(
             run["end_frame"] = row["frame_index"]
             run["frames"] += 1
     intervals = []
-    if video_sections:
+    tool_holdout = None
+    assignment_manifest = None
+    if split_by == "tool-sample":
+        from dataset_splits import split_tool_samples
+
+        assignments, tool_holdout = split_tool_samples(
+            rows,
+            unseen_tool_size=unseen_tool_size,
+            validation_size=validation_size,
+            test_size=test_size,
+            seed=seed,
+            group_by=capture_grouping,
+            unseen_tool_ids=unseen_tool_ids,
+        )
+        assignment_manifest = tool_holdout.pop("assignments")
+    elif video_sections:
         # Within-video evaluation intentionally permits shared physical tools.
         stills = [row for row in rows if not row["video_id"]]
         videos = [row for row in rows if row["video_id"]]
@@ -503,13 +529,17 @@ def build_dataset(
                 os.path.relpath(obj["mask_path"], output)
             ).as_posix()
     data = Dataset.from_list(rows, features=dataset_features(names))
+    export_splits = (
+        ("train", "validation", "test_known", "test_unseen")
+        if split_by == "tool-sample"
+        else tuple(split for split, size in sizes.items() if size > 0)
+    )
     result = DatasetDict(
         {
             split: data.select(
                 [i for i, assigned in enumerate(assignments) if assigned == split]
             )
-            for split, size in sizes.items()
-            if size > 0
+            for split in export_splits
         }
     )
     split_summary = {}
@@ -554,22 +584,37 @@ def build_dataset(
         "include_videos": include_videos,
         "sampling": "Dynamic in trainer; no frame subsampling during export.",
         "split_grouping": (
-            ["video section", "Sample ID"]
-            if video_sections
+            ["held-out Tool IDs", "Sample ID", "Video ID"]
+            + (["Capture Session ID"] if capture_grouping == "session" else [])
+            if tool_holdout is not None
             else (
-                ["physical Tool ID", "Sample ID"]
-                if split_by == "tool"
+                ["video section", "Sample ID"]
+                if video_sections
                 else (
-                    ["Capture Session ID", "Sample ID", "Video ID"]
-                    if split_by == "session"
-                    else ["Sample ID"]
+                    ["physical Tool ID", "Sample ID"]
+                    if split_by == "tool"
+                    else (
+                        ["Capture Session ID", "Sample ID", "Video ID"]
+                        if split_by == "session"
+                        else ["Sample ID"]
+                    )
                 )
             )
         ),
         "classes": names,
         "label_fields": list(label_fields),
         "split_policy": (
-            "contiguous_sections" if video_sections else "training_class_coverage_first"
+            "physical_tool_then_capture_holdout"
+            if tool_holdout is not None
+            else (
+                "contiguous_sections"
+                if video_sections
+                else "training_class_coverage_first"
+            )
+        ),
+        "physical_tool_holdout": tool_holdout,
+        "split_assignment_manifest": (
+            "split_assignments.json" if tool_holdout is not None else None
         ),
         "empty_splits": [split for split, subset in result.items() if not len(subset)],
         "classes_absent_from_train": [
@@ -590,7 +635,7 @@ def build_dataset(
             if not summary["base_eligible"]
         ],
         "augmentation_recommendation": {
-            "rotation_degrees": [0, 45],
+            "rotation_degrees": [-22.5, 22.5],
             "overlap_min_overlays": 0,
             "overlap_max_overlays": 1,
             "overlap_p": 0.25,
@@ -614,6 +659,18 @@ def build_dataset(
             + "\n"
         )
         (staged / "build_report.json").write_text(json.dumps(report, indent=2) + "\n")
+        if assignment_manifest is not None:
+            (staged / "split_assignments.json").write_text(
+                json.dumps(
+                    {
+                        "seed": seed,
+                        "tool_holdout": tool_holdout,
+                        "assignments": assignment_manifest,
+                    },
+                    indent=2,
+                )
+                + "\n"
+            )
         if output.exists():
             if not force:
                 raise FileExistsError(f"Output appeared during the build: {output}")
@@ -648,9 +705,26 @@ def main() -> None:
     )
     parser.add_argument(
         "--split-by",
-        choices=("tool", "sample", "session"),
+        choices=("tool", "sample", "session", "tool-sample"),
         default="tool",
-        help="Group by tools/samples (tool), samples/videos (sample), or capture sessions/samples/videos (session).",
+        help="Legacy tool/sample/session grouping, or two-stage physical-tool and capture holdouts (tool-sample). In tool-sample mode validation/test fractions apply to remaining capture groups.",
+    )
+    parser.add_argument(
+        "--unseen-tool-size",
+        type=float,
+        default=0.1,
+        help="Physical Tool ID fraction held out in tool-sample mode.",
+    )
+    parser.add_argument(
+        "--capture-grouping",
+        choices=("sample", "session"),
+        default="sample",
+        help="Second-stage grouping in tool-sample mode; always groups whole videos.",
+    )
+    parser.add_argument(
+        "--unseen-tool-ids",
+        nargs="+",
+        help="Explicit held-out physical IDs instead of seeded selection.",
     )
     parser.add_argument(
         "--force",
@@ -690,6 +764,9 @@ def main() -> None:
         seed=args.seed,
         force=args.force,
         split_by=args.split_by,
+        unseen_tool_size=args.unseen_tool_size,
+        capture_grouping=args.capture_grouping,
+        unseen_tool_ids=args.unseen_tool_ids,
         label_fields=tuple(args.label_fields),
         include_videos=args.include_videos,
         video_sections=args.video_sections,

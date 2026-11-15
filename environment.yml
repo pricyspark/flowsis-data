@@ -14,6 +14,7 @@ dependencies:
   - pytest
   - filelock
   - datasets
+  - scikit-learn
   - pip
   - dvc >=3.67,<4
   - dvc-gdrive >=3,<4
