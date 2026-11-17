@@ -180,7 +180,13 @@ file uses them. Shared/external caches are left intact. Metadata cannot be evict
 deletions; edit referring manifests as well before syncing. If a tracked local file
 simply disappears, sync stops and asks you to restore it or record remove/evict.
 
-On the first command, existing checkouts are adopted without changing their files.
+On first adoption, zero-byte manifest CSVs that replace populated tracked versions
+are treated as empty placeholders. The next successful pull or sync restores the
+tracked contents and preserves the placeholders in its recovery session under
+`data-before-sync/`. Failed attempts and `status` leave adoption pending so a retry
+handles the placeholders the same way. Header-only manifests, nonempty edits,
+new files, and edits in an already managed workspace keep their usual meaning.
+Other existing files are adopted without changing their contents.
 Absent tracked paths are treated as not downloaded. Thereafter, the Git-ignored
 `.data-sync/workspace.json` records the applied baseline, materialized files,
 selections, and pending deletions. Preserve that file; do not delete it as routine

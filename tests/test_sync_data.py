@@ -291,6 +291,72 @@ def test_metadata_pull_and_contribution_never_download_videos(
     assert not json.loads((root / ".data-sync/workspace.json").read_text())["deletions"]
 
 
+def test_first_adoption_restores_empty_manifest_placeholders(repositories):
+    from dataset_commands import status
+
+    root, other, remote = repositories
+    contents = {
+        "video_manifest.csv": "Video ID,Filepath\nv,videos/v.mp4\n",
+        "video_frame_manifest.csv": "Video ID,Frame Index,Filepath\nv,0,frames/v/0.png\n",
+        "image_manifest.csv": "Image ID,Sample ID,Tool IDs,Filepath\ni,1,1,images/i.jpg\n",
+        "image_object_manifest.csv": (
+            "Image ID,Instance ID,Sample ID,Tool ID,Filepath\ni,1,1,1,images/i.jpg\n"
+        ),
+        "videos/v.mp4": "video",
+        "frames/v/0.png": "frame",
+        "images/i.jpg": "image",
+    }
+    for name, content in contents.items():
+        path = other / "data" / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content)
+    dvc(other, "add", "data")
+    dvc(other, "push")
+    git(other, "add", "data.dvc")
+    git(other, "commit", "-m", "Add manifests and media")
+    git(other, "push")
+    git(root, "pull", "--ff-only")
+    head = git(root, "rev-parse", "HEAD")
+    pointer = (root / "data.dvc").read_bytes()
+    for name in sync_data.CSV_KEYS:
+        (root / "data" / name).write_bytes(b"")
+    (root / "data/local.txt").write_text("unpublished addition")
+
+    # Inspection and a failed pull must not turn placeholders into local edits.
+    status(root)
+    assert not (root / ".data-sync/workspace.json").exists()
+    with pytest.raises(sync_data.SyncError, match="not tracked"):
+        sync_data.sync(root, None, publish=False, targets=["data/unknown"])
+    assert not (root / ".data-sync/workspace.json").exists()
+    for name in sync_data.CSV_KEYS:
+        assert (root / "data" / name).read_bytes() == b""
+
+    sync_data.sync(root, None, publish=False)
+
+    for name in sync_data.CSV_KEYS:
+        assert (root / "data" / name).read_text() == contents[name]
+        backups = list(
+            (root / ".data-sync/sessions").glob(f"*/attempt-*/data-before-sync/{name}")
+        )
+        assert len(backups) == 1
+        assert backups[0].read_bytes() == b""
+    assert (root / ".data-sync/workspace.json").exists()
+    assert (root / "data/local.txt").read_text() == "unpublished addition"
+    assert not (root / "data/videos/v.mp4").exists()
+    assert not (root / "data/frames/v/0.png").exists()
+    assert git(root, "rev-parse", "HEAD") == head
+    assert git(remote, "rev-parse", "main") == head
+    assert sync_data.pointer_hash(
+        (root / "data.dvc").read_bytes()
+    ) != sync_data.pointer_hash(pointer)
+
+    # Once managed, truncation remains an edit and must fail reference checks.
+    (root / "data/video_manifest.csv").write_bytes(b"")
+    with pytest.raises(sync_data.Conflict, match="unknown Video ID"):
+        sync_data.sync(root, None, publish=False)
+    assert (root / "data/video_manifest.csv").read_bytes() == b""
+
+
 def test_image_preset_is_persistent_and_excludes_raw_and_videos(repositories):
     root, other, _ = sparse_dataset(repositories)
     sync_data.sync(root, None, publish=False, preset="images")
@@ -300,6 +366,26 @@ def test_image_preset_is_persistent_and_excludes_raw_and_videos(repositories):
     publish(other, "images/45/later.jpg", "later capture")
     sync_data.sync(root, None, publish=False)
     assert (root / "data/images/45/later.jpg").read_text() == "later capture"
+
+
+def test_first_adoption_preserves_header_only_edits_and_new_empty_manifests(
+    repositories,
+):
+    root, _, _ = repositories
+    publish(root, "video_manifest.csv", "Video ID,Filepath\nv,base.txt\n")
+    header = b"Video ID,Filepath\n"
+    (root / "data/video_manifest.csv").write_bytes(header)
+    (root / "data/video_frame_manifest.csv").write_bytes(b"")
+
+    sync_data.sync(root, None, publish=False)
+
+    assert (root / "data/video_manifest.csv").read_bytes() == header
+    assert (root / "data/video_frame_manifest.csv").read_bytes() == b""
+    files = sync_data.index(root / "data.dvc", root / ".dvc/cache")
+    assert sync_data.cache_file(
+        root / ".dvc/cache", files["video_manifest.csv"]
+    ).read_bytes() == header
+    assert "video_frame_manifest.csv" in files
 
 
 def test_eviction_reclaims_cache_and_does_not_delete_or_redownload(repositories):

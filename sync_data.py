@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from copy import deepcopy
 from datetime import datetime, timezone
+import hashlib
 import json
 from pathlib import Path
 import shutil
@@ -209,6 +210,16 @@ def local_snapshot(
             f"Previously downloaded files disappeared, starting with {sorted(missing)[0]}. Use 'remove' for dataset deletion, 'evict' for local removal, or restore the files."
         )
     local = {**base, **{name: record["md5"] for name, record in observed.items()}}
+    placeholders: set[str] = set()
+    if not managed:
+        empty = hashlib.md5(b"").hexdigest()
+        placeholders = {
+            name
+            for name in CSV_KEYS.keys() & observed.keys() & base.keys()
+            if observed[name]["md5"] == empty and base[name] != empty
+        }
+        for name in placeholders:
+            local[name] = base[name]
     for name in state["deletions"]:
         if name in observed:
             raise SyncError(
@@ -249,7 +260,9 @@ def local_snapshot(
     )
     if not managed:
         state["materialized"] = observed
-    if not managed or adopting_revision:
+    # Keep placeholder adoption pending until the file transaction restores them.
+    # Otherwise a failed pull or status command would make them edits on retry.
+    if (not managed or adopting_revision) and not placeholders:
         save_state(root, state)
     return state, observed, local
 
