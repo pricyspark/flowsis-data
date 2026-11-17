@@ -23,7 +23,7 @@ from dvc_data.hashfile.tree import Tree
 from dvc_objects.fs.local import LocalFileSystem
 
 from dataset_merge import Conflict, safe_path
-from dvc_gdrive_sync import bounded_drive_queries
+from dvc_gdrive_sync import bounded_drive_queries, drive_authentication
 
 
 class SyncError(RuntimeError):
@@ -96,11 +96,21 @@ class DatasetStore:
             download = Path(temporary) / "object"
             try:
                 self.remote.fs.get_file(self.remote.oid_to_path(digest), str(download))
-            except Exception as error:
+            except FileNotFoundError as error:
                 raise SyncError(
                     f"DVC object {digest} is unavailable. Ask its contributor to run "
                     "python dvc_gdrive_sync.py push on their original machine. "
                     f"Storage error: {error}"
+                ) from error
+            except Exception as error:
+                detail = (
+                    f"{error}: {error.__cause__}" if error.__cause__ else str(error)
+                )
+                raise SyncError(
+                    f"Could not download DVC object {digest}: {detail}. "
+                    "Check remote authentication, permissions, and connectivity, "
+                    "then rerun python sync_data.py pull. "
+                    "Remote object availability could not be determined."
                 ) from error
             if checksum(download) != digest.removesuffix(".dir"):
                 raise SyncError(f"Downloaded DVC object failed checksum: {digest}")
@@ -179,7 +189,8 @@ class DatasetStore:
         try:
             return digests - set(self.remote.oids_exist(digests, jobs=4))
         except Exception as error:
-            raise SyncError(f"Could not verify DVC remote objects: {error}") from error
+            detail = f"{error}: {error.__cause__}" if error.__cause__ else str(error)
+            raise SyncError(f"Could not verify DVC remote objects: {detail}") from error
 
     def verify_remote(self, files: Mapping[str, str], pointer: bytes) -> None:
         missing = self.remote_missing({pointer_hash(pointer), *files.values()})
@@ -207,7 +218,7 @@ class DatasetStore:
 @contextmanager
 def open_store(root: Path) -> Iterator[DatasetStore]:
     (root / ".data-sync").mkdir(exist_ok=True)
-    with bounded_drive_queries(), Repo(
+    with bounded_drive_queries(), drive_authentication(), Repo(
         str(root),
         config={"core": {"site_cache_dir": str(root / ".data-sync/dvc-state")}},
     ) as repo:

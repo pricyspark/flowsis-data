@@ -102,6 +102,21 @@ the command is still running. DVC caches your personal authorization locally;
 each collaborator signs in individually. See the
 [DVC Google Drive authentication documentation](https://doc.dvc.org/user-guide/data-management/remote-storage/google-drive#authorization).
 
+`sync_data.py` handles authentication and invokes the DVC wrapper internally;
+you do not need to run `dvc_gdrive_sync.py` separately for normal pulls or syncs.
+A warning about a missing cached `default.json` on the first login means no
+personal authorization has been saved yet; it does not mean the OAuth client ID
+or secret is wrong. A "Failed to start a local web server" error means the local
+OAuth callback server could not bind, before Google validates those values.
+Both scripts use `127.0.0.1` and try ports 8080, 8090, then 8100–8110. If all are
+occupied or local listening is blocked, free one of these ports or allow the
+local callback server, then rerun `python sync_data.py pull --preset all`.
+Google supports these [loopback callbacks for Desktop app OAuth clients](https://developers.google.com/identity/protocols/oauth2/native-app#redirect-uri_loopback).
+Keep the command running until the browser login completes.
+Authentication or connection errors do not establish
+that a dataset object is missing; only a confirmed missing-object error calls
+for a contributor to repair the upload.
+
 The default download restores designated manifests, review logs, and orientation
 metadata under `data/`, then creates the complete directory skeleton. It does not
 download images, masks, raw captures, video frames, or videos. Use the presets or
