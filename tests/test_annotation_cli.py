@@ -11,6 +11,64 @@ from annotations import IMAGE_OBJECT_FIELDS, read_csv, stable_media_id, write_cs
 from masks import load_mask_bundle
 
 
+def test_reopen_rejected_images_preserves_history_and_draft(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    write_csv(
+        "image_manifest.csv",
+        [
+            {"Image ID": "image-a", "Filepath": "images/a.jpg"},
+            {"Image ID": "image-b", "Filepath": "images/b.jpg"},
+        ],
+        ["Image ID", "Filepath"],
+    )
+    log = annotate.ReviewLog(Path("image_review.jsonl"))
+    log.append("image-a", "rejected")
+    log.append("image-b", "rejected")
+    history = log.path.read_bytes()
+    draft = annotate.state_path(log.path, "image-a")
+    draft.parent.mkdir()
+    draft.write_bytes(b"saved draft")
+    manifest = Path("image_manifest.csv").read_bytes()
+    monkeypatch.setattr(
+        sys, "argv",
+        ["annotate.py", "reopen-images", "image-a", "images/a.jpg", "images/b.jpg",
+         "--data-dir", "."],
+    )
+    annotate.main()
+    restored = annotate.ReviewLog(log.path)
+    assert not restored.completed("image-a")
+    assert not restored.completed("image-b")
+    assert restored.decisions["image-a"] == {
+        "key": "image-a", "decision": "pending", "action": "reopen",
+        "previous_decision": "rejected",
+    }
+    assert log.path.read_bytes().startswith(history)
+    assert len(log.path.read_text().splitlines()) == 4
+    assert draft.read_bytes() == b"saved draft"
+    assert Path("image_manifest.csv").read_bytes() == manifest
+
+
+@pytest.mark.parametrize("target", ["unknown", "accepted"])
+def test_reopen_validates_all_targets_before_writing(tmp_path, monkeypatch, target):
+    monkeypatch.chdir(tmp_path)
+    write_csv(
+        "image_manifest.csv",
+        [{"Image ID": key, "Filepath": f"images/{key}.jpg"}
+         for key in ("rejected", "accepted")],
+        ["Image ID", "Filepath"],
+    )
+    log = annotate.ReviewLog(Path("image_review.jsonl"))
+    log.append("rejected", "rejected")
+    log.append("accepted", "accepted")
+    before = log.path.read_bytes()
+    args = annotate.parse_args(
+        ["reopen-images", "rejected", target, "--data-dir", "."]
+    )
+    with pytest.raises(ValueError, match="Unknown image|not rejected"):
+        annotate.reopen_images(args)
+    assert log.path.read_bytes() == before
+
+
 @pytest.mark.parametrize("empty", [False, True])
 @pytest.mark.parametrize("data_dir", [".", "data"])
 @pytest.mark.parametrize("selection", [[], ["--tool-id", "7", "--sample-id", "12"]])

@@ -857,12 +857,25 @@ Both interfaces save an atomic checkpoint after each successful edit in
 `<log stem>_state/`). It includes actual
 candidate and edited masks, assignments, points, visibility, locks, crossing
 ownership, and up to 40 undo states. Skipping, quitting, or closing the canvas
-retains this draft. Rerunning the command restores it without rerunning initial
+retains this draft. Rejected images also retain their drafts so an accidental
+rejection can be undone. Rerunning the command restores it without rerunning initial
 predictions. Changed source pixels, tool metadata, model, or threshold invalidate
 a stale draft, as do changes to configured text prompts. Completed images retain
 their normal mask bundles and manifest records; their draft is removed after
-saving. Older JSONL logs alone cannot
+saving an accepted review. Older JSONL logs alone cannot
 restore edits made before mask checkpoints were introduced.
+
+To return a rejected image to pending review, use its manifest filepath or Image ID:
+
+```bash
+python annotate.py reopen-images images/multi/12/IMG_2028.jpg
+```
+
+You can provide multiple images. This appends a pending decision to the review
+history and preserves tool declarations, annotations, and any saved draft.
+Run your usual `annotate.py images` command afterward to review it again.
+Accepted images cannot be reopened with this command. Rejections made before
+draft retention was added require fresh predictions if no checkpoint remains.
 
 **Reset the current image:** click **Reset image** or enter `reset`. This restores
 the original predictions and declarations and clears all assignments, corrections,

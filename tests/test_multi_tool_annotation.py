@@ -835,7 +835,10 @@ def test_impossible_order_rejects_image_without_saving(monkeypatch, tmp_path):
     monkeypatch.setattr("builtins.input", lambda _: "order impossible")
     monkeypatch.setattr(annotate, "show_candidates", lambda *_: None)
     annotate.main()
-    assert not list(tmp_path.rglob("*.npz"))
+    assert not list((tmp_path / "masks").rglob("*.npz"))
+    assert annotate.state_path(
+        Path("image_review.jsonl"), "image-1"
+    ).is_file()
     assert all(
         not row["Annotation Complete"] for row in read_csv("image_object_manifest.csv")
     )

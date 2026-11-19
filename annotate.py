@@ -1116,11 +1116,34 @@ def annotate_images(args: argparse.Namespace) -> None:
                 ],
                 depth_order_tool_ids=result.depth_order if explicit else [],
             )
-            if explicit and decision in {"accepted", "rejected"}:
+            if explicit and decision == "accepted":
                 state_path(args.review_log, key).unlink(missing_ok=True)
         backend.refine_crop = original_refine
         if quit_sample:
             return
+
+
+def reopen_images(args: argparse.Namespace) -> None:
+    """Return rejected images to the review queue without clearing their drafts."""
+    rows = read_csv(args.manifest)
+    by_target = {
+        target: row
+        for row in rows
+        for target in (row[IMAGE_ID_FIELD], row["Filepath"])
+    }
+    review = ReviewLog(args.review_log)
+    targets: dict[str, dict[str, str]] = {}
+    for target in args.targets:
+        if target not in by_target:
+            raise ValueError(f"Unknown image ID or manifest filepath: {target}")
+        row = by_target[target]
+        key = row[IMAGE_ID_FIELD]
+        if review.decisions.get(key, {}).get("decision") != "rejected":
+            raise ValueError(f"Image is not rejected: {row['Filepath']}")
+        targets[key] = row
+    for key, row in targets.items():
+        review.append(key, "pending", action="reopen", previous_decision="rejected")
+        print(f"Reopened {row['Filepath']} for review.")
 
 
 def declare_instances(args: argparse.Namespace) -> None:
@@ -1263,6 +1286,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         description="Generate and review SAM3 annotations."
     )
     commands = parser.add_subparsers(dest="command", required=True)
+    reopen = commands.add_parser(
+        "reopen-images", help="Return rejected images to pending review."
+    )
+    reopen.add_argument("targets", nargs="+", help="Image IDs or manifest filepaths.")
+    reopen.add_argument("--manifest", type=Path, default=Path("image_manifest.csv"))
+    reopen.add_argument("--review-log", type=Path, default=Path("image_review.jsonl"))
     declare = commands.add_parser(
         "declare",
         help="Declare known tools in images, a multi-tool folder, or a sample.",
@@ -1435,7 +1464,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    if args.command == "declare":
+    if args.command == "reopen-images":
+        reopen_images(args)
+    elif args.command == "declare":
         declare_instances(args)
     elif args.command == "images":
         if args.batch_size <= 0:
