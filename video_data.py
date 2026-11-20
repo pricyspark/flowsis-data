@@ -28,6 +28,7 @@ from annotations import (
 from masks import load_mask_bundle, mask2xywh, save_mask_bundle
 
 Mask: TypeAlias = NDArray[np.bool_]
+AcceptedVersion: TypeAlias = tuple[str, str, str, str, str]
 
 
 def video_numbers(manifest: Path, videos: list[dict[str, str]]) -> dict[str, int]:
@@ -98,7 +99,8 @@ class VideoLog:
     def __init__(self, path: Path):
         self.path = path
         self.decisions: dict[str, str] = {}
-        self.accepted_versions: dict[str, tuple[str, str, str, str, str]] = {}
+        self.accepted_versions: dict[str, AcceptedVersion] = {}
+        self._mask_hashes: dict[Path, tuple[tuple[int, int, int, int, int], str]] = {}
         if path.is_file():
             with path.open(encoding="utf-8") as stream:
                 for line in stream:
@@ -107,8 +109,13 @@ class VideoLog:
                         self._update(str(record["key"]), str(record["decision"]), record)
 
     def _update(self, key: str, decision: str, details: dict[str, object]) -> None:
+        undo = details.get("action") == "undo"
+        if undo and details.get("decision_missing"):
+            self.decisions.pop(key, None)
+            self.accepted_versions.pop(key, None)
+            return
         self.decisions[key] = decision
-        if decision != "accepted":
+        if decision != "accepted" or (undo and details.get("acceptance_missing")):
             self.accepted_versions.pop(key, None)
         elif details.get("action") not in {"set_anchor", "remove_anchor", "skip"}:
             self.accepted_versions[key] = (
@@ -127,8 +134,22 @@ class VideoLog:
         if not version or not version[0] or not path:
             return False
         source = resolve_path(root, path)
-        return source.is_file() and version == (
-            file_hash(source),
+        if not source.is_file():
+            return False
+        stat = source.stat()
+        signature = (
+            stat.st_dev,
+            stat.st_ino,
+            stat.st_size,
+            stat.st_mtime_ns,
+            stat.st_ctime_ns,
+        )
+        cached = self._mask_hashes.get(source)
+        if cached is None or cached[0] != signature:
+            cached = (signature, file_hash(source))
+            self._mask_hashes[source] = cached
+        return version == (
+            cached[1],
             path,
             row.get("Visibility", ""),
             video["Extraction ID"],
@@ -153,17 +174,47 @@ class VideoLog:
             )
         self._update(key, decision, details)
 
+    def restore_decision(
+        self,
+        key: str,
+        decision: str | None,
+        version: AcceptedVersion | None,
+        command: str,
+    ) -> None:
+        details: dict[str, object] = {
+            "action": "undo",
+            "command": command,
+            "decision_missing": decision is None,
+            "acceptance_missing": version is None,
+        }
+        if version is not None:
+            details.update(
+                zip(
+                    (
+                        "mask_sha256", "mask_path", "visibility",
+                        "extraction_id", "frame_sha256",
+                    ),
+                    version,
+                    strict=True,
+                )
+            )
+        self.append(key, decision or "pending", **details)
+
 
 def prepare_videos(args: argparse.Namespace) -> None:
     import av
 
     root = args.manifest.parent.resolve()
     videos = read_csv(args.manifest) if args.manifest.is_file() else []
-    video_numbers(args.manifest, videos)
+    numbers = video_numbers(args.manifest, videos)
+    for video in videos:
+        video["Video Number"] = str(numbers[video["Video ID"]])
     target_id = args.video_id
     if args.video is not None:
         target_id = select_videos(args, videos)[0][1]["Video ID"]
     frames = read_csv(args.frame_manifest) if args.frame_manifest.is_file() else []
+    for row in frames:
+        row["Video Number"] = str(numbers[row["Video ID"]])
     log = VideoLog(args.review_log)
     paths = sorted(
         path
@@ -210,7 +261,8 @@ def prepare_videos(args: argparse.Namespace) -> None:
                 }
             )
             videos.append(video)
-            video_numbers(args.manifest, videos)
+            numbers = video_numbers(args.manifest, videos)
+            video["Video Number"] = str(numbers[video_id])
         video["Manufacturer"] = metadata["Manufacturer"]
         old_frames = [row for row in frames if row["Video ID"] == video_id]
         previous_filepaths = {row["Filepath"] for row in old_frames}
@@ -294,6 +346,7 @@ def prepare_videos(args: argparse.Namespace) -> None:
                     row = dict.fromkeys(FRAME_FIELDS, "")
                     row.update(
                         {
+                            "Video Number": video["Video Number"],
                             "Video ID": video_id,
                             "Frame Index": str(index),
                             "Timestamp Seconds": repr(timestamp),
@@ -430,6 +483,7 @@ def validate_video_frames(
     frames: list[dict[str, str]],
     *,
     check_files: bool = True,
+    check_masks: bool = True,
 ) -> None:
     for field in (
         "Video ID",
@@ -469,13 +523,21 @@ def validate_video_frames(
             raise ValueError("Frame refers to a different video.")
         if row["Frame ID"] != f"{video['Video ID']}:{int(row['Frame Index'])}":
             raise ValueError("Frame ID disagrees with video and frame index.")
+        for field in ("Mask Path", "Anchor Path"):
+            value = row.get(field)
+            if value and Path(value).suffix.lower() != ".npz":
+                raise ValueError(
+                    f"Frame {row['Frame ID']} has invalid {field} {value!r}; "
+                    "expected a relative .npz path. Check the frame manifest "
+                    "for shifted or corrupted columns."
+                )
         if check_files:
             image = read_frame(root, row)
             if image.size != (int(video["Width"]), int(video["Height"])):
                 raise ValueError(
                     "Extracted frame dimensions disagree with the video manifest."
                 )
-        if row.get("Review Status") == "accepted":
+        if check_masks and row.get("Review Status") == "accepted":
             mask = read_mask(root, row, (int(video["Height"]), int(video["Width"])))
             positive = row.get("Visibility") in {"clear", "partial", "severe"}
             if not parse_bool(row.get("Reviewed")) or not parse_bool(

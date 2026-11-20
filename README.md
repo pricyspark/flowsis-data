@@ -1384,7 +1384,7 @@ Two CSVs are authoritative:
 | Manifest | Rows and fields |
 | --- | --- |
 | `video_manifest.csv` | One row per MP4: Tool ID/class/name/confidence, Video ID, source Filepath, FPS, actual decoded Frame Count, Width/Height, Capture Session ID, Condition, source SHA256, Extraction ID, and Extraction Complete. |
-| `video_frame_manifest.csv` | One row per frame: Video ID, zero-based Frame Index, Timestamp Seconds, PNG Filepath, Frame ID, PNG SHA256, bounding box, Mask Path/Index, visibility, annotation/review flags, Review Status, and optional Anchor Path. Tool identity comes from the video row. |
+| `video_frame_manifest.csv` | One row per frame, starting with Video Number, zero-based Frame Index, Review Status, and optional Anchor Path. Timing, image/mask paths, bounding box, visibility, and annotation flags follow; Video ID, Frame ID, and PNG SHA256 are last. Tool identity comes from the video row. |
 
 There is no separate video object manifest in this single-tool prototype.
 `Extraction Complete` must be true before annotation. Extracted frames initially
@@ -1411,7 +1411,10 @@ python -u batch_propagate_videos.py --video 4 --auto-preview
 
 Numbers are assigned on preparation, or on the first listing/selection of an
 existing dataset. They are saved in `data/video_manifest.numbers.json`, keyed
-by the original hash-based Video ID. Reordering the manifest does not change
+by the original hash-based Video ID. Both `video_manifest.csv` and
+`video_frame_manifest.csv` also include this value in a `Video Number` column.
+Preparation fills or refreshes these columns from the registry, including in
+older manifests. Reordering the manifest does not change
 numbers; removing a video reserves its old number, and new videos receive new
 numbers. Keep this small registry with the dataset and include it in DVC updates
 and selective collaborator downloads. Do not delete/regenerate it. A custom
@@ -1444,11 +1447,13 @@ not the physical identity or training label.
 | --- | --- |
 | `p [TEXT]` | Generate text candidates for this frame, or the selected repair region. Omit TEXT to use the current tool prompt. |
 | `g 0,2` | Select/group candidates into the current tool mask. The union preserves disconnected visible pieces and empty gaps. |
-| `click` | Open the mouse editor: left click marks tool pixels; right click marks background. Clicks accumulate for the same frame and repair region during the reviewer session. Backspace undoes the last click; Enter generates a replacement; Esc cancels. Include positive examples of all desired visible parts. |
+| `click` | Refine the current mask with clicks: left click marks tool pixels; right click marks background. The current mask is passed to SAM3 as a mask prompt. Clicks accumulate for the same frame and repair region during the reviewer session. Backspace undoes the last click; Enter applies the refinement; Esc cancels. Without an existing mask, add a positive click to start. |
+| `click reset` | Start from an empty mask and no previous clicks. Enter replaces the mask using the new clicks; Esc preserves the saved mask and click history. In a repair region, only that region is replaced. |
 | `box` | Draw a box to guide segmentation. Enter applies it; Esc cancels. |
 | `region` or `region L T R B` | Select a repair rectangle by dragging or providing pixel coordinates. Right/bottom edges are exclusive. Text, click, and box prompts operate on this crop; only pixels inside it are replaced. |
 | `whole` | Return to whole-tool correction. Whole-tool prompts can change pixels anywhere in the frame. |
 | `prop both 80 160` | From the current corrected frame, propagate backward and forward within the inclusive range 80–160. `forward` and `backward` are also supported. |
+| `prop between 80 160` | Use the existing nonempty masks at frames 80 and 160 together to predict the frames between them. Both endpoints condition every chunk, even across long intervals. The current frame can be anywhere. Endpoint masks and saved correction anchors are preserved; reviewed interior frames must be reopened first. New predictions remain pending. |
 | `prop forward 10` | Propagate 10 frames beyond the current frame, stopping at the video boundary. `backward 10` goes back 10 frames; `both 10` goes up to 10 frames in each direction. `propr` is also accepted as an alias for `prop`. |
 | `preview 80 160` | Save PNG contact sheets with up to 12 labeled mask overlays per page. Generate the whole range without opening windows or waiting between pages; the terminal prints the output directory. |
 | `accept 80 160` | Accept pending nonempty masks and reaccept changed/unverified accepted masks in that inclusive range after previewing their current versions. Unchanged accepted frames are preserved; rejected frames must be reopened. Prints newly accepted, reaccepted, and preserved frame ranges. |
@@ -1459,23 +1464,32 @@ not the physical identity or training label.
 | `unanchor 120` / `unanchor` | Delete a saved correction anchor at the specified/current frame, preserving its current mask and review status. Propagate from a different, good frame to replace the bad mask; starting propagation on the unanchored frame makes its current mask an anchor again. |
 | `anchor 120` / `anchor` | Use the existing nonempty mask at the specified/current frame as a saved anchor, preserving the mask and review status. |
 | `jump 120` | Inspect another frame directly. |
+| `pending` | Jump to the next frame needing review in the selected range, wrapping to the first. Includes changed/unverified accepted masks; skips rejected frames. |
+| `status` | Show acceptance counts and the first frame needing review in the selected range. |
+| `undo` | Undo the last command that changed state in this video session, including propagation, clicks, acceptance, anchors, and navigation. Restore affected mask files, frame metadata, review decisions, and the prior view. One undo level; status checks, previews, invalid commands, and cancelled prompts preserve the undo point. Generated preview files are retained. Undo history is cleared when leaving the video. |
 | `view crop` / `view full` | Zoom around masks/candidates (default), or display the full frame. Also applies to saved previews. |
 | `autopreview on` / `autopreview off` | Enable/disable unattended contact-sheet generation after each propagation. Can also be enabled at startup with `--auto-preview`. |
 | `next-video` | Leave this video and open the next selected video, preserving all saved work. Ends the command when there are no more selected videos. |
 | `stay` / `stay on` / `stay off` | Stay on the current video after completion, or restore automatic advancement. Enter `stay` before the final acceptance if you want to keep inspecting. |
 | `next` / `s`, `r`, `q` | Leave this frame unfinished and continue, reject it, or quit the entire video command. |
 
-By default, `python annotate.py videos` skips finished videos and advances after
-the final acceptance/rejection. A finished video has every frame accepted with
+By default, `python annotate.py videos` skips videos that are already finished.
+After an interactive command completes a video, it stays open so you can `undo`
+that command. Enter `next` or `next-video` to advance, or `stay off` to advance
+immediately when finished. A finished video has every frame accepted with
 matching acceptance checksums or explicitly rejected. Pending, changed, or
 unverified accepted frames prevent it from being considered finished. The
 terminal prints each video's source path and ID when opening it.
+It then reports acceptance counts and whether the selected range is fully accepted,
+and starts at the first frame needing review. Startup checks acceptance hashes
+without decoding every accepted mask; unchanged mask hashes are reused during the
+session. Use `verify-videos` for full validation of frame files and mask contents.
 
 To revisit a finished video, use `python annotate.py videos --video NUMBER`.
 Explicit selection also keeps that video open after completion. Alternatively,
 `--stay-on-video` keeps completed videos open while browsing the normal queue;
-use `next-video` to leave each one. Within a session, `stay off` resumes automatic
-advancement, `next-video` leaves manually, and `q` exits the whole reviewer.
+use `next-video` to leave each one. Within a session, `stay off` leaves a finished
+video, `next-video` leaves manually, and `q` exits the whole reviewer.
 
 For example, if early masks are good but tracking drifts around frame 120:
 
@@ -1521,8 +1535,10 @@ python annotate.py videos --chunk-size 8 --context-frames 1 --auto-preview
 Then run, for example, `jump 300` and `prop forward 300`. Tracking saves its masks,
 then generates all sheets for the range without asking the user to close windows.
 Alternatively, enter `autopreview on` in an existing reviewer session. Sheets are
-stored under `data/previews/videos/<Video ID>/<range>-<snapshot ID>/`; each call
-creates a separate snapshot. Use `--preview-dir` to change the destination and
+stored under `data/previews/videos/<video number>/<range>-<snapshot ID>/`, using
+the permanent numbers shown by `list-videos` and selected with `--video NUMBER`.
+Each call creates a separate snapshot whose manifest records both the video
+number and hash ID. Use `--preview-dir` to change the destination and
 `--preview-size 1024` for larger inspection tiles (default: 768; allowed: 64–2048).
 Snapshots can be deleted when no longer needed; they are not training assets.
 

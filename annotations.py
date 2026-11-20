@@ -50,15 +50,34 @@ IMAGE_OBJECT_FIELDS = (
     "Annotation Confidence",
 )
 VIDEO_MANIFEST_FIELDS = (
-    "Tool ID", "Tool Class", "Tool Name", "Manufacturer", "Confidence", "Video ID", "Filepath",
+    "Tool ID", "Tool Class", "Tool Name", "Manufacturer", "Confidence", "Video Number", "Video ID", "Filepath",
     "FPS", "Frame Count", "Width", "Height", CAPTURE_SESSION_FIELD, "Condition",
     "Source SHA256", "Extraction ID", "Extraction Complete",
 )
 VIDEO_FRAME_FIELDS = (
-    "Video ID", "Frame Index", "Timestamp Seconds", "Filepath", "Frame ID", "Frame SHA256",
-    "BBox X", "BBox Y", "BBox Width", "BBox Height", "Mask Path", "Mask Index",
-    "Visibility", "Reviewed", "Annotation Complete", "Mask Valid", "Class Valid",
-    "Base Valid", "Visible", "Annotation Confidence", "Review Status", "Anchor Path",
+    "Video Number",
+    "Frame Index",
+    "Review Status",
+    "Anchor Path",
+    "Timestamp Seconds",
+    "Filepath",
+    "Mask Path",
+    "Mask Index",
+    "Visibility",
+    "BBox X",
+    "BBox Y",
+    "BBox Width",
+    "BBox Height",
+    "Reviewed",
+    "Annotation Complete",
+    "Mask Valid",
+    "Class Valid",
+    "Base Valid",
+    "Visible",
+    "Annotation Confidence",
+    "Video ID",
+    "Frame ID",
+    "Frame SHA256",
 )
 
 def parse_bool(value: object, *, default: bool = False) -> bool:

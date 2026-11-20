@@ -25,6 +25,7 @@ from image_review import Candidate
 from image_refinement import refine_tool, tool_crop
 from masks import load_mask_bundle, save_mask_bundle
 from video_backend import Sam3VideoBackend
+from video_history import VideoCommandUndo, VideoViewState
 from video_data import (
     FRAME_FIELDS,
     Mask,
@@ -37,6 +38,7 @@ from video_data import (
     save_frame_mask,
     select_videos,
     validate_video_frames,
+    video_numbers,
 )
 from video_ui import (
     collect_clicks,
@@ -104,7 +106,11 @@ class VideoReviewer:
             (row for row in all_frames if row["Video ID"] == video["Video ID"]),
             key=lambda row: int(row["Frame Index"]),
         )
-        validate_video_frames(self.root, video, self.frames, check_files=False)
+        # Interactive startup checks structure and acceptance hashes. Decoding every
+        # accepted mask belongs to verify-videos, rather than every resume.
+        validate_video_frames(
+            self.root, video, self.frames, check_files=False, check_masks=False
+        )
         self.backend = backend
         self.log = VideoLog(args.review_log)
         self.aliases = load_taxonomy_aliases(args.aliases_json)
@@ -114,6 +120,17 @@ class VideoReviewer:
         self.click_history: dict[
             tuple[int, tuple[int, int, int, int] | None], list[tuple[float, float, int]]
         ] = {}
+        self._undo: VideoCommandUndo | None = None
+        self._pending_undo: VideoCommandUndo | None = None
+
+    def remember(self, index: int, *paths: Path) -> None:
+        if self._pending_undo is not None:
+            self._pending_undo.record(self.frames[index], paths)
+
+    def discard_undo(self) -> None:
+        if self._undo is not None:
+            self._undo.close()
+            self._undo = None
 
     def flush(self) -> None:
         write_csv(self.args.frame_manifest, self.all_frames, FRAME_FIELDS)
@@ -130,6 +147,36 @@ class VideoReviewer:
             for row in self.frames
         )
 
+    def needs_review(self, index: int) -> bool:
+        row = self.frames[index]
+        status = row.get("Review Status")
+        return status != "rejected" and (
+            status != "accepted"
+            or not self.log.acceptance_matches(self.root, self.video, row)
+        )
+
+    def progress(self, start: int, stop: int) -> list[int]:
+        pending = [
+            index for index in range(start, stop + 1) if self.needs_review(index)
+        ]
+        counts = Counter(
+            row.get("Review Status") for row in self.frames[start : stop + 1]
+        )
+        print(
+            f"Frames {start}–{stop}: {counts['accepted']}/{stop - start + 1} accepted, "
+            f"{counts['rejected']} rejected, {len(pending)} needing review."
+        )
+        if pending:
+            print(
+                f"First frame needing review: {pending[0]}. "
+                "Use pending to jump ahead."
+            )
+        elif counts["rejected"]:
+            print("Selected frames are fully reviewed (including rejected frames).")
+        else:
+            print("Selected frames are fully accepted.")
+        return pending
+
     def editable(self, indices: list[int]) -> None:
         protected = [
             index
@@ -143,7 +190,9 @@ class VideoReviewer:
 
     def reopen(self, start: int, stop: int) -> None:
         self.check_range(start, stop)
-        for row in self.frames[start : stop + 1]:
+        for index in range(start, stop + 1):
+            self.remember(index)
+            row = self.frames[index]
             row.update(
                 {
                     "Review Status": "pending",
@@ -165,6 +214,7 @@ class VideoReviewer:
         if not path:
             print(f"Frame {index} has no saved anchor.")
             return
+        self.remember(index, resolve_path(self.root, path))
         resolve_path(self.root, path).unlink(missing_ok=True)
         row["Anchor Path"] = ""
         self.flush()
@@ -189,6 +239,7 @@ class VideoReviewer:
             / self.video["Video ID"]
             / f"{index:06d}.npz"
         )
+        self.remember(index, path)
         save_mask_bundle(path, mask[None], [f"tool-{self.video['Tool ID']}"])
         row["Anchor Path"] = path.resolve().relative_to(self.root).as_posix()
         self.flush()
@@ -227,6 +278,13 @@ class VideoReviewer:
     ) -> None:
         self.editable([index])
         row = self.frames[index]
+        path = self.args.mask_dir / self.video["Video ID"] / f"{index:06d}.npz"
+        self.remember(index, path)
+        if anchor and mask.any():
+            self.remember(
+                index,
+                self.args.mask_dir / "anchors" / self.video["Video ID"] / path.name,
+            )
         save_frame_mask(
             self.root,
             row,
@@ -257,9 +315,12 @@ class VideoReviewer:
     def preview(self, start: int, stop: int) -> Path:
         self.check_range(start, stop)
         self.backend.release()
+        number = video_numbers(self.args.manifest, read_csv(self.args.manifest))[
+            self.video["Video ID"]
+        ]
         directory = (
             self.args.preview_dir
-            / self.video["Video ID"]
+            / str(number)
             / f"{start:06d}-{stop:06d}-{uuid4().hex[:8]}"
         )
         directory.mkdir(parents=True, exist_ok=True)
@@ -317,6 +378,7 @@ class VideoReviewer:
                 json.dumps(
                     {
                         "video_id": self.video["Video ID"],
+                        "video_number": number,
                         "extraction_id": self.video["Extraction ID"],
                         "preview_size": self.args.preview_size,
                         "frames": records,
@@ -547,6 +609,106 @@ class VideoReviewer:
         if self.args.auto_preview:
             self.preview(target_start, target_stop)
 
+    def propagate_between(self, start: int, stop: int) -> None:
+        self.check_range(start, stop)
+        if stop - start < 2:
+            raise ValueError("Choose two anchors with at least one frame between them.")
+        if any(
+            self.frames[index].get("Review Status") == "rejected"
+            for index in (start, stop)
+        ):
+            raise ValueError(
+                "Rejected frames cannot be endpoint anchors; reopen them first."
+            )
+        self.editable(list(range(start + 1, stop)))
+        endpoints = {index: self.mask(index) for index in (start, stop)}
+        for index, mask in endpoints.items():
+            if not mask.any():
+                raise ValueError(f"Endpoint frame {index} needs a nonempty mask.")
+        fixed = {start, stop} | {
+            index
+            for index in range(start + 1, stop)
+            if self.frames[index].get("Anchor Path")
+        }
+        existing = {
+            index
+            for index in range(start + 1, stop)
+            if self.frames[index].get("Mask Path")
+        }
+        written: set[int] = set()
+        current, carry = start, endpoints[start]
+        while current < stop - 1:
+            last = min(stop - 1, current + self.args.chunk_size - 1)
+            # Keep both endpoint images in every bounded window. Local indices
+            # follow chronological order even when distant frames are omitted.
+            indices = sorted(
+                {start, stop}
+                | set(
+                    range(
+                        max(start, current - self.args.context_frames),
+                        min(stop, last + self.args.context_frames) + 1,
+                    )
+                )
+            )
+            positions = {index: local for local, index in enumerate(indices)}
+            images = [read_frame(self.root, self.frames[index]) for index in indices]
+            anchors = {positions[index]: mask for index, mask in endpoints.items()}
+            for index in indices:
+                if index in fixed and index not in endpoints:
+                    bundle = load_mask_bundle(
+                        resolve_path(self.root, self.frames[index]["Anchor Path"])
+                    )
+                    if bundle.masks.shape != (1, images[0].height, images[0].width):
+                        raise ValueError(
+                            "Correction anchor has invalid mask dimensions."
+                        )
+                    anchors[positions[index]] = bundle.masks[0]
+            anchors[positions[current]] = carry
+            seen: set[int] = set()
+            boundary: Mask | None = None
+            for local, prediction in self.backend.track(
+                images, anchors, positions[current], positions[last], False
+            ):
+                if not 0 <= local < len(indices):
+                    raise ValueError(f"Tracker returned an invalid frame index: {local}.")
+                index = indices[local]
+                if not current < index <= last:
+                    continue
+                seen.add(index)
+                if index == last:
+                    boundary = prediction
+                if index not in fixed:
+                    self.save(
+                        index,
+                        prediction,
+                        "pending",
+                        action="propagate",
+                        anchor_frames=[start, stop],
+                        frame_range=[start, stop],
+                        direction="between",
+                    )
+                    written.add(index)
+            del images, anchors
+            missing = set(range(current + 1, last + 1)) - seen
+            if missing:
+                raise ValueError(
+                    f"Tracker did not return frame {min(missing)}; correct it before continuing."
+                )
+            if last == stop - 1:
+                break
+            if boundary is None or not boundary.any():
+                raise ValueError(
+                    f"Tracking lost the tool at frame {last}. Add a correction there."
+                )
+            current, carry = last, boundary
+        print(f"Propagation between anchors {start} and {stop} completed.")
+        print(f"New pending masks: {frame_ranges(written - existing)}.")
+        print(f"Regenerated pending masks: {frame_ranges(written & existing)}.")
+        print(f"Preserved anchor frames: {frame_ranges(fixed)}.")
+        print("Review pending masks before acceptance.")
+        if self.args.auto_preview:
+            self.preview(start, stop)
+
     def run(self) -> bool:
         start = self.args.start_frame
         stop = (
@@ -555,12 +717,13 @@ class VideoReviewer:
             else len(self.frames) - 1
         )
         self.check_range(start, stop)
+        pending = self.progress(start, stop)
         current = next(
             (
                 index
-                for index in range(start, stop + 1)
-                if self.frames[index].get("Review Status")
-                not in {"accepted", "rejected"}
+                for index in pending
+                if not self.args.auto_accept
+                or self.frames[index].get("Review Status") != "accepted"
             ),
             None,
         )
@@ -575,16 +738,45 @@ class VideoReviewer:
         region: tuple[int, int, int, int] | None = None
         candidates: list[Candidate] = []
         visited: set[int] = set()
+
+        def view_state() -> VideoViewState:
+            return VideoViewState(
+                current,
+                prompt,
+                region,
+                candidates,
+                visited,
+                self.zoom,
+                self.stay,
+                self.args.auto_preview,
+                self.click_history,
+                self.inspected,
+            )
+
+        advance_when_finished = False
+        completion_announced = False
         if not self.args.auto_accept and (self.stay or not self.is_finished()):
             print(
-                "Commands: p, g, click, prop, preview, accept, jump, q. "
+                "Commands: p, g, click [reset], prop, preview, accept, jump, "
+                "pending, status, undo, q. "
                 "See README.md for details."
             )
         while current is not None:
             if not self.stay and self.is_finished():
-                self.backend.release()
-                print(f"Finished video {self.video['Filepath']}; moving to the next video.")
-                return True
+                if self._undo is None or advance_when_finished:
+                    self.discard_undo()
+                    self.backend.release()
+                    print(f"Finished video {self.video['Filepath']}; moving to the next video.")
+                    return True
+                if not completion_announced:
+                    self.backend.release()
+                    print(
+                        "Video complete. Use undo to revert, "
+                        "or next/next-video to continue."
+                    )
+                    completion_announced = True
+            else:
+                completion_announced = False
             row = self.frames[current]
             image = read_frame(self.root, row)
             mask = self.mask(current)
@@ -617,10 +809,44 @@ class VideoReviewer:
                         resolve_path(self.root, row["Mask Path"])
                     )
                 command, _, argument = input("video> ").strip().partition(" ")
+            advance_when_finished = False
+            if not self.args.auto_accept and command not in {
+                "undo", "q", "next-video", "status", "preview",
+            }:
+                self._pending_undo = VideoCommandUndo(
+                    f"{command} {argument}".strip(), view_state(), self.log
+                )
             try:
                 if command == "q":
+                    self.discard_undo()
                     return False
+                if command == "undo":
+                    if argument:
+                        raise ValueError("Use undo without arguments.")
+                    if self._undo is None:
+                        print("Nothing to undo in this video session.")
+                        continue
+                    snapshot = self._undo
+                    state = snapshot.restore()
+                    if snapshot.rows:
+                        self.flush()
+                    current, prompt, region = state.current, state.prompt, state.region
+                    candidates, visited = state.candidates, state.visited
+                    self.zoom, self.stay = state.zoom, state.stay
+                    self.args.auto_preview = state.auto_preview
+                    self.click_history = state.click_history
+                    self.inspected = state.inspected
+                    print(f"Undid: {snapshot.command}.")
+                    self._undo = None
+                    snapshot.close()
+                    continue
+                if command in {"next", "s"} and not self.stay and self.is_finished():
+                    self.discard_undo()
+                    self.backend.release()
+                    print(f"Finished video {self.video['Filepath']}; moving to the next video.")
+                    return True
                 if command == "next-video":
+                    self.discard_undo()
                     self.backend.release()
                     print(f"Leaving {self.video['Filepath']}; saved masks are retained.")
                     return True
@@ -628,12 +854,21 @@ class VideoReviewer:
                     if argument not in {"", "on", "off"}:
                         raise ValueError("Use stay, stay on, or stay off.")
                     self.stay = argument != "off"
+                    advance_when_finished = argument == "off"
                     print(f"Stay on the current video: {'on' if self.stay else 'off'}.")
                     continue
                 if command == "jump":
                     index = int(argument)
                     self.check_range(index, index)
                     current, region, candidates = index, None, []
+                    continue
+                if command in {"pending", "status"}:
+                    pending = self.progress(start, stop)
+                    if command == "pending" and pending:
+                        index = next(
+                            (index for index in pending if index > current), pending[0]
+                        )
+                        current, region, candidates = index, None, []
                     continue
                 if command == "view":
                     if argument not in {"crop", "full"}:
@@ -706,6 +941,7 @@ class VideoReviewer:
                         candidates.append(
                             Candidate(full, part.score, prompt, part.identity)
                         )
+                    self.remember(current)
                     self.log.append(
                         row["Frame ID"],
                         "pending",
@@ -760,6 +996,11 @@ class VideoReviewer:
                     candidates = []
                     continue
                 if command in {"click", "box"}:
+                    if command == "click" and argument not in {"", "reset"}:
+                        raise ValueError(
+                            "Use click to refine, or click reset to start over."
+                        )
+                    reset = command == "click" and argument == "reset"
                     view = image.crop(region) if region else image
                     view_mask = (
                         mask[region[1] : region[3], region[0] : region[2]]
@@ -769,8 +1010,12 @@ class VideoReviewer:
                     points = (
                         collect_clicks(
                             view,
-                            view_mask,
-                            self.click_history.get((current, region), []),
+                            np.zeros_like(view_mask) if reset else view_mask,
+                            (
+                                []
+                                if reset
+                                else self.click_history.get((current, region), [])
+                            ),
                         )
                         if command == "click"
                         else []
@@ -778,7 +1023,12 @@ class VideoReviewer:
                     box = select_region(view) if command == "box" else None
                     if points is None or (not points and box is None):
                         continue
-                    replacement = self.backend.clicks(view, points, box)
+                    seed = (
+                        view_mask
+                        if command == "click" and not reset and view_mask.any()
+                        else None
+                    )
+                    replacement = self.backend.clicks(view, points, box, seed=seed)
                     full = np.zeros_like(mask)
                     if region:
                         full[region[1] : region[3], region[0] : region[2]] = replacement
@@ -793,6 +1043,7 @@ class VideoReviewer:
                         points=points,
                         box=box,
                         region=region,
+                        reset_mask=reset,
                     )
                     if command == "click":
                         self.click_history[(current, region)] = points
@@ -800,13 +1051,20 @@ class VideoReviewer:
                     continue
                 if command in {"prop", "propr"}:
                     parts = argument.split()
+                    if parts and parts[0] == "between":
+                        if len(parts) != 3:
+                            raise ValueError("Use prop between START END.")
+                        first, last = map(int, parts[1:])
+                        self.propagate_between(first, last)
+                        continue
                     if len(parts) not in {2, 3} or parts[0] not in {
                         "forward",
                         "backward",
                         "both",
                     }:
                         raise ValueError(
-                            "Use prop forward|backward|both COUNT or START END."
+                            "Use prop forward|backward|both COUNT or START END, "
+                            "or prop between START END."
                         )
                     direction = parts[0]
                     if len(parts) == 2:
@@ -832,6 +1090,7 @@ class VideoReviewer:
                         raise ValueError(
                             "Visible state must be clear, partial, or severe."
                         )
+                    self.remember(current)
                     row["Visibility"] = argument
                     self.flush()
                     continue
@@ -848,6 +1107,7 @@ class VideoReviewer:
                         anchor=bool(mask.any()),
                     )
                 elif command == "r":
+                    self.remember(current)
                     row.update(
                         {
                             "Review Status": "rejected",
@@ -860,6 +1120,7 @@ class VideoReviewer:
                 elif command not in {"next", "s"}:
                     raise ValueError("Unknown command.")
                 elif not self.args.auto_accept:
+                    self.remember(current)
                     self.log.append(
                         row["Frame ID"],
                         row.get("Review Status") or "pending",
@@ -871,19 +1132,36 @@ class VideoReviewer:
                         index
                         for index in range(start, stop + 1)
                         if index not in visited
-                        and self.frames[index].get("Review Status")
-                        not in {"accepted", "rejected"}
+                        and self.needs_review(index)
+                        and (
+                            not self.args.auto_accept
+                            or self.frames[index].get("Review Status") != "accepted"
+                        )
                     ),
                     None,
                 )
-                if current is None and self.stay and not self.args.auto_accept:
+                if (
+                    current is None
+                    and not self.args.auto_accept
+                    and (self.stay or self.is_finished())
+                ):
                     current = start
                 region, candidates = None, []
             except (ValueError, OSError) as error:
                 print(error)
+            finally:
+                snapshot = self._pending_undo
+                self._pending_undo = None
+                if snapshot is not None:
+                    if snapshot.changed(view_state()):
+                        self.discard_undo()
+                        self._undo = snapshot
+                    else:
+                        snapshot.close()
         if self.is_finished():
             self.backend.release()
             print(f"Finished video {self.video['Filepath']}; moving to the next video.")
+        self.discard_undo()
         return True
 
 
@@ -909,10 +1187,13 @@ def annotate_videos(args: argparse.Namespace) -> None:
     )
     backend = Sam3VideoBackend(args.model, device, args.threshold)
     for number, video in select_videos(args, videos):
+        print(
+            f"Opening {video['Filepath']} (Video {number}, Tool {video['Tool ID']}).",
+            flush=True,
+        )
         root = args.manifest.parent.resolve()
         if file_hash(resolve_path(root, video["Filepath"])) != video["Source SHA256"]:
             raise ValueError("Source MP4 changed; reextract before annotating.")
-        print(f"Opening {video['Filepath']} (Video {number}, Tool {video['Tool ID']}).")
         if not VideoReviewer(args, video, all_frames, backend).run():
             return
     print("No more selected videos.")

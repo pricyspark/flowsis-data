@@ -8,6 +8,7 @@ from PIL import Image
 from annotate import Sam3ImageBackend
 from image_review import Candidate, review_image_instances
 from image_spatial import Sam3SpatialBackend
+from video_backend import Sam3VideoBackend
 
 
 class Batch(dict):
@@ -105,6 +106,39 @@ def test_spatial_cache_reuses_embedding_and_offload_clears_it():
     assert not instance.active
     instance.segment(image, [(1, 1, 1), (5, 5, 0)])
     assert instance.processor.calls[-1]["images"] is image
+
+
+@pytest.mark.parametrize("points", [[(1, 1, 1), (5, 5, 0)], [(5, 5, 0)]])
+def test_video_click_refinement_passes_mask_logits_to_decoder(points):
+    spatial = backend()
+    instance = Sam3VideoBackend("unused", torch.device("cpu"))
+    instance._spatial_backend = spatial
+    image = Image.new("RGB", (8, 8))
+    seed = np.zeros((8, 8), dtype=np.bool_)
+    seed[:5, :5] = True
+    result = instance.clicks(image, points, seed=seed)
+    dense = spatial.model.calls[0]["input_masks"]
+    assert dense.shape == (1, 1, 8, 8)
+    assert dense[0, 0, 0, 0] == 4
+    assert dense[0, 0, 7, 7] == -4
+    assert result.sum() == 9
+    assert seed.sum() == 25
+    instance.clicks(image, [(1, 1, 1), (5, 5, 0)])
+    assert spatial.model.calls[-1]["input_masks"] is None
+
+
+def test_video_clicks_unload_other_models_and_release_spatial_model(monkeypatch):
+    spatial = backend()
+    instance = Sam3VideoBackend("unused", torch.device("cpu"))
+    instance.detector = object()
+    instance.tracker = object()
+    monkeypatch.setattr("video_backend.Sam3SpatialBackend", lambda *args: spatial)
+    instance.clicks(Image.new("RGB", (8, 8)), [(1, 1, 1), (5, 5, 0)])
+    assert instance.detector is None
+    assert instance.tracker is None
+    assert instance._spatial_backend is spatial
+    instance.release()
+    assert instance._spatial_backend is None
 
 
 @pytest.mark.parametrize(

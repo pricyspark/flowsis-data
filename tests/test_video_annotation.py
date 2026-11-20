@@ -13,6 +13,7 @@ from PIL import Image
 import annotate
 import batch_propagate_videos
 import video_annotation
+import video_data
 from annotations import IMAGE_OBJECT_FIELDS, read_csv, write_csv
 from image_review import Candidate
 from masks import load_mask_bundle, save_mask_bundle
@@ -72,6 +73,10 @@ def prepared(tmp_path, monkeypatch, times=(0, 1, 3, 4)):
     prepare_videos(args)
     video = read_csv("video_manifest.csv")[0]
     assert video["Manufacturer"] == "Example Instruments"
+    assert video["Video Number"] == "1"
+    assert all(
+        row["Video Number"] == "1" for row in read_csv("video_frame_manifest.csv")
+    )
     return video, read_csv("video_frame_manifest.csv")
 
 
@@ -124,7 +129,7 @@ class Tracker:
         value = np.ones((image.height, image.width), dtype=np.bool_)
         return [Candidate(value, 0.9, prompt, "candidate-0")]
 
-    def clicks(self, image, points, box=None):
+    def clicks(self, image, points, box=None, *, seed=None):
         return np.ones((image.height, image.width), dtype=np.bool_)
 
 
@@ -173,6 +178,7 @@ def test_batch_uses_last_anchor_and_preserves_earlier_and_reviewed_masks(
     assert report[0]["new_mask_frames"] == "6"
     assert report[0]["regenerated_mask_frames"] == "4"
     assert Path(report[0]["preview_directory"]).is_dir()
+    assert Path(report[0]["preview_directory"]).parent.name == "1"
     assert json.loads(Path("batch_propagation_report.json").read_text()) == report
     saved = read_csv("video_frame_manifest.csv")
     for index, (row, contents) in original.items():
@@ -342,6 +348,72 @@ def test_extraction_uses_decoded_timestamps_and_resumes_without_changing_annotat
     Path(frames[0]["Filepath"]).unlink()
     prepare_videos(parse(monkeypatch, "prepare-videos"))
     assert Path("video_frame_manifest.csv").read_bytes() == before
+
+
+def test_preparation_backfills_manifest_numbers_without_changing_annotations(
+    tmp_path, monkeypatch
+):
+    from annotations import VIDEO_MANIFEST_FIELDS
+
+    video, frames = prepared(tmp_path, monkeypatch)
+    seed_frame(tmp_path, video, frames, 0, "accepted")
+    video.pop("Video Number")
+    for row in frames:
+        row.pop("Video Number")
+    write_csv(
+        "video_manifest.csv",
+        [video],
+        [field for field in VIDEO_MANIFEST_FIELDS if field != "Video Number"],
+    )
+    write_csv(
+        "video_frame_manifest.csv",
+        frames,
+        [field for field in FRAME_FIELDS if field != "Video Number"],
+    )
+    registry = Path("video_manifest.numbers.json")
+    numbers = {"retired-video": 1, video["Video ID"]: 7}
+    registry.write_text(json.dumps(numbers))
+    log_before = Path("video_review.jsonl").read_bytes()
+    mask_before = Path(frames[0]["Mask Path"]).read_bytes()
+
+    prepare_videos(parse(monkeypatch, "prepare-videos", "--video", "7"))
+
+    saved_video = read_csv("video_manifest.csv")[0]
+    saved_frames = read_csv("video_frame_manifest.csv")
+    assert saved_video.pop("Video Number") == "7"
+    assert saved_video == video
+    for saved, original in zip(saved_frames, frames, strict=True):
+        assert saved.pop("Video Number") == "7"
+        assert saved == original
+    assert Path("video_review.jsonl").read_bytes() == log_before
+    assert Path(frames[0]["Mask Path"]).read_bytes() == mask_before
+    assert json.loads(registry.read_text()) == numbers
+
+
+def test_preparation_assigns_new_video_number_to_all_its_frames(tmp_path, monkeypatch):
+    video, _ = prepared(tmp_path, monkeypatch)
+    write_video(Path("videos/12/second.mp4"))
+    prepare_videos(parse(monkeypatch, "prepare-videos"))
+    videos = read_csv("video_manifest.csv")
+    frames = read_csv("video_frame_manifest.csv")
+    numbers = {row["Video ID"]: row["Video Number"] for row in videos}
+    assert numbers[video["Video ID"]] == "1"
+    assert sorted(numbers.values()) == ["1", "2"]
+    assert all(row["Video Number"] == numbers[row["Video ID"]] for row in frames)
+
+
+@pytest.mark.parametrize("field,value", [("Mask Path", "957"), ("Anchor Path", "FALSE")])
+def test_startup_reports_malformed_manifest_paths(tmp_path, monkeypatch, field, value):
+    video, frames = prepared(tmp_path, monkeypatch)
+    frames[1][field] = value
+    with pytest.raises(ValueError) as error:
+        video_annotation.VideoReviewer(
+            parse(monkeypatch, "videos"), video, frames, Tracker()
+        )
+    message = str(error.value)
+    assert frames[1]["Frame ID"] in message
+    assert f"invalid {field} {value!r}" in message
+    assert "shifted or corrupted columns" in message
 
 
 def test_changed_video_requires_explicit_reextraction_and_invalidates_masks(
@@ -665,7 +737,7 @@ def test_continue_from_accepted_range_through_terminal_commands(tmp_path, monkey
     )
     monkeypatch.setattr(video_annotation, "show_frame", lambda *args: None)
     commands = iter(
-        ["jump 1", "prop forward 1 3", "preview 2 3", "accept 2 3"]
+        ["jump 1", "prop forward 1 3", "preview 2 3", "accept 2 3", "next"]
     )
     monkeypatch.setattr("builtins.input", lambda _: next(commands))
     assert reviewer.run() is True
@@ -891,6 +963,107 @@ def test_default_video_queue_skips_finished_video(tmp_path, monkeypatch, capsys)
     assert "Opening videos/12/second.mp4" in output
 
 
+def test_finished_video_startup_does_not_decode_masks(tmp_path, monkeypatch, capsys):
+    video, frames = prepared(tmp_path, monkeypatch)
+    for index in range(len(frames)):
+        seed_frame(tmp_path, video, frames, index, "accepted")
+
+    decoded = []
+    original = video_data.load_mask_bundle
+
+    def counted_decode(path):
+        decoded.append(path)
+        return original(path)
+
+    monkeypatch.setattr(video_data, "load_mask_bundle", counted_decode)
+    reviewer = video_annotation.VideoReviewer(
+        parse(monkeypatch, "videos"), video, frames, Tracker()
+    )
+    assert reviewer.run() is True
+    assert not decoded
+    assert "Selected frames are fully accepted." in capsys.readouterr().out
+    # Full verification still decodes and validates the saved mask contents.
+    validate_video_frames(tmp_path, video, frames, check_files=False)
+    assert decoded
+
+
+def test_completion_reuses_hashes_and_detects_replaced_masks(tmp_path, monkeypatch):
+    video, frames = prepared(tmp_path, monkeypatch)
+    for index in range(len(frames)):
+        seed_frame(tmp_path, video, frames, index, "accepted")
+    reviewer = video_annotation.VideoReviewer(
+        parse(monkeypatch, "videos"), video, frames, Tracker()
+    )
+    calls = []
+    original = video_data.file_hash
+
+    def counted_hash(path):
+        calls.append(path)
+        return original(path)
+
+    monkeypatch.setattr(video_data, "file_hash", counted_hash)
+    assert reviewer.is_finished()
+    assert reviewer.is_finished()
+    assert len(calls) == len(frames)
+    path = Path(frames[2]["Mask Path"])
+    # A different file of the same size must invalidate the cached checksum.
+    contents = bytearray(path.read_bytes())
+    contents[-1] ^= 1
+    path.write_bytes(contents)
+    assert not reviewer.is_finished()
+    assert len(calls) == len(frames) + 1
+
+
+def test_startup_finds_later_unverified_accepted_frame(tmp_path, monkeypatch, capsys):
+    video, frames = prepared(tmp_path, monkeypatch)
+    for index in range(len(frames)):
+        seed_frame(tmp_path, video, frames, index, "accepted")
+    VideoLog(Path("video_review.jsonl")).append(frames[2]["Frame ID"], "accepted")
+    reviewer = video_annotation.VideoReviewer(
+        parse(monkeypatch, "videos"), video, frames, Tracker()
+    )
+    displayed = []
+    monkeypatch.setattr(
+        video_annotation, "show_frame", lambda *args: displayed.append(args[2])
+    )
+    monkeypatch.setattr("builtins.input", lambda _: "q")
+    assert reviewer.run() is False
+    assert "frame 2 @" in displayed[0]
+    assert "changed/unverified" in displayed[0]
+    output = capsys.readouterr().out
+    assert "1 needing review" in output
+    assert "First frame needing review: 2." in output
+
+
+def test_pending_navigation_wraps_within_range_and_status_preserves_position(
+    tmp_path, monkeypatch, capsys
+):
+    video, frames = prepared(tmp_path, monkeypatch, tuple(range(6)))
+    seed_frame(tmp_path, video, frames, 1, "accepted")
+    frames[3]["Review Status"] = "rejected"
+    reviewer = video_annotation.VideoReviewer(
+        parse(monkeypatch, "videos", "--start-frame", "1", "--end-frame", "4"),
+        video,
+        frames,
+        Tracker(),
+    )
+    displayed = []
+    monkeypatch.setattr(
+        video_annotation, "show_frame", lambda *args: displayed.append(args[2])
+    )
+    commands = iter(["pending", "status", "pending", "q"])
+    monkeypatch.setattr("builtins.input", lambda _: next(commands))
+    assert reviewer.run() is False
+    assert [title.split("frame ")[1].split(" @")[0] for title in displayed] == [
+        "2",
+        "4",
+        "4",
+        "2",
+    ]
+    output = capsys.readouterr().out
+    assert "Frames 1–4: 1/4 accepted, 1 rejected, 2 needing review." in output
+
+
 def test_explicit_video_id_opens_finished_video_and_stays(tmp_path, monkeypatch):
     video, frames = prepared(tmp_path, monkeypatch)
     for index in range(len(frames)):
@@ -1007,6 +1180,175 @@ def test_propagation_count_shorthand(tmp_path, monkeypatch, command, expected):
     assert calls == [expected]
 
 
+def test_between_propagation_conditions_every_bounded_chunk_on_both_endpoints(
+    tmp_path, monkeypatch, capsys
+):
+    video, frames = prepared(tmp_path, monkeypatch, tuple(range(22)))
+    for index, decision in [
+        (0, "accepted"), (2, "accepted"), (5, "pending"),
+        (10, "pending"), (19, "pending"),
+    ]:
+        seed_frame(tmp_path, video, frames, index, decision, anchor=index != 5)
+    right = np.zeros_like(mask())
+    right[12:18, 20:26] = True
+    save_frame_mask(
+        tmp_path,
+        frames[19],
+        video,
+        Path("masks/videos"),
+        right,
+        decision="pending",
+    )
+    original = [row.copy() for row in frames]
+    preserved = {
+        index: Path(frames[index]["Mask Path"]).read_bytes()
+        for index in (0, 2, 10, 19)
+    }
+    calls = []
+    live = []
+    read = video_annotation.read_frame
+
+    def read_one(root, row):
+        image = read(root, row)
+        image.info["frame_index"] = int(row["Frame Index"])
+        live.append(weakref.ref(image))
+        assert sum(reference() is not None for reference in live) <= 8
+        return image
+
+    class BetweenTracker(Tracker):
+        def track(self, images, anchors, start, stop, reverse):
+            indices = [image.info["frame_index"] for image in images]
+            calls.append(indices)
+            assert indices == sorted(indices)
+            assert indices[0] == 2 and indices[-1] == 19
+            np.testing.assert_array_equal(anchors[0], mask())
+            np.testing.assert_array_equal(anchors[len(images) - 1], right)
+            assert not reverse
+            for local in range(start, stop + 1):
+                yield local, anchors.get(local, mask() | right).copy()
+
+    monkeypatch.setattr(video_annotation, "read_frame", read_one)
+    reviewer = video_annotation.VideoReviewer(
+        parse(monkeypatch, "videos", "--chunk-size", "4", "--context-frames", "1"),
+        video,
+        frames,
+        BetweenTracker(),
+    )
+    reviewer.propagate_between(2, 19)
+    assert len(calls) > 1
+    for index in range(len(frames)):
+        if index <= 2 or index >= 19 or index == 10:
+            assert frames[index] == original[index]
+        else:
+            assert frames[index]["Review Status"] == "pending"
+            np.testing.assert_array_equal(
+                load_mask_bundle(frames[index]["Mask Path"]).masks[0], mask() | right
+            )
+    for index, contents in preserved.items():
+        assert Path(frames[index]["Mask Path"]).read_bytes() == contents
+    assert reviewer.log.acceptance_matches(tmp_path, video, frames[2])
+    output = capsys.readouterr().out
+    assert "Preserved anchor frames: 2, 10, 19." in output
+    assert "Regenerated pending masks: 5." in output
+    records = [
+        json.loads(line) for line in Path("video_review.jsonl").read_text().splitlines()
+    ]
+    generated = [record for record in records if record.get("direction") == "between"]
+    assert len(generated) == 15
+    assert all(record["anchor_frames"] == [2, 19] for record in generated)
+
+
+@pytest.mark.parametrize(
+    "problem", ["missing", "empty", "rejected", "reviewed", "adjacent"]
+)
+def test_between_propagation_checks_inputs_before_writing(tmp_path, monkeypatch, problem):
+    video, frames = prepared(tmp_path, monkeypatch, tuple(range(6)))
+    seed_frame(tmp_path, video, frames, 1)
+    seed_frame(tmp_path, video, frames, 4)
+    if problem == "missing":
+        frames[4]["Mask Path"] = ""
+    elif problem == "empty":
+        save_frame_mask(
+            tmp_path,
+            frames[4],
+            video,
+            Path("masks/videos"),
+            np.zeros_like(mask()),
+            decision="pending",
+        )
+    elif problem == "rejected":
+        frames[4]["Review Status"] = "rejected"
+    elif problem == "reviewed":
+        seed_frame(tmp_path, video, frames, 2, "accepted")
+    before = [row.copy() for row in frames]
+    backend = Tracker()
+    reviewer = video_annotation.VideoReviewer(
+        parse(monkeypatch, "videos"), video, frames, backend
+    )
+    with pytest.raises(ValueError):
+        reviewer.propagate_between(1, 2 if problem == "adjacent" else 4)
+    assert frames == before
+    assert not backend.calls
+
+
+@pytest.mark.parametrize("failure", ["error", "missing", "loss"])
+def test_between_propagation_keeps_partial_progress(tmp_path, monkeypatch, failure):
+    video, frames = prepared(tmp_path, monkeypatch, tuple(range(8)))
+    for index in (0, 7):
+        seed_frame(tmp_path, video, frames, index, "accepted")
+
+    class InterruptedTracker(Tracker):
+        def track(self, images, anchors, start, stop, reverse):
+            yield start, anchors[start].copy()
+            yield start + 1, mask()
+            if failure == "error":
+                raise RuntimeError("Interrupted inference")
+            if failure == "loss":
+                yield stop, np.zeros_like(mask())
+
+    reviewer = video_annotation.VideoReviewer(
+        parse(monkeypatch, "videos", "--chunk-size", "3", "--context-frames", "0"),
+        video,
+        frames,
+        InterruptedTracker(),
+    )
+    with pytest.raises(RuntimeError if failure == "error" else ValueError):
+        reviewer.propagate_between(0, 7)
+    saved = read_csv("video_frame_manifest.csv")
+    assert saved[1]["Review Status"] == "pending"
+    np.testing.assert_array_equal(load_mask_bundle(saved[1]["Mask Path"]).masks[0], mask())
+    assert not saved[3]["Mask Path"]
+    assert saved[0]["Review Status"] == saved[7]["Review Status"] == "accepted"
+
+
+@pytest.mark.parametrize("command", ["prop between 1 3", "propr between 1 3"])
+def test_between_command_is_independent_of_current_frame(tmp_path, monkeypatch, command):
+    video, frames = prepared(tmp_path, monkeypatch)
+    reviewer = video_annotation.VideoReviewer(
+        parse(monkeypatch, "videos"), video, frames, Tracker()
+    )
+    calls = []
+    monkeypatch.setattr(reviewer, "propagate_between", lambda *args: calls.append(args))
+    monkeypatch.setattr(video_annotation, "show_frame", lambda *args: None)
+    replies = iter([command, "q"])
+    monkeypatch.setattr("builtins.input", lambda _: next(replies))
+    assert reviewer.run() is False
+    assert calls == [(1, 3)]
+
+
+def test_between_propagation_honors_auto_preview(tmp_path, monkeypatch):
+    video, frames = prepared(tmp_path, monkeypatch)
+    seed_frame(tmp_path, video, frames, 0)
+    seed_frame(tmp_path, video, frames, 3)
+    reviewer = video_annotation.VideoReviewer(
+        parse(monkeypatch, "videos", "--auto-preview"), video, frames, Tracker()
+    )
+    previews = []
+    monkeypatch.setattr(reviewer, "preview", lambda *args: previews.append(args))
+    reviewer.propagate_between(0, 3)
+    assert previews == [(0, 3)]
+
+
 @pytest.mark.parametrize("count", [0, -1])
 def test_propagation_count_must_be_positive(tmp_path, monkeypatch, capsys, count):
     video, frames = prepared(tmp_path, monkeypatch)
@@ -1066,6 +1408,7 @@ def test_saved_previews_stream_frames_into_contact_sheets(tmp_path, monkeypatch)
     monkeypatch.setattr(video_annotation, "read_frame", read_one)
     monkeypatch.setattr(plt, "show", no_gui)
     directory = reviewer.preview(0, 24)
+    assert directory.parent == Path("previews/videos/1")
     assert backend.releases == 1
     assert sorted(path.name for path in directory.glob("*.png")) == [
         "000000-000011.png",
@@ -1076,6 +1419,7 @@ def test_saved_previews_stream_frames_into_contact_sheets(tmp_path, monkeypatch)
         assert sheet.size == (256, 312)
     snapshot = json.loads((directory / "manifest.json").read_text())
     assert snapshot["video_id"] == video["Video ID"]
+    assert snapshot["video_number"] == 1
     assert snapshot["extraction_id"] == video["Extraction ID"]
     assert [row["frame_index"] for row in snapshot["frames"]] == list(range(25))
     assert snapshot["frames"][0]["mask_sha256"] == file_hash(
@@ -1083,6 +1427,38 @@ def test_saved_previews_stream_frames_into_contact_sheets(tmp_path, monkeypatch)
     )
     assert reviewer.inspected == {0: snapshot["frames"][0]["mask_sha256"]}
     assert all(row["Review Status"] == "pending" for row in frames)
+
+
+@pytest.mark.parametrize("selector", ["--video", "--video-id"])
+def test_preview_uses_registered_number_and_custom_destination(
+    tmp_path, monkeypatch, selector
+):
+    video, frames = prepared(tmp_path, monkeypatch)
+    registry = Path("video_manifest.numbers.json")
+    numbers = {"retired-video": 1, video["Video ID"]: 7}
+    registry.write_text(json.dumps(numbers))
+    value = "7" if selector == "--video" else video["Video ID"]
+    reviewer = video_annotation.VideoReviewer(
+        parse(
+            monkeypatch,
+            "videos",
+            selector,
+            value,
+            "--preview-dir",
+            "custom-previews",
+            "--preview-size",
+            "64",
+        ),
+        video,
+        frames,
+        Tracker(),
+    )
+    directory = reviewer.preview(0, 0)
+    assert directory.parent == Path("custom-previews/7")
+    snapshot = json.loads((directory / "manifest.json").read_text())
+    assert snapshot["video_number"] == 7
+    assert snapshot["video_id"] == video["Video ID"]
+    assert json.loads(registry.read_text()) == numbers
 
 
 def test_auto_preview_saves_sheets_after_propagation(tmp_path, monkeypatch):
@@ -1095,7 +1471,7 @@ def test_auto_preview_saves_sheets_after_propagation(tmp_path, monkeypatch):
         Tracker(),
     )
     reviewer.propagate(0, 0, 3, "forward")
-    assert len(list(Path("previews/videos").rglob("*.png"))) == 1
+    assert len(list(Path("previews/videos/1").rglob("*.png"))) == 1
     assert set(reviewer.inspected) == set(range(4))
     assert all(row["Review Status"] == "pending" for row in frames)
     # The saved snapshot qualifies for explicit range acceptance, but changing
@@ -1156,6 +1532,95 @@ def test_click_region_preserves_pixels_outside_it_and_records_coordinates(
     assert correction["region"] == [1, 1, 5, 5]
     assert correction["points"] == [[1.0, 1.0, 1], [2.0, 2.0, 0]]
     assert frames[0]["Review Status"] == "pending"
+
+
+@pytest.mark.parametrize("reset", [False, True])
+@pytest.mark.parametrize("region", [None, (9, 6, 20, 16)])
+def test_video_clicks_refine_current_mask_or_explicitly_reset(
+    tmp_path, monkeypatch, reset, region
+):
+    video, frames = prepared(tmp_path, monkeypatch)
+    seed_frame(tmp_path, video, frames, 0, anchor=False)
+    before = mask()
+    local = before[6:16, 9:20] if region else before
+    backend = Tracker()
+    reviewer = video_annotation.VideoReviewer(
+        parse(monkeypatch, "videos"), video, frames, backend
+    )
+    previous = [(0.0, 0.0, 1)]
+    points = [(1.0, 1.0, 1)]
+    reviewer.click_history[(0, region)] = previous
+
+    def collect(image, overlay, initial_points):
+        np.testing.assert_array_equal(overlay, np.zeros_like(local) if reset else local)
+        assert initial_points == ([] if reset else previous)
+        return points
+
+    def clicks(image, points, box=None, *, seed=None):
+        if reset:
+            assert seed is None
+        else:
+            np.testing.assert_array_equal(seed, local)
+        return np.ones((image.height, image.width), dtype=np.bool_)
+
+    monkeypatch.setattr(video_annotation, "collect_clicks", collect)
+    monkeypatch.setattr(backend, "clicks", clicks)
+    monkeypatch.setattr(video_annotation, "show_frame", lambda *args: None)
+    commands = (["region 9 6 20 16"] if region else []) + [
+        "click reset" if reset else "click",
+        "q",
+    ]
+    replies = iter(commands)
+    monkeypatch.setattr("builtins.input", lambda _: next(replies))
+    assert reviewer.run() is False
+    expected = before.copy() if region else np.ones_like(before)
+    if region:
+        expected[6:16, 9:20] = True
+    for field in ("Mask Path", "Anchor Path"):
+        np.testing.assert_array_equal(
+            load_mask_bundle(frames[0][field]).masks[0], expected
+        )
+    assert reviewer.click_history[(0, region)] == points
+    assert frames[0]["Review Status"] == "pending"
+    records = [
+        json.loads(line) for line in Path("video_review.jsonl").read_text().splitlines()
+    ]
+    assert records[-1]["reset_mask"] is reset
+
+
+@pytest.mark.parametrize("fail", [False, True])
+def test_cancelled_or_failed_click_reset_preserves_mask_and_history(
+    tmp_path, monkeypatch, fail
+):
+    video, frames = prepared(tmp_path, monkeypatch)
+    seed_frame(tmp_path, video, frames, 0)
+    original = frames[0].copy()
+    contents = Path(original["Mask Path"]).read_bytes()
+    backend = Tracker()
+    reviewer = video_annotation.VideoReviewer(
+        parse(monkeypatch, "videos"), video, frames, backend
+    )
+    previous = [(1.0, 1.0, 1)]
+    reviewer.click_history[(0, None)] = previous
+    monkeypatch.setattr(video_annotation, "show_frame", lambda *args: None)
+    monkeypatch.setattr(
+        video_annotation,
+        "collect_clicks",
+        lambda *args: [(2.0, 2.0, 1)] if fail else None,
+    )
+
+    def clicks(*args, **kwargs):
+        if fail:
+            raise ValueError("Could not satisfy clicks")
+        pytest.fail("Cancelled prompts must not invoke inference")
+
+    monkeypatch.setattr(backend, "clicks", clicks)
+    replies = iter(["click reset", "q"])
+    monkeypatch.setattr("builtins.input", lambda _: next(replies))
+    assert reviewer.run() is False
+    assert frames[0] == original
+    assert Path(original["Mask Path"]).read_bytes() == contents
+    assert reviewer.click_history[(0, None)] == previous
 
 
 def test_empty_prediction_is_unresolved_and_absent_is_an_explicit_empty_bundle(
@@ -1256,10 +1721,13 @@ def test_tracker_adapter_initializes_all_anchors_and_uses_the_requested_directio
             return [torch.ones((1, 1, 24, 32), dtype=torch.bool)]
 
     class Model:
+        config = SimpleNamespace(max_cond_frame_num=1)
+
         def __call__(self, **kwargs):
             return SimpleNamespace(pred_masks=torch.ones((1, 1, 24, 32)))
 
         def propagate_in_video_iterator(self, **kwargs):
+            assert self.config.max_cond_frame_num == 2
             calls.append(kwargs)
             yield SimpleNamespace(frame_idx=1, pred_masks=torch.ones((1, 1, 24, 32)))
             yield SimpleNamespace(frame_idx=0, pred_masks=torch.ones((1, 1, 24, 32)))
@@ -1277,6 +1745,7 @@ def test_tracker_adapter_initializes_all_anchors_and_uses_the_requested_directio
     np.testing.assert_array_equal(result[0], mask())
     assert released == [True]
     assert session.processed_frames is None
+    assert backend.tracker.config.max_cond_frame_num == 1
 
 
 @pytest.mark.parametrize("fail", [False, True])
@@ -1293,6 +1762,8 @@ def test_tracking_session_is_released_on_close_or_error(monkeypatch, fail):
             pass
 
     class Model:
+        config = SimpleNamespace(max_cond_frame_num=1)
+
         def __call__(self, **kwargs):
             pass
 
@@ -1303,9 +1774,10 @@ def test_tracking_session_is_released_on_close_or_error(monkeypatch, fail):
     backend.tracker, backend.video_processor = Model(), Processor()
     monkeypatch.setattr(backend, "_session", lambda images: session)
     predictions = backend._track_window(
-        [Image.new("RGB", (32, 24))] * 2, {0: mask()}, 0, 1, False
+        [Image.new("RGB", (32, 24))] * 2, {0: mask(), 1: mask()}, 0, 1, False
     )
     next(predictions)
+    assert backend.tracker.config.max_cond_frame_num == 2
     assert not released
     if fail:
         with pytest.raises(RuntimeError, match="interrupted"):
@@ -1314,6 +1786,7 @@ def test_tracking_session_is_released_on_close_or_error(monkeypatch, fail):
         predictions.close()
     assert released == [True]
     assert session.processed_frames is None
+    assert backend.tracker.config.max_cond_frame_num == 1
 
 
 def test_propagation_saves_predictions_before_inference_finishes(tmp_path, monkeypatch):

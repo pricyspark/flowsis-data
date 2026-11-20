@@ -12,6 +12,7 @@ from PIL import Image
 
 from image_review import Candidate
 from image_refinement import tool_crop
+from image_spatial import Sam3SpatialBackend
 from video_data import Mask
 
 if TYPE_CHECKING:
@@ -36,6 +37,7 @@ class Sam3VideoBackend:
         self.image_processor: Sam3Processor | None = None
         self.tracker: Sam3TrackerVideoModel | None = None
         self.video_processor: Sam3TrackerVideoProcessor | None = None
+        self._spatial_backend: Sam3SpatialBackend | None = None
 
     def _release_unused_memory(self) -> None:
         gc.collect()
@@ -46,6 +48,7 @@ class Sam3VideoBackend:
         """Unload inference weights before CPU-only inspection/export."""
         self.detector = None
         self.tracker = None
+        self._spatial_backend = None
         self._release_unused_memory()
 
     def _release_session(self, session: Sam3TrackerVideoInferenceSession) -> None:
@@ -57,8 +60,9 @@ class Sam3VideoBackend:
     def text(self, image: Image.Image, prompt: str) -> list[Candidate]:
         from transformers import Sam3Model, Sam3Processor
 
-        if self.tracker is not None:
+        if self.tracker is not None or self._spatial_backend is not None:
             self.tracker = None
+            self._spatial_backend = None
             self._release_unused_memory()
         if self.detector is None:
             self.detector = (
@@ -91,8 +95,9 @@ class Sam3VideoBackend:
     ) -> Sam3TrackerVideoInferenceSession:
         from transformers import Sam3TrackerVideoModel, Sam3TrackerVideoProcessor
 
-        if self.detector is not None:
+        if self.detector is not None or self._spatial_backend is not None:
             self.detector = None
+            self._spatial_backend = None
             self._release_unused_memory()
         if self.tracker is None:
             self.tracker = (
@@ -129,26 +134,16 @@ class Sam3VideoBackend:
         image: Image.Image,
         points: list[tuple[float, float, int]],
         box: tuple[int, int, int, int] | None = None,
+        *,
+        seed: Mask | None = None,
     ) -> Mask:
         if not points and box is None:
             raise ValueError("Provide positive/negative clicks or a box.")
-        session = self._session([image])
-        assert self.video_processor is not None and self.tracker is not None
-        try:
-            self.video_processor.add_inputs_to_inference_session(
-                session,
-                frame_idx=0,
-                obj_ids=1,
-                input_points=[[[[x, y] for x, y, _ in points]]] if points else None,
-                input_labels=[[[label for _, _, label in points]]] if points else None,
-                input_boxes=[[list(box)]] if box is not None else None,
-            )
-            return self._mask(
-                self.tracker(inference_session=session, frame_idx=0),
-                (image.height, image.width),
-            )
-        finally:
-            self._release_session(session)
+        if self.detector is not None or self.tracker is not None:
+            self.release()
+        if self._spatial_backend is None:
+            self._spatial_backend = Sam3SpatialBackend(self.model_name, self.device)
+        return self._spatial_backend.segment(image, points, seed, box=box).mask
 
     @torch.inference_mode()
     def track(
@@ -232,6 +227,12 @@ class Sam3VideoBackend:
     ) -> Generator[tuple[int, Mask], None, None]:
         session = self._session(images)
         assert self.video_processor is not None and self.tracker is not None
+        config = self.tracker.config
+        limit = config.max_cond_frame_num
+        # Every explicit anchor must remain available to attention, including
+        # distant endpoints. The caller already bounds the window's size.
+        if limit != -1:
+            config.max_cond_frame_num = max(limit, len(anchors))
         try:
             for index, mask in sorted(anchors.items()):
                 self.video_processor.add_inputs_to_inference_session(
@@ -255,4 +256,5 @@ class Sam3VideoBackend:
                 )
                 yield index, mask
         finally:
+            config.max_cond_frame_num = limit
             self._release_session(session)
